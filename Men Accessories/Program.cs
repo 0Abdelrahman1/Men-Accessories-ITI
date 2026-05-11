@@ -1,3 +1,6 @@
+using Men_Accessories.Contexts;
+using Microsoft.EntityFrameworkCore;
+
 namespace Men_Accessories
 {
     public class Program
@@ -8,6 +11,9 @@ namespace Men_Accessories
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<MenAccessoriesContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("CS"))
+                    .UseLazyLoadingProxies());
 
             var app = builder.Build();
 
