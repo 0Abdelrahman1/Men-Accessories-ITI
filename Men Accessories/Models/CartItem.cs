@@ -1,3 +1,4 @@
+using Men_Accessories.Validators;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -15,11 +16,13 @@ namespace Men_Accessories.Models
 
         [Required(ErrorMessage = "Quantity is required")]
         [Range(1, 10000, ErrorMessage = "Quantity must be at least 1")]
+        [MaxStockQuantity]
         public int Quantity { get; set; }
 
         [Required(ErrorMessage = "Unit price is required")]
         [Column(TypeName = "decimal(18, 2)")]
         [Range(0.01, 999999.99, ErrorMessage = "Unit price must be between 0.01 and 999999.99")]
+        [ValidCartItemPrice]
         public decimal UnitPrice { get; set; }
 
         // Navigation
