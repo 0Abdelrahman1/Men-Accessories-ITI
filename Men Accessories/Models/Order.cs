@@ -1,3 +1,4 @@
+using Men_Accessories.Validators;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,6 +17,7 @@ namespace Men_Accessories.Models
         [Required(ErrorMessage = "Total amount is required")]
         [Column(TypeName = "decimal(18, 2)")]
         [Range(0.01, 999999.99, ErrorMessage = "Total amount must be between 0.01 and 999999.99")]
+        [ValidOrderTotal]
         public decimal TotalAmount { get; set; }
 
         // Navigation
