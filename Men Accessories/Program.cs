@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 using Men_Accessories.Contexts;
 using Microsoft.EntityFrameworkCore;
+=======
+using Men_Accessories.Models;
+using Microsoft.AspNetCore.Identity;
+>>>>>>> Account
 
 namespace Men_Accessories
 {
@@ -11,9 +16,11 @@ namespace Men_Accessories
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
             builder.Services.AddDbContext<MenAccessoriesContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("CS"))
                     .UseLazyLoadingProxies());
+
 
             var app = builder.Build();
 
@@ -22,10 +29,14 @@ namespace Men_Accessories
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+            app.UseStaticFiles();
+            app.UseHttpsRedirection();
             app.UseRouting();
+            
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
+           
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
