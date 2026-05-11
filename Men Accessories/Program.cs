@@ -1,3 +1,6 @@
+using Men_Accessories.Models;
+using Microsoft.AspNetCore.Identity;
+
 namespace Men_Accessories
 {
     public class Program
@@ -8,6 +11,7 @@ namespace Men_Accessories
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            
 
             var app = builder.Build();
 
@@ -16,10 +20,14 @@ namespace Men_Accessories
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+            app.UseStaticFiles();
+            app.UseHttpsRedirection();
             app.UseRouting();
+            
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
+           
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
