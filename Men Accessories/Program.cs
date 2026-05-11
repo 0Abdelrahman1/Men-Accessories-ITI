@@ -1,10 +1,7 @@
-<<<<<<< HEAD
 using Men_Accessories.Contexts;
 using Microsoft.EntityFrameworkCore;
-=======
 using Men_Accessories.Models;
 using Microsoft.AspNetCore.Identity;
->>>>>>> Account
 
 namespace Men_Accessories
 {
