@@ -2,6 +2,9 @@ using Men_Accessories.Contexts;
 using Microsoft.EntityFrameworkCore;
 using Men_Accessories.Models;
 using Microsoft.AspNetCore.Identity;
+using Men_Accessories.Repositories;
+using Men_Accessories.Services;
+using Men_Accessories.Data;
 
 namespace Men_Accessories
 {
@@ -42,11 +45,21 @@ namespace Men_Accessories
                 options.AppSecret = "f715c8b3460683ff044781b12494fb5f";
             });
 
+            builder.Services.AddScoped<IProductRepository, ProductRepository>();
+            builder.Services.AddScoped<IProductService, ProductService>();
+
 
             builder.Configuration.AddJsonFile("appsettings.json", optional: false)
                 .AddJsonFile("appsettings.local.json", optional: true);
 
             var app = builder.Build();
+
+            // Seed database
+            using (var scope = app.Services.CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<MenAccessoriesContext>();
+                DbSeeder.Seed(context);
+            }
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

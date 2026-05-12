@@ -1,0 +1,42 @@
+@model Men_Accessories.Models.Product
+@{
+    ViewData["Title"] = "Delete Product";
+}
+
+<div class="container mt-4">
+    <h1>Delete Product</h1>
+    <hr />
+    <h3>Are you sure you want to delete this product?</h3>
+
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <img src="@Model.ImageUrl" class="img-fluid mb-3" alt="@Model.Name" />
+        </div>
+        <div class="col-md-6">
+            <dl class="row">
+                <dt class="col-sm-3">Name</dt>
+                <dd class="col-sm-9">@Model.Name</dd>
+
+                <dt class="col-sm-3">Description</dt>
+                <dd class="col-sm-9">@Model.Description</dd>
+
+                <dt class="col-sm-3">Category</dt>
+                <dd class="col-sm-9">@Model.Category?.Name</dd>
+
+                <dt class="col-sm-3">Price</dt>
+                <dd class="col-sm-9">$@Model.Price</dd>
+
+                <dt class="col-sm-3">Discount</dt>
+                <dd class="col-sm-9">@Model.Discount%</dd>
+
+                <dt class="col-sm-3">Stock Quantity</dt>
+                <dd class="col-sm-9">@Model.StockQuantity</dd>
+            </dl>
+        </div>
+    </div>
+
+    <form asp-action="DeleteConfirmed" asp-route-id="@Model.Id" method="post">
+        <input type="submit" value="Delete" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    </form>
+</div>
