@@ -1,9 +1,11 @@
 using Men_Accessories.Models;
 using Men_Accessories.Utilities;
 using Men_Accessories.ViewModels.Account;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Men_Accessories.Controllers.Account
 {
@@ -67,7 +69,7 @@ namespace Men_Accessories.Controllers.Account
         #endregion
 
         [HttpGet]
-        public IActionResult ConfirmEmail(string email , string token)
+        public IActionResult ConfirmEmail(string email, string token)
         {
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token))
             {
@@ -93,35 +95,45 @@ namespace Men_Accessories.Controllers.Account
         }
 
         #region Login
-        [HttpGet]
-        public IActionResult Login()
+        private IActionResult RedirectToLocal(string returnUrl)
         {
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                return Redirect(returnUrl);
+
+            return RedirectToAction("Home");
+        }
+        [HttpGet]
+        public IActionResult Login(string returnUrl = null)
+        {
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
         [HttpPost]
-        public IActionResult Login(LoginViewModel loginView)
+        public IActionResult Login(LoginViewModel loginView, string returnUrl = null)
         {
             if (!ModelState.IsValid) return View(loginView);
             var user = userManager.FindByEmailAsync(loginView.Email).Result;
             if (user is not null)
             {
-                bool flagCorrect = userManager.CheckPasswordAsync(user, loginView.Password).Result;
-                if (flagCorrect)
+                var hasPassword = userManager.HasPasswordAsync(user).Result;
+
+                if (!hasPassword)
                 {
-                    if (!user.EmailConfirmed)
-                    {
-                        ModelState.AddModelError("", "Please confirm your email before logging in");
-                        return View(loginView);
-                    }
-                    var result = signInManager.PasswordSignInAsync(user, loginView.Password, loginView.RememberMe, false).Result;
-                    if (result.IsNotAllowed)
-                        ModelState.AddModelError("", "Your Account Is Not Allowed to login");
-                    if (result.IsLockedOut)
-                        ModelState.AddModelError("", "Your Account Is Locked Out");
-                    if (result.Succeeded)
-                        return RedirectToAction(nameof(HomeController.Index), "Home");
+                    ModelState.AddModelError("", "This account uses external login (Google/Facebook). Please login using it.");
+                    return View(loginView);
                 }
+
+                var result = signInManager.PasswordSignInAsync(user, loginView.Password, loginView.RememberMe, false).Result;
+                if (result.Succeeded)
+                    //return RedirectToLocal(returnUrl);
+                    return RedirectToAction("Index", "Home");
+                if (result.IsNotAllowed)
+                    ModelState.AddModelError("", "Your Account Is Not Allowed to login");
+                if (result.IsLockedOut)
+                    ModelState.AddModelError("", "Your Account Is Locked Out");
+                else
+                    ModelState.AddModelError("", "Invalid Email or Password");
             }
             else
             {
@@ -153,17 +165,17 @@ namespace Men_Accessories.Controllers.Account
             {
                 //check user by email
                 var user = userManager.FindByEmailAsync(forgetPasswordView.Email).Result;
-                if(user is not null)
+                if (user is not null)
                 {
                     var token = userManager.GeneratePasswordResetTokenAsync(user).Result;
 
-                    var resetPasswordURL = Url.Action("ResetPassword", "Account", new { email = forgetPasswordView.Email, token },Request.Scheme);
+                    var resetPasswordURL = Url.Action("ResetPassword", "Account", new { email = forgetPasswordView.Email, token }, Request.Scheme);
                     //create Email
                     var email = new Email()
                     {
                         To = forgetPasswordView.Email,
                         Subject = "Reset Password",
-                        Body = resetPasswordURL 
+                        Body = resetPasswordURL
                     };
 
                     // send Email
@@ -174,7 +186,7 @@ namespace Men_Accessories.Controllers.Account
 
             }
             ModelState.AddModelError("", "invalid Operation");
-            return View(nameof(ForgetPassword),forgetPasswordView);
+            return View(nameof(ForgetPassword), forgetPasswordView);
         }
 
 
@@ -186,7 +198,7 @@ namespace Men_Accessories.Controllers.Account
 
 
         [HttpGet]
-        public IActionResult ResetPassword(string email,string token)
+        public IActionResult ResetPassword(string email, string token)
         {
             TempData["email"] = email;
             TempData["token"] = token;
@@ -203,10 +215,10 @@ namespace Men_Accessories.Controllers.Account
 
             //get user by email
             var user = userManager.FindByEmailAsync(email).Result;
-            if(user !=null)
+            if (user != null)
             {
                 var result = userManager.ResetPasswordAsync(user, token, resetPasswordView.Password).Result;
-                if(result.Succeeded)
+                if (result.Succeeded)
                 {
                     return RedirectToAction(nameof(Login));
                 }
@@ -215,7 +227,7 @@ namespace Men_Accessories.Controllers.Account
                     foreach (var error in result.Errors)
                     {
                         ModelState.AddModelError("", error.Description);
-                        
+
                     }
                 }
             }
@@ -224,5 +236,57 @@ namespace Men_Accessories.Controllers.Account
         }
         #endregion
 
+
+        // POST: /Account/ExternalLogin
+        [HttpPost]
+        [AllowAnonymous]
+        public IActionResult ExternalLogin(string provider, string returnUrl = "/")
+        {
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { returnUrl });
+            var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return Challenge(properties, provider);
+        }
+
+        // GET: /Account/ExternalLoginCallback
+        [AllowAnonymous]
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = "/")
+        {
+            var info = await signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+                return RedirectToAction("Register");
+
+            // Try to sign in with existing external login
+            var result = await signInManager.ExternalLoginSignInAsync(
+                info.LoginProvider, info.ProviderKey, isPersistent: false);
+
+            if (result.Succeeded)
+                return LocalRedirect(returnUrl);
+
+            // No account yet — create one
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            var firstName = info.Principal.FindFirstValue(ClaimTypes.GivenName);
+            var lastName = info.Principal.FindFirstValue(ClaimTypes.Surname);
+            var user = new ApplicationUser
+            {
+                firstName = firstName,
+                lastName = lastName,
+                UserName = email,
+                Email = email
+            };
+
+            var createResult = await userManager.CreateAsync(user);
+            if (createResult.Succeeded)
+            {
+                await userManager.AddLoginAsync(user, info);
+                await signInManager.SignInAsync(user, isPersistent: false);
+                return LocalRedirect(returnUrl);
+            }
+
+            // Surface errors
+            foreach (var error in createResult.Errors)
+                ModelState.AddModelError(string.Empty, error.Description);
+
+            return View("Register");
+        }
     }
 }
