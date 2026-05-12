@@ -239,8 +239,26 @@
         <div class="topbar-links">
             <a href="#">Help &amp; FAQs</a>
             <a href="#">My Account</a>     
-            <a asp-controller="Account" asp-action="Register">Register</a>
-            <a asp-controller="Account" asp-action="Login">Login</a>
+            <div class="topbar-links">
+    <a href="#">Help &amp; FAQs</a>
+    <a href="#">My Account</a>
+
+    @if (User.Identity.IsAuthenticated)
+    {
+        <span>Hello, @User.Identity.Name</span>
+
+        <form asp-controller="Account" asp-action="Logout" method="Get" style="display:inline;">
+            <button type="submit" style="background:none;border:none;color:inherit;cursor:pointer;">
+                Logout
+            </button>
+        </form>
+    }
+    else
+    {
+        <a asp-controller="Account" asp-action="Register">Register</a>
+        <a asp-controller="Account" asp-action="Login">Login</a>
+    }
+</div>
         </div>
     </div>
 
