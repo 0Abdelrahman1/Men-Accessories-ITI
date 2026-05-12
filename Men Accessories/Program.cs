@@ -19,6 +19,9 @@ namespace Men_Accessories
                     .UseLazyLoadingProxies());
 
 
+            builder.Configuration.AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile("appsettings.local.json", optional: true);
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
