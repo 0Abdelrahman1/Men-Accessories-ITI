@@ -1,9 +1,11 @@
-﻿using Men_Accessories.Models;
+using Men_Accessories.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
 
 namespace Men_Accessories.Contexts
 {
-    public class MenAccessoriesContext : DbContext
+    public class MenAccessoriesContext : IdentityDbContext<ApplicationUser>
     {
         public MenAccessoriesContext(DbContextOptions<MenAccessoriesContext> options) : base(options)
         {}
@@ -18,6 +20,7 @@ namespace Men_Accessories.Contexts
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly()); 
             base.OnModelCreating(modelBuilder);
 
             // Category configuration
@@ -170,6 +173,8 @@ namespace Men_Accessories.Contexts
                     .HasForeignKey(e => e.ProductId)
                     .OnDelete(DeleteBehavior.Restrict);
             });
+
+            
         }
     }
 }

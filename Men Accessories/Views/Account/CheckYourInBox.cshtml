@@ -1,0 +1,48 @@
+@{
+    ViewData["Title"] = "Check Your Inbox";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+    <a asp-controller="Home" asp-action="Index">Home</a>
+    <span class="sep">›</span>
+    <a asp-controller="Account" asp-action="Register">Register</a>
+    <span class="sep">›</span>
+    <span class="current">Verify Email</span>
+</div>
+
+<!-- STEP DOTS -->
+<div class="step-dots">
+    <div class="step-dot done"></div>
+    <div class="step-dot active"></div>
+    <div class="step-dot"></div>
+</div>
+
+<!-- AUTH CARD -->
+<div class="auth-card" style="text-align:center;">
+
+    <div class="icon-circle green" style="margin-bottom:28px;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#4caf85" stroke-width="1.8">
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+            <polyline points="22,6 12,13 2,6"/>
+        </svg>
+    </div>
+
+    <div class="card-eyebrow">Almost There</div>
+    <div class="card-title">Check Your Inbox</div>
+
+    <p class="card-sub">
+        We've sent a verification link to your email address.<br>
+        Click the link in the email to Ensure your account.
+    </p>
+
+    <a href="https://mail.google.com/mail/u/0/#inbox" target="_blank" class="btn-accent" style="text-decoration:none;">
+        Open Gmail Inbox
+    </a>
+
+    <div class="card-footer">
+        Wrong email address? <a asp-controller="Account" asp-action="Register">Start over</a>
+    </div>
+
+</div>

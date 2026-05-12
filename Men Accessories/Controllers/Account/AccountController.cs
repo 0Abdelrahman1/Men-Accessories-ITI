@@ -37,7 +37,7 @@ namespace Men_Accessories.Controllers.Account
                     var token = userManager.GenerateEmailConfirmationTokenAsync(appuser).Result;
 
                     var confirmEmailURL = Url.Action("ConfirmEmail", "Account",
-                        new { userId = appuser.Id, token }, Request.Scheme);
+                        new { email = appuser.Email, token }, Request.Scheme);
 
                     var email = new Email()
                     {
@@ -67,7 +67,7 @@ namespace Men_Accessories.Controllers.Account
         #endregion
 
         [HttpGet]
-        public IActionResult ConfirmEmail(string email, string token)
+        public IActionResult ConfirmEmail(string email , string token)
         {
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(token))
             {
@@ -163,7 +163,7 @@ namespace Men_Accessories.Controllers.Account
                     {
                         To = forgetPasswordView.Email,
                         Subject = "Reset Password",
-                        Body = resetPasswordURL //TODO
+                        Body = resetPasswordURL 
                     };
 
                     // send Email
@@ -208,7 +208,7 @@ namespace Men_Accessories.Controllers.Account
                 var result = userManager.ResetPasswordAsync(user, token, resetPasswordView.Password).Result;
                 if(result.Succeeded)
                 {
-                    RedirectToAction(nameof(Login));
+                    return RedirectToAction(nameof(Login));
                 }
                 else
                 {

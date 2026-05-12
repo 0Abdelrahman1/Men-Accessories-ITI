@@ -240,6 +240,7 @@
             <a href="#">Help &amp; FAQs</a>
             <a href="#">My Account</a>     
             <a asp-controller="Account" asp-action="Register">Register</a>
+            <a asp-controller="Account" asp-action="Login">Login</a>
         </div>
     </div>
 
@@ -290,7 +291,10 @@
             if (el.value.length === 1 && next) { document.getElementById(next).focus(); }
         }
     </script>
-
+   <script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
     @RenderSection("Scripts", required: false)
+    
 </body>
 </html>
