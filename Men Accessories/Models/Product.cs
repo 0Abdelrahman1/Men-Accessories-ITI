@@ -28,6 +28,11 @@ namespace Men_Accessories.Models
         [Range(0, 10000, ErrorMessage = "Stock quantity must be between 0 and 10000")]
         public int StockQuantity { get; set; }
 
+        [Range(0, 100, ErrorMessage = "Discount must be between 0 and 100")]
+        public decimal Discount { get; set; }
+
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
+
         [Required(ErrorMessage = "Category is required")]
         public int CategoryId { get; set; }
 

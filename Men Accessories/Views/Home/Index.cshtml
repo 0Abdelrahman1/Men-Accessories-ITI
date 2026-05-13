@@ -1,8 +1,73 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model List<Men_Accessories.Models.Product>
+
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="text-center mb-4">
+    <h1>Welcome to Product Dashboard</h1>
+    <p class="lead">Browse our latest products and offers</p>
 </div>
+
+@if (Model != null && Model.Any())
+{
+    <h2 class="mb-3">Featured Products</h2>
+
+    <div class="product-grid">
+        @foreach (var product in Model)
+        {
+            <div class="card">
+                <img src="@product.ImageUrl"
+                     class="card-img-top"
+                     alt="@product.Name"
+                     style="height: 200px; object-fit: cover;">
+
+                <div class="card-body">
+                    <h5 class="card-title">@product.Name</h5>
+
+                    <p class="card-text text-muted">
+                        @product.Category?.Name
+                    </p>
+
+                    @if (!string.IsNullOrEmpty(product.Description))
+                    {
+                        <p class="card-text">
+                            @(product.Description.Length > 100
+                                            ? product.Description.Substring(0, 100) + "..."
+                                            : product.Description)
+                        </p>
+                    }
+
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="h5 mb-0">$@product.Price</span>
+
+                        @if (product.Discount > 0)
+                        {
+                            <span class="badge bg-danger">
+                                @product.Discount% OFF
+                            </span>
+                        }
+                    </div>
+
+                    <p class="card-text">
+                        <small class="text-muted">
+                            Stock: @product.StockQuantity
+                        </small>
+                    </p>
+
+                    <a href="/Product/Details/@product.Id"
+                       class="btn btn-outline">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        No products available at the moment.
+    </div>
+}
