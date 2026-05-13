@@ -287,10 +287,52 @@
             <div class="action-wrap">
                 @if (Model.StockQuantity > 0)
                 {
-                    <a href="#" class="btn-add">Add to Cart</a>
+                    <form id="addToCartForm" asp-controller="Cart" asp-action="AddToCartAjax" method="post" style="flex: 1;">
+                        <input type="hidden" name="productId" value="@Model.Id" />
+                        <input type="hidden" name="quantity" value="1" />
+                        <button type="submit" class="btn-add" style="width: 100%;">Add to Cart</button>
+                    </form>
                 }
                 <a asp-controller="Home" asp-action="Index" class="btn-back">Back to Shop</a>
             </div>
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    <script>
+        document.getElementById('addToCartForm').addEventListener('submit', function (e) {
+        e.preventDefault(); 
+
+        var form = this;
+        var formData = new FormData(form);
+
+        fetch(form.action, {
+        method: 'POST',
+        body: formData
+        })
+        .then(response => response.json()) 
+        .then(data => {
+        if (data.success) {
+        Swal.fire({
+        title: 'Success!',
+        text: data.message,
+        icon: 'success',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true
+        });
+        } else {
+        Swal.fire('Oops...', data.message, 'error');
+        }
+        })
+        .catch(error => {
+        Swal.fire('Error', 'Could not connect to the server.', 'error');
+        });
+        });
+    </script>
+}

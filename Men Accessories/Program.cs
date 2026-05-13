@@ -54,7 +54,8 @@ namespace Men_Accessories
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 
-           
+            var stripeSecretKey = builder.Configuration["Stripe:SecretKey"];
+            Stripe.StripeConfiguration.ApiKey = stripeSecretKey;
 
             var app = builder.Build();
             using (var scope = app.Services.CreateScope())

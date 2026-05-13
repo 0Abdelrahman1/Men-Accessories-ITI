@@ -19,12 +19,12 @@ namespace Men_Accessories.Services
             _cartRepository.addToCart(customerId, productId, quantity);
         }
 
-        public void Checkout(int customerId)
+        public void Checkout(int customerId, string stripeSessionId)
         {
             Cart? cart = _cartRepository.getCartByCustomerId(customerId);
-            if(cart is not null && cart.CartItems.Count > 0)
+            if (cart is not null && cart.CartItems.Count > 0)
             {
-                _orderRepository.CreateOrderFromCart(cart);
+                _orderRepository.CreateOrderFromCart(cart, stripeSessionId);
                 _cartRepository.clearCart(customerId);
             }
         }
@@ -42,6 +42,11 @@ namespace Men_Accessories.Services
         public void updateCart(CartModelView cart)
         {
             _cartRepository.updateCart(cart.ToCart());
+        }
+
+        public void RemoveFromCart(int customerId, int productId)
+        {
+            _cartRepository.RemoveFromCart(customerId, productId);
         }
     }
 }

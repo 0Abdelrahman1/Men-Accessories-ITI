@@ -6,6 +6,7 @@ namespace Men_Accessories.Repositories
     {
         List<Order> GetOrdersByCustomerId(int customerId);
         void CreateOrder(Order order);
-        void CreateOrderFromCart(Cart cart);
+        void CreateOrderFromCart(Cart cart, string stripeSessionId);
+
     }
 }

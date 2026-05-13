@@ -9,6 +9,7 @@ namespace Men_Accessories.Services
         void updateCart(CartModelView cart);
         void clearCart(int customerId);
         CartModelView? getCartByCustomerId(int customerId);
-        void Checkout(int customerId);
+        void Checkout(int customerId, string stripeSessionId);
+        void RemoveFromCart(int customerId, int productId);
     }
 }

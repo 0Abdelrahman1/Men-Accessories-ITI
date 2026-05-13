@@ -17,14 +17,17 @@ namespace Men_Accessories.Repositories
             _db.SaveChanges();
         }
 
-        public void CreateOrderFromCart(Cart cart)
+        public void CreateOrderFromCart(Cart cart, string stripeSessionId)
         {
             Order order = new Order()
             {
                 CustomerId = cart.CustomerId,
                 CreatedAt = DateTime.Now,
                 Customer = cart.Customer,
-                TotalAmount = cart.CalculateTotalAmount(),
+                TotalAmount = cart.CalculateTotalAmount(), 
+                PaymentStatus = "Paid", 
+                OrderStatus = "Processing",
+                StripeSessionId = stripeSessionId,
                 OrderItems = cart.CartItems.Select(ci => new OrderItem
                 {
                     ProductId = ci.ProductId,

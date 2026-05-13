@@ -8,5 +8,7 @@ namespace Men_Accessories.Repositories
         void updateCart(Cart cart);
         void clearCart(int customerId);
         Cart? getCartByCustomerId(int customerId);
+
+        void RemoveFromCart(int customerId, int productId);
     }
 }

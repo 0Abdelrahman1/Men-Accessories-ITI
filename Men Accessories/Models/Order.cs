@@ -20,6 +20,9 @@ namespace Men_Accessories.Models
         [ValidOrderTotal]
         public decimal TotalAmount { get; set; }
 
+        public string PaymentStatus { get; set; } = "Pending"; 
+        public string OrderStatus { get; set; } = "Processing"; 
+        public string? StripeSessionId { get; set; } 
         // Navigation
         [ForeignKey("CustomerId")]
         public virtual Customer? Customer { get; set; }

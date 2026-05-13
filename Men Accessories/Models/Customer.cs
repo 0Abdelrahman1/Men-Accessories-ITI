@@ -1,5 +1,6 @@
 using Men_Accessories.Enums;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Men_Accessories.Models
 {
@@ -22,6 +23,11 @@ namespace Men_Accessories.Models
         [Required(ErrorMessage = "Phone number is required")]
         [RegularExpression(@"^01[0-2]\d{8}$", ErrorMessage = "Please enter a valid Egyptian phone number")]
         public string Phone { get; set; }
+
+        public string? ApplicationUserId { get; set; }
+
+        [ForeignKey("ApplicationUserId")]
+        public virtual ApplicationUser? ApplicationUser { get; set; }
 
         // Navigation
         public virtual Cart Cart { get; set; } = new Cart();
