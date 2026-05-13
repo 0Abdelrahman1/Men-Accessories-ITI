@@ -1,5 +1,5 @@
 ﻿using Men_Accessories.Models;
-using Men_Accessories.ViewModels.Cart;
+using Men_Accessories.ViewModels.CartRelated;
 
 namespace Men_Accessories.ExtensionMethods
 {

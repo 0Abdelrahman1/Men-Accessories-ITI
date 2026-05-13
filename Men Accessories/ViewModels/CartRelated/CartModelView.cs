@@ -27,6 +27,5 @@ namespace Men_Accessories.ViewModels.CartRelated
                 CartItems = this.CartItems
             };
         }
-        }
     }
 }
