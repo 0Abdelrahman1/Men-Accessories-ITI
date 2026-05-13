@@ -14,6 +14,8 @@ namespace Men_Accessories
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Configuration.AddJsonFile("appsettings.json", optional: false)
+               .AddJsonFile("appsettings.local.json", optional: true);
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -49,8 +51,7 @@ namespace Men_Accessories
             builder.Services.AddScoped<IProductService, ProductService>();
 
 
-            builder.Configuration.AddJsonFile("appsettings.json", optional: false)
-                .AddJsonFile("appsettings.local.json", optional: true);
+           
 
             var app = builder.Build();
             using (var scope = app.Services.CreateScope())

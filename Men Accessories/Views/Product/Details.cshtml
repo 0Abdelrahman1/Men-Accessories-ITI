@@ -1,43 +1,296 @@
 @model Men_Accessories.Models.Product
+
 @{
-    ViewData["Title"] = "Product Details";
+    ViewData["Title"] = Model.Name;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    decimal finalPrice = Model.Price;
+    decimal oldPrice = 0;
+    if (Model.Discount > 0)
+    {
+        finalPrice = Model.Price - (Model.Price * (Model.Discount / 100));
+        oldPrice = Model.Price;
+    }
 }
 
-<div class="container mt-4">
-    <h1>Product Details</h1>
-    <hr />
-    <div class="row">
-        <div class="col-md-6">
-            <img src="@Model.ImageUrl" class="img-fluid" alt="@Model.Name" />
-        </div>
-        <div class="col-md-6">
-            <dl class="row">
-                <dt class="col-sm-3">Name</dt>
-                <dd class="col-sm-9">@Model.Name</dd>
+@section Styles {
+    <style>
+        .detail-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
 
-                <dt class="col-sm-3">Description</dt>
-                <dd class="col-sm-9">@Model.Description</dd>
+        .breadcrumb {
+            font-family: var(--font-display);
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: var(--gray-text);
+            text-transform: uppercase;
+            margin-bottom: 40px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
 
-                <dt class="col-sm-3">Category</dt>
-                <dd class="col-sm-9">@Model.Category?.Name</dd>
+            .breadcrumb a {
+                color: var(--gray-text);
+                text-decoration: none;
+                transition: color 0.2s;
+            }
 
-                <dt class="col-sm-3">Price</dt>
-                <dd class="col-sm-9">$@Model.Price</dd>
+                .breadcrumb a:hover {
+                    color: var(--accent);
+                }
 
-                <dt class="col-sm-3">Discount</dt>
-                <dd class="col-sm-9">@Model.Discount%</dd>
+            .breadcrumb .sep {
+                color: var(--gray-mid);
+            }
 
-                <dt class="col-sm-3">Stock Quantity</dt>
-                <dd class="col-sm-9">@Model.StockQuantity</dd>
+            .breadcrumb .current {
+                color: var(--black);
+                font-weight: 700;
+            }
 
-                <dt class="col-sm-3">Created At</dt>
-                <dd class="col-sm-9">@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</dd>
-            </dl>
-        </div>
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 56px;
+            align-items: start;
+        }
+
+        .img-box {
+            background: var(--gray-light);
+            border: 1px solid var(--gray-mid);
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            max-height: 600px; 
+        }
+
+            .img-box img {
+                width: 100%;
+                height: 100%; 
+                display: block;
+                object-fit: cover; 
+                object-position: center; 
+                transition: transform 0.4s ease;
+            }
+
+            .img-box:hover img {
+                transform: scale(1.03);
+            }
+
+        .badge-sale {
+            position: absolute;
+            top: 24px;
+            left: 24px;
+            background: var(--error);
+            color: var(--white);
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            padding: 8px 18px;
+            border-radius: 4px;
+        }
+
+        .info-box {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-cat {
+            font-family: var(--font-display);
+            font-size: 13px;
+            letter-spacing: 3px;
+            color: var(--gray-text);
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .product-title {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: 24px;
+            line-height: 1.3;
+        }
+
+        .price-wrap {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            margin-bottom: 36px;
+        }
+
+        .price-current {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--black);
+        }
+
+        .price-old {
+            font-size: 22px;
+            color: var(--gray-text);
+            text-decoration: line-through;
+        }
+
+        .product-desc {
+            font-family: var(--font-body);
+            font-size: 16px;
+            color: var(--gray-text);
+            line-height: 1.8;
+            margin-bottom: 36px;
+            padding-bottom: 36px;
+            border-bottom: 1px solid var(--gray-mid);
+        }
+
+        .stock-info {
+            font-family: var(--font-display);
+            font-size: 14px;
+            letter-spacing: 2px;
+            color: var(--black);
+            margin-bottom: 36px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+        }
+
+        .stock-count {
+            color: var(--success);
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .stock-out {
+            color: var(--error);
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .action-wrap {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn-add {
+            flex: 1;
+            background: var(--black);
+            color: var(--white);
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 20px;
+            border: 2px solid var(--black);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+            .btn-add:hover {
+                background: var(--accent);
+                border-color: var(--accent);
+            }
+
+        .btn-back {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 32px;
+            border: 2px solid var(--gray-mid);
+            background: transparent;
+            color: var(--black);
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+            .btn-back:hover {
+                border-color: var(--black);
+            }
+
+        @@media (max-width: 992px) {
+            .product-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+
+        @@media (max-width: 540px) {
+            .action-wrap {
+                flex-direction: column;
+            }
+        }
+    </style>
+}
+
+<div class="detail-container">
+    <div class="breadcrumb">
+        <a asp-controller="Home" asp-action="Index">Home</a>
+        <span class="sep">/</span>
+        <a href="#">@(Model.Category?.Name ?? "Shop")</a>
+        <span class="sep">/</span>
+        <span class="current">@Model.Name</span>
     </div>
 
-    <div class="mt-4">
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
-        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
+    <div class="product-grid">
+        <div class="img-box">
+            <img src="@Model.ImageUrl" alt="@Model.Name" onerror="this.src='/images/placeholder.jpg'" />
+            @if (Model.Discount > 0)
+            {
+                <span class="badge-sale">-@Model.Discount.ToString("0")%</span>
+            }
+        </div>
+
+        <div class="info-box">
+            <span class="product-cat">@(Model.Category?.Name ?? "General")</span>
+            <h1 class="product-title">@Model.Name</h1>
+
+            <div class="price-wrap">
+                <span class="price-current">$@finalPrice.ToString("0.00")</span>
+                @if (Model.Discount > 0)
+                {
+                    <span class="price-old">$@oldPrice.ToString("0.00")</span>
+                }
+            </div>
+
+            <p class="product-desc">
+                @Model.Description
+            </p>
+
+            <div class="stock-info">
+                Availability:
+                @if (Model.StockQuantity > 0)
+                {
+                    <span class="stock-count">In Stock (@Model.StockQuantity)</span>
+                }
+                else
+                {
+                    <span class="stock-out">Out of Stock</span>
+                }
+            </div>
+
+            <div class="action-wrap">
+                @if (Model.StockQuantity > 0)
+                {
+                    <a href="#" class="btn-add">Add to Cart</a>
+                }
+                <a asp-controller="Home" asp-action="Index" class="btn-back">Back to Shop</a>
+            </div>
+        </div>
     </div>
 </div>

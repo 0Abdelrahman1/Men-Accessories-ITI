@@ -17,9 +17,9 @@ namespace Men_Accessories.Services
             return _productRepository.GetAll();
         }
 
-        public Product? GetProductById(int id)
+        public Product GetProductById(int id)
         {
-            return _productRepository.GetByKey(id, p => p.Id);
+            return _productRepository.GetById(id);
         }
 
         public List<Product> GetProductsByCategory(int categoryId)

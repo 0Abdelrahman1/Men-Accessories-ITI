@@ -1,56 +1,208 @@
 @model List<Men_Accessories.Models.Product>
 @{
-    ViewData["Title"] = "Products";
+    ViewData["Title"] = "Manage Products";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h1>Products</h1>
-        <a asp-action="Create" class="btn btn-primary">Add New Product</a>
+@section Styles {
+    <style>
+        .admin-page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding-bottom: 60px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--gray-mid);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--black);
+        }
+
+        .btn-add-new {
+            background: var(--black);
+            color: var(--white);
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 12px 24px;
+            text-decoration: none;
+            transition: background 0.3s;
+            display: inline-block;
+        }
+
+        .btn-add-new:hover {
+            background: var(--accent);
+            color: var(--white);
+        }
+
+        .table-wrapper {
+            background: var(--white);
+            border: 1px solid var(--gray-mid);
+            border-radius: 4px;
+            overflow-x: auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .admin-table th {
+            background: var(--gray-light);
+            font-family: var(--font-display);
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 18px 20px;
+            border-bottom: 1px solid var(--gray-mid);
+            color: var(--black);
+        }
+
+        .admin-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-mid);
+            vertical-align: middle;
+            font-size: 14px;
+            color: var(--gray-text);
+        }
+
+        .admin-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .admin-table tr:hover {
+            background: #fafafa;
+        }
+
+        .prod-img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid var(--gray-mid);
+        }
+
+        .prod-name {
+            color: var(--black);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        .prod-name:hover {
+            color: var(--accent);
+        }
+
+        .action-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .action-links a {
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .link-edit { color: #f5a623; }
+        .link-edit:hover { color: var(--black); }
+        
+        .link-details { color: var(--accent); }
+        .link-details:hover { color: var(--black); }
+        
+        .link-delete { color: var(--error); }
+        .link-delete:hover { color: var(--black); }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--white);
+            border: 1px dashed var(--gray-mid);
+            color: var(--gray-text);
+        }
+    </style>
+}
+
+<div class="admin-page-container">
+    <div class="page-header">
+        <h1 class="page-title">Products Inventory</h1>
+        <a asp-action="Create" class="btn-add-new">+ Add New Product</a>
     </div>
 
     @if (Model != null && Model.Count > 0)
     {
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Image</th>
-                    <th>Name</th>
-                    <th>Category</th>
-                    <th>Price</th>
-                    <th>Discount</th>
-                    <th>Stock</th>
-                    <th>Created At</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var product in Model)
-                {
+        <div class="table-wrapper">
+            <table class="admin-table">
+                <thead>
                     <tr>
-                        <td>
-                            <img src="@product.ImageUrl" alt="@product.Name" style="width: 50px; height: 50px; object-fit: cover;" />
-                        </td>
-                        <td>@product.Name</td>
-                        <td>@product.Category?.Name</td>
-                        <td>$@product.Price</td>
-                        <td>@product.Discount%</td>
-                        <td>@product.StockQuantity</td>
-                        <td>@product.CreatedAt.ToString("yyyy-MM-dd")</td>
-                        <td>
-                            <a asp-action="Details" asp-route-id="@product.Id" class="btn btn-sm btn-info">Details</a>
-                            <a asp-action="Edit" asp-route-id="@product.Id" class="btn btn-sm btn-warning">Edit</a>
-                            <a asp-action="Delete" asp-route-id="@product.Id" class="btn btn-sm btn-danger">Delete</a>
-                        </td>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Actions</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var product in Model)
+                    {
+                        <tr>
+                            <td>
+                                <img src="@product.ImageUrl" alt="@product.Name" class="prod-img" onerror="this.src='/images/placeholder.jpg'" />
+                            </td>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@product.Id" class="prod-name">@product.Name</a>
+                            </td>
+                            <td>@(product.Category?.Name ?? "General")</td>
+                            <td style="color: var(--black); font-weight: bold;">$@product.Price</td>
+                            <td>
+                                @if (product.StockQuantity > 0)
+                                {
+                                    <span style="color: var(--success); font-weight: bold;">@product.StockQuantity</span>
+                                }
+                                else
+                                {
+                                    <span style="color: var(--error); font-weight: bold;">Out of Stock</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="action-links">
+                                    <a asp-action="Edit" asp-route-id="@product.Id" class="link-edit">Edit</a>
+                                    <a asp-action="Details" asp-route-id="@product.Id" class="link-details">View</a>
+                                    <a asp-action="Delete" asp-route-id="@product.Id" class="link-delete">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     }
     else
     {
-        <div class="alert alert-info">
-            No products found. <a asp-action="Create">Add your first product</a>.
+        <div class="empty-state">
+            <h3 style="font-family: var(--font-display); letter-spacing: 2px; color: var(--black); margin-bottom: 10px;">No Products Found</h3>
+            <p>Your inventory is currently empty. Start by adding a new product.</p>
         </div>
     }
 </div>
