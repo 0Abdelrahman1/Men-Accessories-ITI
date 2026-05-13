@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Security.Claims;
 
 namespace Men_Accessories.Controllers.Account
@@ -19,10 +20,11 @@ namespace Men_Accessories.Controllers.Account
             return View();
         }
         [HttpPost]
-        public IActionResult Register(RegisterViewModel registerview)
+        public async Task<IActionResult> Register(RegisterViewModel registerview)
         {
             if (ModelState.IsValid)//server side validation
             {
+              
                 //mapping from registerview to applicationUser
                 ApplicationUser appuser = new ApplicationUser()
                 {
@@ -145,7 +147,7 @@ namespace Men_Accessories.Controllers.Account
 
         #endregion
 
-        public async Task<IActionResult> SignOut()
+        public async Task<IActionResult> Logout()
         {
             await signInManager.SignOutAsync();
             return RedirectToAction(nameof(Login));

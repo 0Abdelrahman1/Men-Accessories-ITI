@@ -1,16 +1,17 @@
 using Men_Accessories.Contexts;
-using Microsoft.EntityFrameworkCore;
+using Men_Accessories.DataRole;
 using Men_Accessories.Models;
 using Microsoft.AspNetCore.Identity;
 using Men_Accessories.Repositories;
 using Men_Accessories.Services;
 using Men_Accessories.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Men_Accessories
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,7 @@ namespace Men_Accessories
             builder.Services.AddDbContext<MenAccessoriesContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("CS"))
                     .UseLazyLoadingProxies());
+
 
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
             {
@@ -31,19 +33,17 @@ namespace Men_Accessories
            .AddEntityFrameworkStores<MenAccessoriesContext>()  // links Identity to your DbContext
            .AddDefaultTokenProviders();
 
-
-            builder.Services.AddAuthentication().AddGoogle(options =>
+            builder.Services.AddAuthentication()
+            .AddGoogle(options =>
             {
-                options.ClientId = "349658992076-g4j356se62drpi0baims7r50752vcm6j.apps.googleusercontent.com";
-
-                options.ClientSecret = "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";
-            });
-
-            builder.Services.AddAuthentication().AddFacebook(options =>
-            {
-                options.AppId = "1342213184632804";
-                options.AppSecret = "f715c8b3460683ff044781b12494fb5f";
-            });
+          options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+          options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+           })
+           .AddFacebook(options =>
+      {
+          options.AppId = builder.Configuration["Authentication:Facebook:AppId"];
+          options.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
+          });
 
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IProductService, ProductService>();
@@ -53,6 +53,17 @@ namespace Men_Accessories
                 .AddJsonFile("appsettings.local.json", optional: true);
 
             var app = builder.Build();
+            using (var scope = app.Services.CreateScope())
+            {
+                var services = scope.ServiceProvider;
+
+                var seeder = new IdentityDataSeeder(
+                    services.GetRequiredService<UserManager<ApplicationUser>>(),
+                    services.GetRequiredService<RoleManager<IdentityRole>>()
+                );
+
+                await seeder.SeedAsync();
+            }
 
             // Seed database
             using (var scope = app.Services.CreateScope())
@@ -69,11 +80,11 @@ namespace Men_Accessories
             app.UseStaticFiles();
             app.UseHttpsRedirection();
             app.UseRouting();
-            
+
 
             app.UseAuthentication();
             app.UseAuthorization();
-           
+
             app.MapStaticAssets();
             app.MapControllerRoute(
                 name: "default",
