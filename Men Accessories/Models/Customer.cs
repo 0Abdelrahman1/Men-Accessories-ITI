@@ -24,7 +24,7 @@ namespace Men_Accessories.Models
         public string Phone { get; set; }
 
         // Navigation
-        public virtual Cart? Cart { get; set; }
+        public virtual Cart Cart { get; set; } = new Cart();
         public virtual ICollection<Order>? Orders { get; set; } = new List<Order>();
     }
 }
