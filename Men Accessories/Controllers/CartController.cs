@@ -6,16 +6,20 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Stripe.Checkout;
+using Men_Accessories.Repositories;
+using Men_Accessories.ExtensionMethods;
 namespace Men_Accessories.Controllers
 {
     [Authorize]
     public class CartController : Controller
     {
+        private readonly ICartRepository _cartRepository;
         private readonly ICartService _cartService;
         private readonly MenAccessoriesContext _context;
 
-        public CartController(ICartService cartService, MenAccessoriesContext context)
+        public CartController(ICartRepository cartRepository , ICartService cartService, MenAccessoriesContext context)
         {
+            _cartRepository = cartRepository;
             _cartService = cartService;
             _context = context;
         }
@@ -125,7 +129,21 @@ namespace Men_Accessories.Controllers
             Response.Headers.Add("Location", session.Url);
             return new StatusCodeResult(303);
         }
+        [HttpPost]
+        public IActionResult UpdateQuantityAjax(int productId, int newQuantity)
+        {
+            int customerId = GetCustomerId();
 
+            _cartService.UpdateQuantity(customerId, productId, newQuantity);
+
+            var cart = _cartRepository.getCartByCustomerId(customerId);
+            var item = cart?.CartItems.FirstOrDefault(i => i.ProductId == productId);
+
+            decimal itemTotal = item != null ? (item.Quantity * item.Product.Price) : 0;
+            decimal cartTotal = cart?.CalculateTotalAmount() ?? 0;
+
+            return Json(new { success = true, itemTotal = itemTotal, cartTotal = cartTotal });
+        }
         private int GetCustomerId()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

@@ -11,5 +11,7 @@ namespace Men_Accessories.Services
         CartModelView? getCartByCustomerId(int customerId);
         void Checkout(int customerId, string stripeSessionId);
         void RemoveFromCart(int customerId, int productId);
+
+        void UpdateQuantity(int customerId, int productId, int newQuantity);
     }
 }
