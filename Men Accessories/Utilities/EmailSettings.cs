@@ -1,16 +1,22 @@
 using System.Net;
 using System.Net.Mail;
+using Microsoft.Extensions.Configuration;
 
 namespace Men_Accessories.Utilities
 {
     public static class EmailSettings
     {
-        public static void SendEmail(Email email)
+        public static void SendEmail(Email email, IConfiguration configuration)
         {
-            var client = new SmtpClient("smtp.gmail.com", 587);
+            var smtpServer = configuration["EmailService:SmtpServer"];
+            var port = int.Parse(configuration["EmailService:Port"]);
+            var emailAddress = configuration["EmailService:Email"];
+            var password = configuration["EmailService:Password"];
+
+            var client = new SmtpClient(smtpServer, port);
             client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("dinaalaraby9503@gmail.com","rbvbeozaihejygep");
-            client.Send("dinaalaraby9503@gmail.com",email.To,email.Subject,email.Body);
+            client.Credentials = new NetworkCredential(emailAddress, password);
+            client.Send(emailAddress, email.To, email.Subject, email.Body);
         }
     }
 }
