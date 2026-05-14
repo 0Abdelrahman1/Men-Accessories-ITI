@@ -46,7 +46,7 @@ namespace Men_Accessories
           options.AppId = builder.Configuration["Authentication:Facebook:AppId"];
           options.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
           });
-
+            builder.Services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<ICartRepository, CartRepository>();
