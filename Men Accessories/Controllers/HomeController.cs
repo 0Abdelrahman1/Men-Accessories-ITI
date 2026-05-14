@@ -59,6 +59,14 @@ namespace Men_Accessories.Controllers
         }
 
 
+        [HttpGet]
+        public IActionResult Search(string keyword)
+        {
+            var products = _productService.SearchProducts(keyword);
+            ViewBag.Categories = _categoryRepository.GetAll();
+            return View("Index", products);
+        }
+
         public IActionResult Privacy()
         {
             return View();
