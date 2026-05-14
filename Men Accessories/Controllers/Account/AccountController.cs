@@ -270,10 +270,13 @@ namespace Men_Accessories.Controllers.Account
             var lastName = info.Principal.FindFirstValue(ClaimTypes.Surname);
             var user = new ApplicationUser
             {
-                firstName = firstName,
-                lastName = lastName,
+                firstName = string.IsNullOrEmpty(firstName) ? email.Split('@')[0] : firstName,
+
+                lastName = string.IsNullOrEmpty(lastName) ? "User" : lastName,
+
                 UserName = email,
-                Email = email
+                Email = email,
+                isAgree = true 
             };
 
             var createResult = await userManager.CreateAsync(user);

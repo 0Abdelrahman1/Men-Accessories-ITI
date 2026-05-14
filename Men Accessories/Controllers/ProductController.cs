@@ -14,13 +14,13 @@ namespace Men_Accessories.Controllers
         {
             _productService = productService;
         }
-
+        [AllowAnonymous]
         public IActionResult Index()
         {
             var products = _productService.GetAllProducts();
             return View(products);
         }
-
+        [AllowAnonymous]
         public IActionResult Details(int id)
         {
             var product = _productService.GetProductById(id);

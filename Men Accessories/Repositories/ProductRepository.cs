@@ -12,6 +12,12 @@ namespace Men_Accessories.Repositories
         {
             _context = context;
         }
+        public Product GetById(int id)
+        {
+            return _context.Products
+                           .Include(p => p.Category)
+                           .FirstOrDefault(p => p.Id == id);
+        }
 
         public List<Product> GetAll()
         {

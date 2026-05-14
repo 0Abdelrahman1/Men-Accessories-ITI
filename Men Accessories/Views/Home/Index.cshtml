@@ -1,73 +1,238 @@
-﻿@model List<Men_Accessories.Models.Product>
+﻿@model List<Product>
 
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Home";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="text-center mb-4">
-    <h1>Welcome to Product Dashboard</h1>
-    <p class="lead">Browse our latest products and offers</p>
+@section Styles {
+    <style>
+        .hero-section {
+            width: 100%;
+            text-align: center;
+            background: var(--white);
+            padding: 60px 20px;
+            margin-bottom: 50px;
+            border-radius: 8px;
+            box-shadow: 0 4px 24px rgba(0,0,0,.04);
+            animation: fadeUp .5s ease both;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--black);
+            margin-bottom: 16px;
+        }
+
+        .hero-subtitle {
+            font-size: 15px;
+            color: var(--gray-text);
+            letter-spacing: 1px;
+            line-height: 1.6;
+        }
+
+        .products-container {
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .section-heading {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 36px;
+            text-align: center;
+            color: var(--black);
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 32px;
+        }
+
+        .product-card {
+            background: var(--white);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--gray-mid);
+        }
+
+            .product-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 12px 36px rgba(0,0,0,.08);
+                border-color: transparent;
+            }
+
+        .product-img-wrapper {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: var(--gray-light);
+            overflow: hidden;
+        }
+
+            .product-img-wrapper img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.5s ease;
+            }
+
+        .product-card:hover .product-img-wrapper img {
+            transform: scale(1.05);
+        }
+
+        .discount-badge {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            background: var(--error);
+            color: var(--white);
+            font-family: var(--font-display);
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            padding: 6px 12px;
+            border-radius: 4px;
+        }
+
+        .product-details {
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .product-category {
+            font-size: 11px;
+            color: var(--gray-text);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            font-family: var(--font-display);
+        }
+
+        .product-name {
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--black);
+            text-decoration: none;
+            letter-spacing: 1px;
+            line-height: 1.4;
+            margin-bottom: 16px;
+            transition: color 0.2s;
+        }
+
+            .product-name:hover {
+                color: var(--accent);
+            }
+
+        .product-meta {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .product-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--black);
+        }
+
+        .product-stock {
+            font-size: 12px;
+            color: var(--gray-text);
+        }
+
+            .product-stock span {
+                color: var(--success);
+                font-weight: bold;
+            }
+
+        .btn-card {
+            width: 100%;
+            text-align: center;
+            padding: 12px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: var(--white);
+            border: 1px dashed var(--gray-mid);
+            color: var(--gray-text);
+        }
+    </style>
+}
+
+<div class="hero-section">
+    <h1 class="hero-title">Discover Your Style</h1>
+    <p class="hero-subtitle">Browse our exclusive collection of premium men's accessories</p>
 </div>
 
-@if (Model != null && Model.Any())
-{
-    <h2 class="mb-3">Featured Products</h2>
+<div class="products-container">
+    @if (Model != null && Model.Any())
+    {
+        <h2 class="section-heading">Featured Products</h2>
 
-    <div class="product-grid">
-        @foreach (var product in Model)
-        {
-            <div class="card">
-                <img src="@product.ImageUrl"
-                     class="card-img-top"
-                     alt="@product.Name"
-                     style="height: 200px; object-fit: cover;">
-
-                <div class="card-body">
-                    <h5 class="card-title">@product.Name</h5>
-
-                    <p class="card-text text-muted">
-                        @product.Category?.Name
-                    </p>
-
-                    @if (!string.IsNullOrEmpty(product.Description))
-                    {
-                        <p class="card-text">
-                            @(product.Description.Length > 100
-                                            ? product.Description.Substring(0, 100) + "..."
-                                            : product.Description)
-                        </p>
-                    }
-
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="h5 mb-0">$@product.Price</span>
-
+        <div class="products-grid">
+            @foreach (var product in Model)
+            {
+                <div class="product-card">
+                    
+                    <div class="product-img-wrapper">
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">
+                            <img src="@product.ImageUrl" alt="@product.Name" onerror="this.src='/images/placeholder.jpg'" />
+                        </a>
+                        
                         @if (product.Discount > 0)
                         {
-                            <span class="badge bg-danger">
-                                @product.Discount% OFF
-                            </span>
+                            <span class="discount-badge">-@product.Discount%</span>
                         }
                     </div>
 
-                    <p class="card-text">
-                        <small class="text-muted">
-                            Stock: @product.StockQuantity
-                        </small>
-                    </p>
+                    <div class="product-details">
+                        <span class="product-category">@(product.Category?.Name ?? "General")</span>
+                        
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="product-name">
+                            @product.Name
+                        </a>
 
-                    <a href="/Product/Details/@product.Id"
-                       class="btn btn-outline">
-                        View Details
-                    </a>
+                        <div class="product-meta">
+                            <span class="product-price">$@product.Price</span>
+                            <span class="product-stock">Stock: <span>@product.StockQuantity</span></span>
+                        </div>
+
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="btn-ghost btn-card">
+                            View Details
+                        </a>
+                    </div>
                 </div>
-            </div>
-        }
-    </div>
-}
-else
-{
-    <div class="alert alert-info">
-        No products available at the moment.
-    </div>
-}
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width: 48px; height: 48px; margin-bottom: 16px; opacity: 0.5;">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+            <h3 style="font-family: var(--font-display); letter-spacing: 2px; color: var(--black);">No Products Found</h3>
+            <p>We are currently updating our catalog. Please check back later.</p>
+        </div>
+    }
+</div>
