@@ -113,7 +113,7 @@ namespace Men_Accessories.Repositories
 
         public void ToggleFavorite(int customerId, int productId)
         {
-            var customer = _context.Customers.Include(c => c.FavoriteProductIds).FirstOrDefault(c => c.Id == customerId);
+            var customer = _context.Customers.FirstOrDefault(c => c.Id == customerId);
             if (customer != null)
             {
                 if (customer.FavoriteProductIds.Contains(productId))
@@ -130,8 +130,8 @@ namespace Men_Accessories.Repositories
 
         public List<Product> GetCustomerFavorites(int customerId)
         {
-            var customer = _context.Customers.Include(c => c.FavoriteProductIds).FirstOrDefault(c => c.Id == customerId);
-            if (customer != null)
+            var customer = _context.Customers.FirstOrDefault(c => c.Id == customerId);
+            if (customer != null && customer.FavoriteProductIds.Any())
             {
                 return _context.Products.Where(p => customer.FavoriteProductIds.Contains(p.Id)).ToList();
             }
@@ -140,7 +140,7 @@ namespace Men_Accessories.Repositories
 
         public bool IsCustomerFavorite(int customerId, int productId)
         {
-            var customer = _context.Customers.Include(c => c.FavoriteProductIds).FirstOrDefault(c => c.Id == customerId);
+            var customer = _context.Customers.FirstOrDefault(c => c.Id == customerId);
             return customer != null && customer.FavoriteProductIds.Contains(productId);
         }
     }

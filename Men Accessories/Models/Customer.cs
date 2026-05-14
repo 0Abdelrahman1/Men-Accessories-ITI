@@ -32,6 +32,6 @@ namespace Men_Accessories.Models
         public virtual Cart Cart { get; set; } = new Cart();
         public virtual ICollection<Order>? Orders { get; set; } = new List<Order>();
 
-        public HashSet<int> FavoriteProductIds { get; set; } = new HashSet<int>();
+        public List<int> FavoriteProductIds { get; set; } = new List<int>();
     }
 }

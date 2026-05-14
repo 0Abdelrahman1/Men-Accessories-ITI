@@ -7,6 +7,31 @@
 
 @section Styles {
     <style>
+        .btn-favorite {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        background: var(--white);
+        border: none;
+        border-radius: 50%;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+        color: var(--black);
+        }
+        .btn-favorite:hover {
+            transform: scale(1.1);
+        }
+        .btn-favorite svg {
+            width: 18px;
+            height: 18px;
+            transition: fill 0.3s, stroke 0.3s;
+        }
         .price-old { font-size: 14px; color: var(--gray-text); text-decoration: line-through; }
         .hero-section { width: 100%; text-align: center; background: var(--white); padding: 60px 20px; margin-bottom: 50px; border-radius: 8px; box-shadow: 0 4px 24px rgba(0,0,0,.04); }
         .hero-title { font-family: var(--font-display); font-size: 36px; font-weight: 700; letter-spacing: 5px; text-transform: uppercase; color: var(--black); margin-bottom: 16px; }

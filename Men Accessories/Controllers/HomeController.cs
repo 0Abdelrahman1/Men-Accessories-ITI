@@ -1,8 +1,11 @@
+using Men_Accessories.Contexts;
 using Men_Accessories.Models;
 using Men_Accessories.Repositories;
 using Men_Accessories.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using System.Security.Claims;
 
 namespace Men_Accessories.Controllers
 {
@@ -10,10 +13,12 @@ namespace Men_Accessories.Controllers
     {
         private readonly IProductService _productService;
         private readonly IBaseRepository<Category> _categoryRepository;
+        private readonly MenAccessoriesContext _context;
 
-        public HomeController(IProductService productService, IBaseRepository<Category> categoryRepository)
+        public HomeController(IProductService productService, IBaseRepository<Category> categoryRepository,MenAccessoriesContext menAccessoriesContext )
         {
             _categoryRepository = categoryRepository;
+            _context  = menAccessoriesContext;
             _productService = productService;
         }
 
@@ -21,6 +26,18 @@ namespace Men_Accessories.Controllers
         {
             var products = _productService.GetAllProducts();
             ViewBag.Categories = _categoryRepository.GetAll();
+            List<int> userFavorites = new List<int>();
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+                var customer = _context.Customers.FirstOrDefault(c => c.ApplicationUserId == userId);
+
+                if (customer != null && customer.FavoriteProductIds != null)
+                {
+                    userFavorites = customer.FavoriteProductIds;
+                }
+            }
+            ViewBag.FavoriteProductIds = userFavorites;
             return View(products);
         }
         // AJAX endpoint for filtering/sorting
@@ -54,6 +71,18 @@ namespace Men_Accessories.Controllers
                 "oldest" => products.OrderBy(p => p.CreatedAt).ToList(),
                 _ => products
             };
+
+            List<int> userFavorites = new List<int>();
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+                var customer = _context.Customers.FirstOrDefault(c => c.ApplicationUserId == userId);
+                if (customer != null && customer.FavoriteProductIds != null)
+                {
+                    userFavorites = customer.FavoriteProductIds;
+                }
+            }
+            ViewBag.FavoriteProductIds = userFavorites;
 
             return PartialView("_ProductsGrid", products);
         }
