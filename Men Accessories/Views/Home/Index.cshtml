@@ -7,6 +7,11 @@
 
 @section Styles {
     <style>
+        .price-old {
+            font-size: 14px;
+            color: var(--gray-text);
+            text-decoration: line-through;
+        }
         .hero-section {
             width: 100%;
             text-align: center;
@@ -191,7 +196,6 @@
             @foreach (var product in Model)
             {
                 <div class="product-card">
-                    
                     <div class="product-img-wrapper">
                         <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id">
                             <img src="@product.ImageUrl" alt="@product.Name" onerror="this.src='/images/placeholder.jpg'" />
@@ -211,7 +215,22 @@
                         </a>
 
                         <div class="product-meta">
-                            <span class="product-price">$@product.Price</span>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                @{
+                                    decimal finalPrice = product.Price;
+                                    decimal oldPrice = 0;
+                                    if (product.Discount > 0)
+                                    {
+                                        finalPrice = product.Price - (product.Price * (product.Discount / 100));
+                                        oldPrice = product.Price;
+                                    }
+                                }
+                                <span class="product-price" style="font-size: 20px;">$@finalPrice.ToString("0.00")</span>
+                                @if (oldPrice > 0)
+                                {
+                                    <span class="price-old">$@oldPrice.ToString("0.00")</span>
+                                }
+                            </div>
                             <span class="product-stock">Stock: <span>@product.StockQuantity</span></span>
                         </div>
 
