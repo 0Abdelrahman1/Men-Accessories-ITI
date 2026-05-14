@@ -8,9 +8,28 @@ namespace Men_Accessories.Utilities
         public static void SendEmail(Email email)
         {
             var client = new SmtpClient("smtp.gmail.com", 587);
+
             client.EnableSsl = true;
-            client.Credentials = new NetworkCredential("dinaalaraby9503@gmail.com","rbvbeozaihejygep");
-            client.Send("dinaalaraby9503@gmail.com",email.To,email.Subject,email.Body);
+
+            client.Credentials = new NetworkCredential(
+                "dinaalaraby9503@gmail.com",
+                "rbvbeozaihejygep"
+            );
+
+            var message = new MailMessage();
+
+            message.From = new MailAddress("dinaalaraby9503@gmail.com");
+
+            message.To.Add(email.To);
+
+            message.Subject = email.Subject;
+
+            message.Body = email.Body;
+
+            // IMPORTANT
+            message.IsBodyHtml = true;
+
+            client.Send(message);
         }
     }
 }
