@@ -1,0 +1,180 @@
+﻿@model Men_Accessories.ViewModels.CartRelated.CartModelView
+
+@{
+    ViewData["Title"] = "Shopping Cart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section Styles {
+    <style>
+        .cart-container {
+            max-width: 1200px;
+            margin: 40px auto 80px;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .cart-header {
+            font-family: var(--font-display);
+            font-size: 30px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--black);
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .cart-table-wrapper {
+            background: var(--white);
+            border: 1px solid var(--gray-mid);
+            margin-bottom: 40px;
+        }
+
+        .cart-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+            .cart-table th {
+                background: var(--gray-light);
+                font-family: var(--font-display);
+                font-size: 12px;
+                letter-spacing: 2px;
+                text-transform: uppercase;
+                padding: 20px;
+                border-bottom: 1px solid var(--gray-mid);
+                color: var(--black);
+            }
+
+            .cart-table td {
+                padding: 20px;
+                border-bottom: 1px solid var(--gray-mid);
+                vertical-align: middle;
+            }
+
+        .cart-item-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 1px solid var(--gray-mid);
+        }
+
+        .cart-totals {
+            max-width: 500px;
+            margin: 0 0 0 auto;
+            background: var(--gray-light);
+            padding: 40px;
+            border: 1px solid var(--gray-mid);
+        }
+
+        .totals-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: var(--black);
+        }
+
+            .totals-row.final {
+                font-family: var(--font-display);
+                font-size: 24px;
+                font-weight: 700;
+                border-top: 1px solid var(--gray-mid);
+                padding-top: 20px;
+            }
+
+        .btn-checkout {
+            display: block;
+            width: 100%;
+            background: var(--black);
+            color: var(--white);
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 18px;
+            text-align: center;
+            text-decoration: none;
+            border: 2px solid var(--black);
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+            .btn-checkout:hover {
+                background: var(--accent);
+                border-color: var(--accent);
+            }
+
+        .empty-cart {
+            text-align: center;
+            padding: 80px 20px;
+            border: 1px dashed var(--gray-mid);
+            background: var(--white);
+        }
+    </style>
+}
+
+<div class="cart-container">
+    <h1 class="cart-header">Your Cart</h1>
+
+    @if (Model != null && Model.CartItems.Any())
+    {
+        <div class="cart-table-wrapper">
+            <table class="cart-table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.CartItems)
+                    {
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 20px;">
+                                    <span style="font-weight: 600; color: var(--black);">Product #@item.ProductId</span>
+                                </div>
+                            </td>
+                            <td>$@item.UnitPrice</td>
+                            <td>@item.Quantity</td>
+                            <td style="font-weight: bold; color: var(--black);">$@(item.UnitPrice * item.Quantity)</td>
+                            <td>
+                                <form asp-controller="Cart" asp-action="RemoveFromCart" method="post">
+                                    <input type="hidden" name="productId" value="@item.ProductId" />
+                                    <button type="submit" style="background: none; border: none; color: var(--error); cursor: pointer; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold; padding: 0;">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="cart-totals">
+            <h3 style="font-family: var(--font-display); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 30px;">Cart Totals</h3>
+            
+            <div class="totals-row final">
+                <span>Total</span>
+                <span>$@Model.CartItems.Sum(i => i.UnitPrice * i.Quantity)</span>
+            </div>
+
+            <form asp-controller="Cart" asp-action="Checkout" method="post">
+                <button type="submit" class="btn-checkout">Proceed to Checkout</button>
+            </form>
+        </div>
+    }
+    else
+    {
+        <div class="empty-cart">
+            <h2 style="font-family: var(--font-display); letter-spacing: 2px; margin-bottom: 20px;">Your cart is currently empty.</h2>
+            <a asp-controller="Home" asp-action="Index" class="btn-checkout" style="max-width: 300px; margin: 0 auto;">Return to Shop</a>
+        </div>
+    }
+</div>

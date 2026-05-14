@@ -14,6 +14,8 @@ namespace Men_Accessories
         public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Configuration.AddJsonFile("appsettings.json", optional: false)
+               .AddJsonFile("appsettings.local.json", optional: true);
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
@@ -47,10 +49,13 @@ namespace Men_Accessories
 
             builder.Services.AddScoped<IProductRepository, ProductRepository>();
             builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<ICartRepository, CartRepository>();
+            builder.Services.AddScoped<ICartService, CartService>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
 
-            builder.Configuration.AddJsonFile("appsettings.json", optional: false)
-                .AddJsonFile("appsettings.local.json", optional: true);
+            var stripeSecretKey = builder.Configuration["Stripe:SecretKey"];
+            Stripe.StripeConfiguration.ApiKey = stripeSecretKey;
 
             var app = builder.Build();
             using (var scope = app.Services.CreateScope())

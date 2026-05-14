@@ -1,42 +1,156 @@
 @model Men_Accessories.Models.Product
 @{
     ViewData["Title"] = "Delete Product";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-4">
-    <h1>Delete Product</h1>
-    <hr />
-    <h3>Are you sure you want to delete this product?</h3>
+@section Styles {
+    <style>
+        .delete-page-container {
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px 80px;
+        }
 
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <img src="@Model.ImageUrl" class="img-fluid mb-3" alt="@Model.Name" />
+        .delete-card {
+            background: var(--white);
+            width: 100%;
+            max-width: 600px;
+            padding: 40px 50px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.05);
+            border: 1px solid var(--error);
+            border-top: 4px solid var(--error);
+            animation: fadeUp 0.5s ease both;
+            text-align: center;
+        }
+
+        .delete-warning {
+            color: var(--error);
+            margin-bottom: 20px;
+        }
+
+            .delete-warning svg {
+                width: 48px;
+                height: 48px;
+                margin-bottom: 10px;
+            }
+
+        .delete-title {
+            font-family: var(--font-display);
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--black);
+            margin-bottom: 10px;
+        }
+
+        .delete-subtitle {
+            color: var(--gray-text);
+            font-size: 15px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .product-preview {
+            background: var(--gray-light);
+            padding: 20px;
+            border-radius: 4px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            text-align: left;
+            border: 1px solid var(--gray-mid);
+        }
+
+            .product-preview img {
+                width: 80px;
+                height: 80px;
+                object-fit: cover;
+                border-radius: 4px;
+                border: 1px solid var(--gray-mid);
+            }
+
+        .product-details h4 {
+            font-family: var(--font-display);
+            font-size: 18px;
+            color: var(--black);
+            margin-bottom: 5px;
+        }
+
+        .product-details p {
+            font-size: 14px;
+            color: var(--gray-text);
+            margin: 0 0 5px 0;
+        }
+
+        .btn-delete {
+            width: 100%;
+            background: var(--error);
+            color: var(--white);
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            padding: 16px;
+            border: 2px solid var(--error);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+            .btn-delete:hover {
+                background: var(--white);
+                color: var(--error);
+            }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-family: var(--font-display);
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--gray-text);
+            text-decoration: none;
+        }
+
+            .back-link:hover {
+                color: var(--black);
+            }
+    </style>
+}
+
+<div class="delete-page-container">
+    <div class="delete-card">
+        <div class="delete-warning">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
         </div>
-        <div class="col-md-6">
-            <dl class="row">
-                <dt class="col-sm-3">Name</dt>
-                <dd class="col-sm-9">@Model.Name</dd>
+        
+        <h1 class="delete-title">Are you absolutely sure?</h1>
+        <p class="delete-subtitle">This action cannot be undone. This will permanently remove the product from your store's database.</p>
 
-                <dt class="col-sm-3">Description</dt>
-                <dd class="col-sm-9">@Model.Description</dd>
-
-                <dt class="col-sm-3">Category</dt>
-                <dd class="col-sm-9">@Model.Category?.Name</dd>
-
-                <dt class="col-sm-3">Price</dt>
-                <dd class="col-sm-9">$@Model.Price</dd>
-
-                <dt class="col-sm-3">Discount</dt>
-                <dd class="col-sm-9">@Model.Discount%</dd>
-
-                <dt class="col-sm-3">Stock Quantity</dt>
-                <dd class="col-sm-9">@Model.StockQuantity</dd>
-            </dl>
+        <div class="product-preview">
+            <img src="@Model.ImageUrl" alt="@Model.Name" onerror="this.src='/images/placeholder.jpg'" />
+            <div class="product-details">
+                <h4>@Model.Name</h4>
+                <p><strong>Price:</strong> $@Model.Price</p>
+                <p><strong>Stock:</strong> @Model.StockQuantity</p>
+                <p><strong>Category:</strong> @(Model.Category?.Name ?? "General")</p>
+            </div>
         </div>
+
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="Id" />
+            
+            <button type="submit" class="btn-delete">Yes, Delete Product</button>
+            <a asp-action="Index" class="back-link">Cancel & Keep Product</a>
+        </form>
     </div>
-
-    <form asp-action="DeleteConfirmed" asp-route-id="@Model.Id" method="post">
-        <input type="submit" value="Delete" class="btn btn-danger" />
-        <a asp-action="Index" class="btn btn-secondary">Back to List</a>
-    </form>
 </div>

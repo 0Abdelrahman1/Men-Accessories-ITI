@@ -4,6 +4,7 @@ namespace Men_Accessories.Repositories
 {
     public interface IProductRepository : IBaseRepository<Product>
     {
+        Product GetById(int id);
         List<Product> GetByCategory(int categoryId);
         List<Product> GetByPriceRange(decimal minPrice, decimal maxPrice);
         List<Product> Search(string keyword);

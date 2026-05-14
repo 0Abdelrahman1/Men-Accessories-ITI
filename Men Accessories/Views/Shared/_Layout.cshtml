@@ -237,14 +237,12 @@
     <div class="topbar">
         <span>Free shipping for standard order over $100</span>
         <div class="topbar-links">
-            <a href="#">Help &amp; FAQs</a>
-            <a href="#">My Account</a>     
-            <div class="topbar-links">
     <a href="#">Help &amp; FAQs</a>
-    <a href="#">My Account</a>
 
     @if (User.Identity.IsAuthenticated)
     {
+        <a asp-controller="Order" asp-action="MyOrders" style="color: var(--accent); font-weight: bold;">My Orders</a>
+        
         <span>Hello, @User.Identity.Name</span>
 
         <form asp-controller="Account" asp-action="Logout" method="Get" style="display:inline;">
@@ -259,7 +257,6 @@
         <a asp-controller="Account" asp-action="Login">Login</a>
     }
 </div>
-        </div>
     </div>
 
     <!-- NAVBAR -->
@@ -272,13 +269,23 @@
             <li><a href="#">Blog</a></li>
             <li><a href="#">About</a></li>
             <li><a href="#">Contact</a></li>
+          @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                <li>
+                    <a asp-controller="Admin" asp-action="Index" style="color: var(--error); font-weight: bold;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px; margin-right: 4px; vertical-align: text-top;"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                        C-PANEL
+                    </a>
+                </li>
+            }
         </ul>
-        <div class="nav-icons">
-            <!-- Search -->
+       <div class="nav-icons">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-            <!-- Cart -->
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-            <!-- Wishlist -->
+            
+            <a asp-controller="Cart" asp-action="Index" style="color: inherit; text-decoration: none; display: flex; align-items: center;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            </a>
+            
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
         </div>
     </nav>
