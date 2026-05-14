@@ -93,5 +93,21 @@ namespace Men_Accessories.Controllers
             _productService.DeleteProduct(id);
             return RedirectToAction("Index");
         }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult ToggleFavorite(int customerId, int productId)
+        {
+            _productService.ToggleFavorite(customerId, productId);
+            return RedirectToAction("Details", new { id = productId });
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult Favorites(int customerId)
+        {
+            var favoriteProducts = _productService.GetCustomerFavorites(customerId);
+            return View(favoriteProducts);
+        }
     }
 }

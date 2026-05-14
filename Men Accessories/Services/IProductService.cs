@@ -12,5 +12,8 @@ namespace Men_Accessories.Services
         void AddProduct(Product product);
         void UpdateProduct(Product product);
         void DeleteProduct(int id);
+        void ToggleFavorite(int customerId, int productId);
+        List<Product> GetCustomerFavorites(int customerId);
+        bool IsFavorite(int customerId, int productId);
     }
 }
