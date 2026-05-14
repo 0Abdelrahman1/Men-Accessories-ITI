@@ -64,7 +64,8 @@ namespace Men_Accessories
 
                 var seeder = new IdentityDataSeeder(
                     services.GetRequiredService<UserManager<ApplicationUser>>(),
-                    services.GetRequiredService<RoleManager<IdentityRole>>()
+                    services.GetRequiredService<RoleManager<IdentityRole>>(),
+                    services.GetRequiredService<IConfiguration>()
                 );
 
                 await seeder.SeedAsync();

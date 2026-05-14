@@ -1,18 +1,23 @@
 using Men_Accessories.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
 
 namespace Men_Accessories.DataRole
 {
     public class IdentityDataSeeder
     {
-        UserManager<ApplicationUser> _userManager;
-        RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly IConfiguration _configuration;
 
-        public IdentityDataSeeder(UserManager<ApplicationUser> userManager,
-                                  RoleManager<IdentityRole> roleManager)
+        public IdentityDataSeeder(
+            UserManager<ApplicationUser> userManager,
+            RoleManager<IdentityRole> roleManager,
+            IConfiguration configuration)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _configuration = configuration;
         }
 
         public async Task SeedAsync()
@@ -23,21 +28,26 @@ namespace Men_Accessories.DataRole
                 await _roleManager.CreateAsync(new IdentityRole("Admin"));
             }
 
-            
-            var adminEmail = "dinaalaraby9503@gmail.com";
+            // Get admin credentials from config
+            var adminEmail = _configuration["AdminUser:Email"];
+            var adminUserName = _configuration["AdminUser:UserName"];
+            var adminFirstName = _configuration["AdminUser:FirstName"];
+            var adminLastName = _configuration["AdminUser:LastName"];
+            var adminPassword = _configuration["AdminUser:Password"];
+
             var user = await _userManager.FindByEmailAsync(adminEmail);
 
             if (user == null)
             {
                 user = new ApplicationUser
                 {
-                    firstName="dina",
-                    lastName="elaraby",
+                    firstName = adminFirstName,
+                    lastName = adminLastName,
                     Email = adminEmail,
-                    UserName = "admin"
+                    UserName = adminUserName
                 };
 
-                await _userManager.CreateAsync(user, "Admin@123");
+                await _userManager.CreateAsync(user, adminPassword);
             }
 
             // Assign Admin role
