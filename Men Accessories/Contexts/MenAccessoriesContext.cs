@@ -76,12 +76,6 @@ namespace Men_Accessories.Contexts
                 entity.Property(e => e.Address)
                     .IsRequired()
                     .HasMaxLength(300);
-                entity.Property(e => e.Phone)
-                    .IsRequired()
-                    .HasMaxLength(15);
-                // Unique phone number constraint
-                entity.HasIndex(e => e.Phone)
-                    .IsUnique();
                 // Prevent customer deletion if they have orders (order history matters)
                 entity.HasOne(e => e.Cart)
                     .WithOne(c => c.Customer)
