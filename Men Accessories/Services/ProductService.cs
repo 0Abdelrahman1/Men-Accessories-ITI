@@ -1,5 +1,6 @@
 using Men_Accessories.Models;
 using Men_Accessories.Repositories;
+using Microsoft.Identity.Client;
 
 namespace Men_Accessories.Services
 {
@@ -50,6 +51,21 @@ namespace Men_Accessories.Services
         public void DeleteProduct(int id)
         {
             _productRepository.Delete(id);
+        }
+
+        public void ToggleFavorite(int customerId, int productId)
+        {
+            _productRepository.ToggleFavorite(customerId, productId);
+        }
+
+        public List<Product> GetCustomerFavorites(int customerId)
+        {
+            return _productRepository.GetCustomerFavorites(customerId);
+        }
+
+        public bool IsFavorite(int customerId, int productId)
+        {
+            return _productRepository.IsCustomerFavorite(customerId, productId);
         }
     }
 }
