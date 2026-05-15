@@ -16,7 +16,7 @@ namespace Men_Accessories.Repositories
             _db.Orders.Add(order);
             foreach (var orderItem in order.OrderItems)
             {
-                var product = _context.Products.Find(orderItem.ProductId);
+                var product = _db.Products.Find(orderItem.ProductId);
 
                 if (product != null)
                 {
@@ -27,7 +27,7 @@ namespace Men_Accessories.Repositories
                         product.StockQuantity = 0;
                     }
 
-                    _context.Products.Update(product);
+                    _db.Products.Update(product);
                 } 
             }
             _db.SaveChanges();
