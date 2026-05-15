@@ -42,7 +42,7 @@ namespace Men_Accessories.Controllers
         }
         // AJAX endpoint for filtering/sorting
         [HttpGet]
-        public IActionResult FilterAndSort(string categoryIds = "", string sortBy = "default", string keyword = "")
+        public IActionResult FilterAndSort(string categoryIds = "", string sortBy = "default", string keyword = "", bool inStock = false, decimal minPrice = 0, decimal maxPrice = decimal.MaxValue)
         {
             var products = _productService.GetAllProducts();
 
@@ -55,7 +55,7 @@ namespace Men_Accessories.Controllers
                 ).ToList();
             }
 
-            // FILTER by categories (AND logic with search)
+            // FILTER by categories
             if (!string.IsNullOrEmpty(categoryIds))
             {
                 var ids = categoryIds.Split(',')
@@ -66,6 +66,13 @@ namespace Men_Accessories.Controllers
                 if (ids.Count > 0)
                     products = products.Where(p => ids.Contains(p.CategoryId)).ToList();
             }
+
+            // FILTER by stock
+            if (inStock)
+                products = products.Where(p => p.StockQuantity > 0).ToList();
+
+            // FILTER by price range
+            products = products.Where(p => p.Price >= minPrice && p.Price <= maxPrice).ToList();
 
             // SORT
             products = sortBy switch
@@ -92,14 +99,17 @@ namespace Men_Accessories.Controllers
             return PartialView("_ProductsGrid", products);
         }
 
+        [HttpGet]
+        public IActionResult GetPriceRange()
+        {
+            var products = _productService.GetAllProducts();
+            return Json(new
+            {
+                min = products.Any() ? products.Min(p => p.Price) : 0,
+                max = products.Any() ? products.Max(p => p.Price) : 1000
+            });
+        }
 
-        //[HttpGet]
-        //public IActionResult Search(string keyword)
-        //{
-        //    var products = _productService.SearchProducts(keyword);
-        //    ViewBag.Categories = _categoryRepository.GetAll();
-        //    return View("Index", products);
-        //}
 
         public IActionResult Privacy()
         {

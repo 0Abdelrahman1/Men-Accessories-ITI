@@ -136,6 +136,167 @@
         .filter-tag .remove-tag:hover {
             opacity: 0.8;
         }
+
+        .price-slider-wrapper {
+    position: relative;
+    margin: 0;
+    height: 30px;
+    width: 100%;
+}
+
+.price-slider {
+    position: absolute;
+    width: 100%;
+    height: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    pointer-events: none;
+    cursor: pointer;
+    z-index: 5;
+}
+
+#minPriceSlider {
+    z-index: 6;
+}
+
+#maxPriceSlider {
+    z-index: 4;
+}
+
+.price-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    pointer-events: auto;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    margin-top: -5.5px;
+}
+
+.price-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    pointer-events: auto;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    z-index: 5;
+}
+
+.price-slider::-moz-range-track {
+    background: transparent;
+    height: 5px;
+    border: none;
+    border-radius: 2px;
+}
+
+.price-slider::-webkit-slider-runnable-track {
+    background: transparent;
+    height: 5px;
+    border: none;
+    border-radius: 2px;
+}
+
+.price-slider::-moz-range-progress {
+    background-color: transparent;
+}
+
+.price-display {
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--black);
+    margin-top: 10px;
+}
+
+/* Toggle Switch Styles */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--gray-mid);
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--white);
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: var(--accent);
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+}
+
+.toggle-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.toggle-label-text {
+    font-family: var(--font-display);
+    font-size: 11px;
+    letter-spacing: 1px;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--black);
+}
+
+/* Price slider container in filter bar */
+.price-slider-inline {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 250px;
+}
+
+.price-slider-inline .filter-label {
+    white-space: nowrap;
+}
+
+.price-slider-inline .price-slider-wrapper {
+    flex: 1;
+    margin: 0;
+    height: 24px;
+}
     </style>
 }
 
@@ -148,51 +309,81 @@
     @if (Model != null && Model.Any())
     {
         <div class="filter-sort-bar">
-    <div class="filter-group">
-        <label class="filter-label">Search:</label>
-        <input type="text" id="searchInput" class="filter-select" placeholder="Search products..." onkeyup="debounceSearch()">
-    </div>
+            <!-- SEARCH -->
+            <div class="filter-group">
+                <label class="filter-label">Search:</label>
+                <input type="text" id="searchInput" class="filter-select" placeholder="Search products..." onkeyup="debounceSearch()">
+            </div>
 
-    <div class="filter-group">
-            <label class="filter-label">Filter:</label>
-            <div class="filter-dropdown">
-                <button class="filter-select" onclick="toggleDropdown()">Categories ▼</button>
-                <div id="filterDropdown" class="dropdown-content">
-                    @foreach (var category in ViewBag.Categories)
-                    {
-                        <label>
-                            <input type="checkbox" value="@category.Id" onchange="onCategoryChange()">
-                            @category.Name
-                        </label>
-                    }
+            <!-- CATEGORY FILTER -->
+            <div class="filter-group">
+                <label class="filter-label">Filter:</label>
+                <div class="filter-dropdown">
+                    <button class="filter-select" onclick="toggleDropdown()">Categories ▼</button>
+                    <div id="filterDropdown" class="dropdown-content">
+                        @foreach (var category in ViewBag.Categories)
+                        {
+                            <label>
+                                <input type="checkbox" value="@category.Id" onchange="onCategoryChange()">
+                                @category.Name
+                            </label>
+                        }
+                    </div>
                 </div>
             </div>
+
+            <!-- SORT -->
+            <div class="filter-group">
+                <label class="filter-label">Sort:</label>
+                <select id="sortFilter" class="filter-select" onchange="loadProducts()">
+                    <option value="default">Default</option>
+                    <option value="name_asc">Name (A-Z)</option>
+                    <option value="name_desc">Name (Z-A)</option>
+                    <option value="price_asc">Price (Low-High)</option>
+                    <option value="price_desc">Price (High-Low)</option>
+                    <option value="newest">Newest</option>
+                    <option value="oldest">Oldest</option>
+                </select>
+            </div>
+
+            <!-- PRICE RANGE SLIDER -->
+            <div class="price-slider-inline">
+                <label class="filter-label">Price:</label>
+                <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
+                    <div class="price-slider-wrapper">
+                        <input type="range" id="minPriceSlider" class="price-slider" min="0" max="1000" value="0" oninput="updatePriceDisplay()" onchange="loadProducts()">
+                        <input type="range" id="maxPriceSlider" class="price-slider" min="0" max="1000" value="1000" oninput="updatePriceDisplay()" onchange="loadProducts()">
+                    </div>
+                    <div class="price-display" style="margin-top: 0; font-size: 12px;">
+                        <span id="minPriceDisplay">$0</span> - <span id="maxPriceDisplay">$1000</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STOCK FILTER -->
+            <div class="filter-group">
+                <div class="toggle-label" style="gap: 4px;">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="inStockFilter" onchange="loadProducts()">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span class="toggle-label-text">In Stock Only</span>
+                </div>
+            </div>
+
+            <!-- RESET FILTERS -->
+            <button class="reset-btn" onclick="resetFilters()">Reset</button>
+
         </div>
 
-        <div class="filter-group">
-            <label class="filter-label">Sort:</label>
-            <select id="sortFilter" class="filter-select" onchange="loadProducts()">
-                <option value="default">Default</option>
-                <option value="name_asc">Name (A-Z)</option>
-                <option value="name_desc">Name (Z-A)</option>
-                <option value="price_asc">Price (Low-High)</option>
-                <option value="price_desc">Price (High-Low)</option>
-                <option value="newest">Newest</option>
-                <option value="oldest">Oldest</option>
-            </select>
-        </div>
+            <!-- FILTER TAGS -->
+                <div class="filter-tags" id="filterTags"></div>
 
-        <button class="reset-btn" onclick="resetFilters()">Reset</button>
-    </div>
+                <h2 class="section-heading">Featured Products</h2>
 
-        <!-- FILTER TAGS -->
-        <div class="filter-tags" id="filterTags"></div>
-
-        <h2 class="section-heading">Featured Products</h2>
-
-        <div id="productsContainer">
-            <partial name="_ProductsGrid" model="Model" />
-        </div>
+                <div id="productsContainer">
+                    <partial name="_ProductsGrid" model="Model" />
+                </div>
     }
     else
     {
@@ -207,12 +398,67 @@
     <script>
         let selectedCategories = [];
         let searchTimeout;
+        let globalMinPrice = 0;
+        let globalMaxPrice = 1000;
+
         const categoryMap = new Map([
             @foreach (var cat in ViewBag.Categories)
             {
                 @Html.Raw($"[{cat.Id}, '{cat.Name}'],")
             }
         ]);
+
+        // Init price slider on page load
+        window.addEventListener('load', initPriceSlider);
+
+        function initPriceSlider() {
+            fetch('/Home/GetPriceRange')
+                .then(r => r.json())
+                .then(data => {
+                    globalMinPrice = Math.floor(data.min);
+                    globalMaxPrice = Math.ceil(data.max);
+
+                    document.getElementById('minPriceSlider').min = globalMinPrice;
+                    document.getElementById('minPriceSlider').max = globalMaxPrice;
+                    document.getElementById('maxPriceSlider').min = globalMinPrice;
+                    document.getElementById('maxPriceSlider').max = globalMaxPrice;
+                    document.getElementById('minPriceSlider').value = globalMinPrice;
+                    document.getElementById('maxPriceSlider').value = globalMaxPrice;
+
+                    document.getElementById('minPriceDisplay').textContent = '$' + Math.floor(globalMinPrice);
+                    document.getElementById('maxPriceDisplay').textContent = '$' + Math.ceil(globalMaxPrice);
+
+                    // Initialize colored line on page load
+                    updateSliderTrack();
+
+                    // Add event listeners for z-index swapping
+                    setupSliderZIndexSwap();
+                });
+        }
+
+        function setupSliderZIndexSwap() {
+            const minSlider = document.getElementById('minPriceSlider');
+            const maxSlider = document.getElementById('maxPriceSlider');
+
+            const bringToFront = (active, inactive) => {
+                active.style.zIndex = '6';
+                inactive.style.zIndex = '5';
+            };
+
+            const resetZIndex = () => {
+                minSlider.style.zIndex = '6';
+                maxSlider.style.zIndex = '5';
+            };
+
+            minSlider.addEventListener('mousedown', () => bringToFront(minSlider, maxSlider));
+            minSlider.addEventListener('touchstart', () => bringToFront(minSlider, maxSlider));
+
+            maxSlider.addEventListener('mousedown', () => bringToFront(maxSlider, minSlider));
+            maxSlider.addEventListener('touchstart', () => bringToFront(maxSlider, minSlider));
+
+            document.addEventListener('mouseup', resetZIndex);
+            document.addEventListener('touchend', resetZIndex);
+        }
 
         function debounceSearch() {
             clearTimeout(searchTimeout);
@@ -264,7 +510,7 @@
 
         function removeTag(catId) {
             selectedCategories = selectedCategories.filter(id => id !== catId);
-    
+
             // Uncheck the checkbox
             const checkbox = document.querySelector(`#filterDropdown input[value="${catId}"]`);
             if (checkbox) checkbox.checked = false;
@@ -273,17 +519,72 @@
             loadProducts();
         }
 
+        function updatePriceDisplay() {
+            const minSlider = document.getElementById('minPriceSlider');
+            const maxSlider = document.getElementById('maxPriceSlider');
+
+            // Swap values if min > max
+            if (parseInt(minSlider.value) > parseInt(maxSlider.value)) {
+                [minSlider.value, maxSlider.value] = [maxSlider.value, minSlider.value];
+            }
+
+            // Update display only (no AJAX call)
+            document.getElementById('minPriceDisplay').textContent = '$' + minSlider.value;
+            document.getElementById('maxPriceDisplay').textContent = '$' + maxSlider.value;
+
+            // Update slider track color between thumbs
+            updateSliderTrack();
+        }
+
+        function updateSliderTrack() {
+            const minSlider = document.getElementById('minPriceSlider');
+            const maxSlider = document.getElementById('maxPriceSlider');
+            const min = parseInt(minSlider.min);
+            const max = parseInt(minSlider.max);
+            const minVal = parseInt(minSlider.value);
+            const maxVal = parseInt(maxSlider.value);
+
+            // Calculate percentage positions
+            const minPercent = ((minVal - min) / (max - min)) * 100;
+            const maxPercent = ((maxVal - min) / (max - min)) * 100;
+
+            // Update background gradient on both sliders
+            minSlider.style.background = `linear-gradient(to right, var(--gray-mid) 0%, var(--gray-mid) ${minPercent}%, var(--accent) ${minPercent}%, var(--accent) ${maxPercent}%, var(--gray-mid) ${maxPercent}%, var(--gray-mid) 100%)`;
+            maxSlider.style.background = `linear-gradient(to right, var(--gray-mid) 0%, var(--gray-mid) ${minPercent}%, var(--accent) ${minPercent}%, var(--accent) ${maxPercent}%, var(--gray-mid) ${maxPercent}%, var(--gray-mid) 100%)`;
+        }
+
         function loadProducts() {
             const categoryIds = selectedCategories.join(',');
             const sortBy = document.getElementById('sortFilter').value || 'default';
             const keyword = document.getElementById('searchInput').value || '';
+            const inStock = document.getElementById('inStockFilter').checked;
 
-            fetch(`/Home/FilterAndSort?categoryIds=${categoryIds}&sortBy=${sortBy}&keyword=${encodeURIComponent(keyword)}`)
+            // Get price range values
+            const minPrice = document.getElementById('minPriceSlider').value;
+            const maxPrice = document.getElementById('maxPriceSlider').value;
+
+            fetch(`/Home/FilterAndSort?categoryIds=${categoryIds}&sortBy=${sortBy}&keyword=${encodeURIComponent(keyword)}&inStock=${inStock}&minPrice=${minPrice}&maxPrice=${maxPrice}`)
                 .then(response => response.text())
                 .then(html => {
                     document.getElementById('productsContainer').innerHTML = html;
+                    // Update price slider range based on filtered results
+                    updatePriceSliderRange();
                 })
                 .catch(error => console.error('Error:', error));
+        }
+
+        function updatePriceSliderRange() {
+            // Get current filtered products to update slider range
+            fetch('/Home/GetPriceRange')
+                .then(r => r.json())
+                .then(data => {
+                    const newMin = Math.floor(data.min);
+                    const newMax = Math.ceil(data.max);
+
+                    // Update slider max value to reflect current filtered products
+                    document.getElementById('maxPriceSlider').max = newMax > 0 ? newMax : 1000;
+                    document.getElementById('minPriceSlider').max = newMax > 0 ? newMax : 1000;
+                });
         }
 
         function resetFilters() {
@@ -291,6 +592,11 @@
             document.getElementById('searchInput').value = '';
             document.querySelectorAll('#filterDropdown input[type="checkbox"]').forEach(cb => cb.checked = false);
             document.getElementById('sortFilter').value = 'default';
+            document.getElementById('inStockFilter').checked = false;
+
+            // Reset sliders to initial range
+            initPriceSlider();
+
             renderTags();
             loadProducts();
         }
