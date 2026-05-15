@@ -1,19 +1,39 @@
 ﻿using Men_Accessories.Contexts;
 using Men_Accessories.ExtensionMethods;
 using Men_Accessories.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Men_Accessories.Repositories
 {
     public class OrderRepository : IOrderRepository
     {
         private readonly MenAccessoriesContext _db;
-        public OrderRepository(MenAccessoriesContext db)
+        private readonly MenAccessoriesContext _context;
+
+        public OrderRepository(MenAccessoriesContext db,MenAccessoriesContext menAccessoriesContext)
         {
             _db = db;
+            _context = menAccessoriesContext;
         }
         public void CreateOrder(Order order)
         {
             _db.Orders.Add(order);
+            foreach (var orderItem in order.OrderItems)
+            {
+                var product = _context.Products.Find(orderItem.ProductId);
+
+                if (product != null)
+                {
+                    product.StockQuantity -= orderItem.Quantity;
+
+                    if (product.StockQuantity < 0)
+                    {
+                        product.StockQuantity = 0;
+                    }
+
+                    _context.Products.Update(product);
+                }
+            }
             _db.SaveChanges();
         }
 

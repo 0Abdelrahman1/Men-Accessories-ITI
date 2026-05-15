@@ -153,7 +153,7 @@
                                 <div style="display: flex; align-items: center; border: 1px solid var(--gray-mid); width: fit-content; border-radius: 4px; overflow: hidden;">
                                     <button type="button" onclick="updateQty(@item.ProductId, -1)" style="width: 35px; height: 35px; background: var(--gray-light); border: none; cursor: pointer; font-size: 18px; transition: 0.3s;">-</button>
         
-                                    <input type="text" id="qty-@item.ProductId" value="@item.Quantity" style="width: 40px; height: 35px; text-align: center; border: none; font-weight: 700; font-family: var(--font-display); outline: none;" readonly />
+                                    <input max="@item.Product.StockQuantity type="text" id="qty-@item.ProductId" value="@item.Quantity" style="width: 40px; height: 35px; text-align: center; border: none; font-weight: 700; font-family: var(--font-display); outline: none;" readonly />
         
                                     <button type="button" onclick="updateQty(@item.ProductId, 1)" style="width: 35px; height: 35px; background: var(--gray-light); border: none; cursor: pointer; font-size: 18px; transition: 0.3s;">+</button>
                                 </div>
@@ -201,9 +201,16 @@
         function updateQty(productId, change) {
             var input = document.getElementById('qty-' + productId);
             var currentQty = parseInt(input.value);
+            var maxStock = parseInt(input.getAttribute('max'));
             var newQty = currentQty + change;
+                if (newQty > maxStock) {
+            alert("the max Quantity in the stock is" + maxStock);
+            return; 
+            }
 
-            if (newQty < 1) return;
+            if (newQty < 1) {
+                return;
+             }
 
             input.value = newQty;
 
