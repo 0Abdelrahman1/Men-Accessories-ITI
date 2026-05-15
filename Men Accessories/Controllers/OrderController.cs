@@ -20,7 +20,7 @@ namespace Men_Accessories.Controllers
         } 
          
         public IActionResult Success(string sessionId)
-        {
+        {   
             int customerId = GetCustomerId();
 
             _cartService.Checkout(customerId, sessionId);
