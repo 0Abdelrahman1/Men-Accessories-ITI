@@ -24,7 +24,7 @@ namespace Men_Accessories.Controllers
 
         public IActionResult Index()
         {
-            var products = _productService.GetAllProducts().Where(p => p.StockQuantity > 0).ToList();
+            var products = _productService.GetAllProducts();
             ViewBag.Categories = _categoryRepository.GetAll();
             List<int> userFavorites = new List<int>();
             if (User.Identity.IsAuthenticated)
@@ -45,7 +45,7 @@ namespace Men_Accessories.Controllers
         public IActionResult FilterAndSort(string categoryIds = "", string sortBy = "default")
         {
             var products = _productService.GetAllProducts();
-            products = products.Where(p => p.StockQuantity > 0).ToList();
+
             // FILTER by multiple categories
             if (!string.IsNullOrEmpty(categoryIds))
             {
@@ -105,15 +105,6 @@ namespace Men_Accessories.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-        public IActionResult About()
-        {
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            return View();
         }
     }
 }
