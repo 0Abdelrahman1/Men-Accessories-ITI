@@ -148,56 +148,42 @@
     @if (Model != null && Model.Any())
     {
         <div class="filter-sort-bar">
-            <div class="filter-group">
-                <label class="filter-label">Filter:</label>
-                <div class="filter-dropdown">
-                    <button class="filter-select" onclick="toggleDropdown()">Categories ▼</button>
-                    <div id="filterDropdown" class="dropdown-content">
-                        @foreach (var category in ViewBag.Categories)
-                        {
-                            <label>
-                                <input type="checkbox" value="@category.Id" onchange="onCategoryChange()">
-                                @category.Name
-                            </label>
-                        }
-                    </div>
+    <div class="filter-group">
+        <label class="filter-label">Search:</label>
+        <input type="text" id="searchInput" class="filter-select" placeholder="Search products..." onkeyup="debounceSearch()">
+    </div>
+
+    <div class="filter-group">
+            <label class="filter-label">Filter:</label>
+            <div class="filter-dropdown">
+                <button class="filter-select" onclick="toggleDropdown()">Categories ▼</button>
+                <div id="filterDropdown" class="dropdown-content">
+                    @foreach (var category in ViewBag.Categories)
+                    {
+                        <label>
+                            <input type="checkbox" value="@category.Id" onchange="onCategoryChange()">
+                            @category.Name
+                        </label>
+                    }
                 </div>
             </div>
-
-            <div class="filter-group">
-                <label class="filter-label">Sort:</label>
-                <select id="sortFilter" class="filter-select" onchange="loadProducts()">
-                    <option value="default">Default</option>
-                    <option value="name_asc">Name (A-Z)</option>
-                    <option value="name_desc">Name (Z-A)</option>
-                    <option value="price_asc">Price (Low-High)</option>
-                    <option value="price_desc">Price (High-Low)</option>
-                    <option value="newest">Newest</option>
-                    <option value="oldest">Oldest</option>
-                </select>
-            </div>
-
-            <form asp-controller="Home"
-                  asp-action="Search"
-                  method="get"
-                  class="search-form">
-
-                <div class="search-box">
-                    <input type="text"
-                           name="keyword"
-                           placeholder="Search products..."
-                           class="search-input" />
-
-                    <button type="submit" class="search-btn">
-                        Search
-                    </button>
-                </div>
-
-            </form>
-
-
-            <button class="reset-btn" onclick="resetFilters()">Reset</button>
         </div>
+
+        <div class="filter-group">
+            <label class="filter-label">Sort:</label>
+            <select id="sortFilter" class="filter-select" onchange="loadProducts()">
+                <option value="default">Default</option>
+                <option value="name_asc">Name (A-Z)</option>
+                <option value="name_desc">Name (Z-A)</option>
+                <option value="price_asc">Price (Low-High)</option>
+                <option value="price_desc">Price (High-Low)</option>
+                <option value="newest">Newest</option>
+                <option value="oldest">Oldest</option>
+            </select>
+        </div>
+
+        <button class="reset-btn" onclick="resetFilters()">Reset</button>
+    </div>
 
         <!-- FILTER TAGS -->
         <div class="filter-tags" id="filterTags"></div>
@@ -220,12 +206,18 @@
 @section Scripts {
     <script>
         let selectedCategories = [];
+        let searchTimeout;
         const categoryMap = new Map([
             @foreach (var cat in ViewBag.Categories)
             {
                 @Html.Raw($"[{cat.Id}, '{cat.Name}'],")
             }
         ]);
+
+        function debounceSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => loadProducts(), 300);
+        }
 
         function toggleDropdown() {
             const dropdown = document.getElementById('filterDropdown');
@@ -272,7 +264,7 @@
 
         function removeTag(catId) {
             selectedCategories = selectedCategories.filter(id => id !== catId);
-            
+    
             // Uncheck the checkbox
             const checkbox = document.querySelector(`#filterDropdown input[value="${catId}"]`);
             if (checkbox) checkbox.checked = false;
@@ -284,8 +276,9 @@
         function loadProducts() {
             const categoryIds = selectedCategories.join(',');
             const sortBy = document.getElementById('sortFilter').value || 'default';
+            const keyword = document.getElementById('searchInput').value || '';
 
-            fetch(`/Home/FilterAndSort?categoryIds=${categoryIds}&sortBy=${sortBy}`)
+            fetch(`/Home/FilterAndSort?categoryIds=${categoryIds}&sortBy=${sortBy}&keyword=${encodeURIComponent(keyword)}`)
                 .then(response => response.text())
                 .then(html => {
                     document.getElementById('productsContainer').innerHTML = html;
@@ -295,6 +288,7 @@
 
         function resetFilters() {
             selectedCategories = [];
+            document.getElementById('searchInput').value = '';
             document.querySelectorAll('#filterDropdown input[type="checkbox"]').forEach(cb => cb.checked = false);
             document.getElementById('sortFilter').value = 'default';
             renderTags();

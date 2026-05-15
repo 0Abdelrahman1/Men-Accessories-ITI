@@ -569,8 +569,6 @@ Views/
  Cart/Index.cshtml
  Favorites/Index.cshtml
  Home/
-  About.cshtml
-  Contact.cshtml
   Index.cshtml
   Privacy.cshtml
   _ProductsGrid.cshtml
@@ -604,8 +602,6 @@ Views/
  Cart/Index.cshtml
  Favorites/Index.cshtml
  Home/
-  About.cshtml
-  Contact.cshtml
   Index.cshtml
   Privacy.cshtml
   _ProductsGrid.cshtml

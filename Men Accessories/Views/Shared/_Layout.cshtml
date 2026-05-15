@@ -307,17 +307,8 @@
             <li><a href="#">Shop</a></li>
             <li><a href="#">Features <span class="hot-badge">HOT</span></a></li>
             <li><a href="#">Blog</a></li>
-            <li>
-                <a asp-controller="Home" asp-action="About">
-                    About
-                </a>
-            </li>
-
-            <li>
-                <a asp-controller="Home" asp-action="Contact">
-                    Contact
-                </a>
-            </li>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Contact</a></li>
           @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
             {
                 <li>
