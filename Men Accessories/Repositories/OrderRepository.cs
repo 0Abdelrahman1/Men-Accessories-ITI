@@ -32,7 +32,7 @@ namespace Men_Accessories.Repositories
                     }
 
                     _context.Products.Update(product);
-                }
+                } 
             }
             _db.SaveChanges();
         }
