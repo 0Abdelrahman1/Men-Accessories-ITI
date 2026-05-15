@@ -51,37 +51,7 @@ namespace Men_Accessories.Controllers.Account
                     {
                         To = registerview.Email,
                         Subject = "Confirm Your Email",
-                        Body = $@"
-    <div style='font-family:Arial;padding:30px;background:#f4f4f4'>
-        
-        <div style='max-width:600px;margin:auto;background:white;
-                    border-radius:10px;padding:40px;text-align:center'>
-
-            <h1 style='color:#4f46e5'>Welcome</h1>
-
-            <p style='font-size:16px;color:#555'>
-                Thank you for registering.
-            </p>
-
-            <p style='font-size:16px;color:#555'>
-                Please confirm your email address.
-            </p>
-
-            <a href='{confirmEmailURL}'
-               style='display:inline-block;
-                      margin-top:20px;
-                      padding:15px 30px;
-                      background:#4f46e5;
-                      color:white;
-                      text-decoration:none;
-                      border-radius:8px;
-                      font-weight:bold'>
-                Confirm Email
-            </a>
-
-        </div>
-
-    </div>"
+                        Body = $"Please confirm your account by clicking this link: {confirmEmailURL}"
                     };
 
                     EmailSettings.SendEmail(email, _configuration);
@@ -210,62 +180,8 @@ namespace Men_Accessories.Controllers.Account
                     var email = new Email()
                     {
                         To = forgetPasswordView.Email,
-
                         Subject = "Reset Password",
-
-                        Body = $@"
-    <div style='font-family:Arial;
-                background:#f4f4f4;
-                padding:40px'>
-
-        <div style='max-width:600px;
-                    margin:auto;
-                    background:white;
-                    border-radius:12px;
-                    padding:40px;
-                    text-align:center'>
-
-            <h1 style='color:#dc2626'>
-                Reset Your Password
-            </h1>
-
-            <p style='font-size:16px;
-                      color:#555;
-                      line-height:1.7'>
-                We received a request to reset your password.
-            </p>
-
-            <p style='font-size:16px;
-                      color:#555'>
-                Click the button below to create a new password.
-            </p>
-
-            <a href='{resetPasswordURL}'
-               style='display:inline-block;
-                      margin-top:20px;
-                      background:#dc2626;
-                      color:white;
-                      padding:15px 30px;
-                      text-decoration:none;
-                      border-radius:8px;
-                      font-weight:bold'>
-
-                Reset Password
-
-            </a>
-
-            <p style='margin-top:30px;
-                      color:#888;
-                      font-size:14px'>
-
-                If you did not request a password reset,
-                you can safely ignore this email.
-
-            </p>
-
-        </div>
-
-    </div>"
+                        Body = resetPasswordURL
                     };
 
                     // send Email
