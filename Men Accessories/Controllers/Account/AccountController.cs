@@ -10,8 +10,12 @@ using System.Security.Claims;
 
 namespace Men_Accessories.Controllers.Account
 {
-    public class AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager) : Controller
+    public class AccountController(
+        UserManager<ApplicationUser> userManager, 
+        SignInManager<ApplicationUser> signInManager,
+        IConfiguration configuration) : Controller
     {
+        private readonly IConfiguration _configuration = configuration;
 
         #region Register
         [HttpGet]
@@ -80,7 +84,7 @@ namespace Men_Accessories.Controllers.Account
     </div>"
                     };
 
-                    EmailSettings.SendEmail(email);
+                    EmailSettings.SendEmail(email, _configuration);
 
                     return RedirectToAction("CheckYourInBox");
                 }
@@ -265,7 +269,7 @@ namespace Men_Accessories.Controllers.Account
                     };
 
                     // send Email
-                    EmailSettings.SendEmail(email);
+                    EmailSettings.SendEmail(email, _configuration);
                     return RedirectToAction("CheckYourInbox");
 
                 }

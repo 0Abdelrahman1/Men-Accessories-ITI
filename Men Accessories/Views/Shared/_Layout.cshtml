@@ -227,6 +227,47 @@
             .social-row { flex-direction:column; }
             .grid-2     { grid-template-columns:1fr; }
         }
+
+        /* Align search with filters */
+        .search-form {
+            display: flex;
+            align-items: center;
+        }
+
+        /* Search container */
+        .search-box {
+            display: flex;
+            align-items: center;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            overflow: hidden;
+            background: white;
+            height: 40px;
+        }
+
+        /* Input */
+        .search-input {
+            border: none;
+            outline: none;
+            padding: 8px 15px;
+            font-size: 14px;
+            width: 220px;
+        }
+
+        /* Button */
+        .search-btn {
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            padding: 0 15px;
+            font-size: 16px;
+            transition: 0.2s;
+        }
+
+        /* Hover effect */
+        .search-box:hover {
+            border-color: #000;
+        }
     </style>
 
     @RenderSection("Styles", required: false)
@@ -237,7 +278,6 @@
     <div class="topbar">
         <span>Free shipping for standard order over $100</span>
         <div class="topbar-links">
-    <a href="#">Help &amp; FAQs</a>
 
     @if (User.Identity.IsAuthenticated)
     {
@@ -289,14 +329,17 @@
             }
         </ul>
        <div class="nav-icons">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
             
             <a asp-controller="Cart" asp-action="Index" style="color: inherit; text-decoration: none; display: flex; align-items: center;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
             </a>
             
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
-        </div>
+            <a asp-controller="Favorites" asp-action="Index" style="color: inherit; text-decoration: none; display: flex; align-items: center; margin-left: 15px;" title="My Favorites">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+                </svg>
+            </a>
+      </div>
     </nav>
 
     <!-- PAGE CONTENT -->
@@ -325,9 +368,11 @@
             if (el.value.length === 1 && next) { document.getElementById(next).focus(); }
         }
     </script>
-   <script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
-<script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>
+     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.20.0/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/4.0.0/jquery.validate.unobtrusive.min.js"></script>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
     
 </body>

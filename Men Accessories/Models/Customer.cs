@@ -20,7 +20,6 @@ namespace Men_Accessories.Models
         [StringLength(300, MinimumLength = 2, ErrorMessage = "Address must be between 2 and 300 characters")]
         public string Address { get; set; }
 
-        [Required(ErrorMessage = "Phone number is required")]
         [RegularExpression(@"^01[0-2]\d{8}$", ErrorMessage = "Please enter a valid Egyptian phone number")]
         public string Phone { get; set; }
 
@@ -32,5 +31,7 @@ namespace Men_Accessories.Models
         // Navigation
         public virtual Cart Cart { get; set; } = new Cart();
         public virtual ICollection<Order>? Orders { get; set; } = new List<Order>();
+
+        public List<int> FavoriteProductIds { get; set; } = new List<int>();
     }
 }

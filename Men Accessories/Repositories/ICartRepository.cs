@@ -10,5 +10,7 @@ namespace Men_Accessories.Repositories
         Cart? getCartByCustomerId(int customerId);
 
         void RemoveFromCart(int customerId, int productId);
+
+        void UpdateQuantity(int customerId, int productId, int newQuantity);
     }
 }

@@ -28,7 +28,10 @@ namespace Men_Accessories.Services
                 _cartRepository.clearCart(customerId);
             }
         }
-
+        public void UpdateQuantity(int customerId, int productId, int newQuantity)
+        {
+            _cartRepository.UpdateQuantity(customerId, productId, newQuantity);
+        }
         public void clearCart(int customerId)
         {
             _cartRepository.clearCart(customerId);

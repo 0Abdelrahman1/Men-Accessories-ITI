@@ -1,5 +1,6 @@
 ﻿using Men_Accessories.Contexts;
 using Men_Accessories.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Men_Accessories.Repositories
 {
@@ -58,13 +59,33 @@ namespace Men_Accessories.Repositories
 
         public Cart? getCartByCustomerId(int customerId)
         {
-            return _db.Carts.FirstOrDefault(c => c.CustomerId == customerId);
+            return _db.Carts
+              .Include(c => c.CartItems)
+              .ThenInclude(i => i.Product) 
+              .FirstOrDefault(c => c.CustomerId == customerId);
         }
 
         public void updateCart(Cart cart)
         {
             _db.Carts.Update(cart);
             _db.SaveChanges();
+        }
+
+        public void UpdateQuantity(int customerId, int productId, int newQuantity)
+        {
+            var cart = getCartByCustomerId(customerId);
+            if (cart != null)
+            {
+                var item = cart.CartItems.FirstOrDefault(i => i.ProductId == productId);
+                if (item != null)
+                {
+                    if (newQuantity > 0)
+                    {
+                        item.Quantity = newQuantity;
+                        _db.SaveChanges();
+                    }
+                }
+            }
         }
 
         public void RemoveFromCart(int customerId, int productId)

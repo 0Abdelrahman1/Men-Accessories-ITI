@@ -1,7 +1,10 @@
+using Men_Accessories.Contexts;
 using Men_Accessories.Models;
 using Men_Accessories.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace Men_Accessories.Controllers
 {
@@ -9,10 +12,12 @@ namespace Men_Accessories.Controllers
     public class ProductController : Controller
     {
         private readonly IProductService _productService;
+        private readonly MenAccessoriesContext _context;
 
-        public ProductController(IProductService productService)
+        public ProductController(IProductService productService, MenAccessoriesContext menAccessoriesContext)
         {
             _productService = productService;
+            _context = menAccessoriesContext;
         }
         [AllowAnonymous]
         public IActionResult Index()
@@ -33,6 +38,8 @@ namespace Men_Accessories.Controllers
 
         public IActionResult Create()
         {
+            var categories = _context.Categories.ToList();
+            ViewBag.CategoriesList = new SelectList(categories, "Id", "Name");
             return View();
         }
 
@@ -44,6 +51,8 @@ namespace Men_Accessories.Controllers
                 _productService.AddProduct(product);
                 return RedirectToAction("Index");
             }
+            var categories = _context.Categories.ToList();
+            ViewBag.CategoriesList = new SelectList(categories, "Id", "Name");
             return View(product);
         }
 
@@ -83,6 +92,22 @@ namespace Men_Accessories.Controllers
         {
             _productService.DeleteProduct(id);
             return RedirectToAction("Index");
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult ToggleFavorite(int customerId, int productId)
+        {
+            _productService.ToggleFavorite(customerId, productId);
+            return RedirectToAction("Details", new { id = productId });
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public IActionResult Favorites(int customerId)
+        {
+            var favoriteProducts = _productService.GetCustomerFavorites(customerId);
+            return View(favoriteProducts);
         }
     }
 }
