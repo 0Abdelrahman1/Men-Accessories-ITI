@@ -202,6 +202,10 @@
             var input = document.getElementById('qty-' + productId);
             var currentQty = parseInt(input.value);
             var newQty = currentQty + change;
+                if (newQty > maxStock) {
+            alert("the max Quantity in the stock is" + maxStock);
+            return; 
+            } 
 
             if (newQty < 1) return;
 

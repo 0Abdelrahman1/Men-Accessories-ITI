@@ -58,9 +58,9 @@ namespace Men_Accessories.Controllers
                 {
                     products = products.Where(p => ids.Contains(p.CategoryId)).ToList();
                 }
-            }
+             }    
 
-            // SORT
+          
             products = sortBy switch
             {
                 "name_asc" => products.OrderBy(p => p.Name).ToList(),

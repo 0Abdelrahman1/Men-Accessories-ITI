@@ -14,6 +14,22 @@ namespace Men_Accessories.Repositories
         public void CreateOrder(Order order)
         {
             _db.Orders.Add(order);
+            foreach (var orderItem in order.OrderItems)
+            {
+                var product = _context.Products.Find(orderItem.ProductId);
+
+                if (product != null)
+                {
+                    product.StockQuantity -= orderItem.Quantity;
+
+                    if (product.StockQuantity < 0)
+                    {
+                        product.StockQuantity = 0;
+                    }
+
+                    _context.Products.Update(product);
+                } 
+            }
             _db.SaveChanges();
         }
 
