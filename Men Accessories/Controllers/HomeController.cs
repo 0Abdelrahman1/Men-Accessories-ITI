@@ -69,7 +69,7 @@ namespace Men_Accessories.Controllers
                 "price_desc" => products.OrderByDescending(p => p.Price).ToList(),
                 "newest" => products.OrderByDescending(p => p.CreatedAt).ToList(),
                 "oldest" => products.OrderBy(p => p.CreatedAt).ToList(),
-                _ => products
+                _ => products   
             };
 
             List<int> userFavorites = new List<int>();
