@@ -11,26 +11,26 @@ namespace Men_Accessories.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IProductService _productService;
+        private readonly IProductRepository _productRepository;
         private readonly IBaseRepository<Category> _categoryRepository;
-        private readonly MenAccessoriesContext _context;
+        private readonly IBaseRepository<Customer> _customerRepository;
 
-        public HomeController(IProductService productService, IBaseRepository<Category> categoryRepository,MenAccessoriesContext menAccessoriesContext )
+        public HomeController(IProductRepository productRepository, IBaseRepository<Category> categoryRepository, IBaseRepository<Customer> customerRepository)
         {
             _categoryRepository = categoryRepository;
-            _context  = menAccessoriesContext;
-            _productService = productService;
+            _customerRepository = customerRepository;
+            _productRepository = productRepository;
         }
 
         public IActionResult Index()
         {
-            var products = _productService.GetAllProducts();
+            var products = _productRepository.GetAll();
             ViewBag.Categories = _categoryRepository.GetAll();
             List<int> userFavorites = new List<int>();
             if (User.Identity.IsAuthenticated)
             {
-                var userId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
-                var customer = _context.Customers.FirstOrDefault(c => c.ApplicationUserId == userId);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var customer = _customerRepository.GetByKey(c => c.ApplicationUserId == userId);
 
                 if (customer != null && customer.FavoriteProductIds != null)
                 {
@@ -40,11 +40,32 @@ namespace Men_Accessories.Controllers
             ViewBag.FavoriteProductIds = userFavorites;
             return View(products);
         }
-        // AJAX endpoint for filtering/sorting
-        [HttpGet]
-        public IActionResult FilterAndSort(string categoryIds = "", string sortBy = "default", string keyword = "", bool inStock = false, decimal minPrice = 0, decimal maxPrice = decimal.MaxValue)
+
+        public IActionResult Features()
         {
-            var products = _productService.GetAllProducts();
+            var products = _productRepository.GetAll().Where(p => p.IsFeatured).ToList();
+
+            ViewBag.Categories = _categoryRepository.GetAll();
+            List<int> userFavorites = new List<int>();
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var customer = _customerRepository.GetByKey(c => c.ApplicationUserId == userId);
+
+                if (customer != null && customer.FavoriteProductIds != null)
+                {
+                    userFavorites = customer.FavoriteProductIds;
+                }
+            }
+            ViewBag.FavoriteProductIds = userFavorites;
+            return View(products);
+        }
+
+        // AJAX endpoint for filtering/sorting (used by both Index and Features views)
+        [HttpGet]
+        public IActionResult FilterAndSort(string categoryIds = "", string sortBy = "default", string keyword = "", bool inStock = false, decimal minPrice = 0, decimal maxPrice = decimal.MaxValue, bool featuredOnly = false)
+        {
+            var products = _productRepository.GetAll();
 
             // SEARCH by keyword
             if (!string.IsNullOrEmpty(keyword))
@@ -54,6 +75,10 @@ namespace Men_Accessories.Controllers
                     p.Description.Contains(keyword, StringComparison.OrdinalIgnoreCase)
                 ).ToList();
             }
+
+            // FILTER by featured
+            if (featuredOnly)
+                products = products.Where(p => p.IsFeatured).ToList();
 
             // FILTER by categories
             if (!string.IsNullOrEmpty(categoryIds))
@@ -90,7 +115,7 @@ namespace Men_Accessories.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var customer = _context.Customers.FirstOrDefault(c => c.ApplicationUserId == userId);
+                var customer = _customerRepository.GetByKey(c => c.ApplicationUserId == userId);
                 if (customer != null && customer.FavoriteProductIds != null)
                     userFavorites = customer.FavoriteProductIds;
             }
@@ -102,14 +127,13 @@ namespace Men_Accessories.Controllers
         [HttpGet]
         public IActionResult GetPriceRange()
         {
-            var products = _productService.GetAllProducts();
+            var products = _productRepository.GetAll();
             return Json(new
             {
                 min = products.Any() ? products.Min(p => p.Price) : 0,
                 max = products.Any() ? products.Max(p => p.Price) : 1000
             });
         }
-
 
         public IActionResult Privacy()
         {
@@ -121,6 +145,7 @@ namespace Men_Accessories.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
         public IActionResult About()
         {
             return View();

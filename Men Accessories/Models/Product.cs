@@ -31,6 +31,8 @@ namespace Men_Accessories.Models
         [Range(0, 100, ErrorMessage = "Discount must be between 0 and 100")]
         public decimal Discount { get; set; }
 
+        public bool IsFeatured { get; set; } = false;
+
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         [Required(ErrorMessage = "Category is required")]
