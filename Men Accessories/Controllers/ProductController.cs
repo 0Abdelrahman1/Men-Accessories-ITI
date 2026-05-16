@@ -63,6 +63,8 @@ namespace Men_Accessories.Controllers
             {
                 return NotFound();
             }
+            var categories = _context.Categories.ToList();
+            ViewBag.CategoriesList = new SelectList(categories, "Id", "Name");
             return View(product);
         }
 
@@ -74,6 +76,8 @@ namespace Men_Accessories.Controllers
                 _productService.UpdateProduct(product);
                 return RedirectToAction("Index");
             }
+            var categories = _context.Categories.ToList();
+            ViewBag.CategoriesList = new SelectList(categories, "Id", "Name");
             return View(product);
         }
 
