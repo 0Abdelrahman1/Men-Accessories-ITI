@@ -13,21 +13,18 @@ namespace Men_Accessories.Utilities
             var emailAddress = configuration["EmailService:Email"];
             var password = configuration["EmailService:Password"];
 
-            var client = new SmtpClient(smtpServer, port)
-            {
-                EnableSsl = true,
-                Credentials = new NetworkCredential(emailAddress, password)
-            };
+            var client = new SmtpClient(smtpServer, port);
+            client.EnableSsl = true;
+            client.Credentials = new NetworkCredential(emailAddress, password);
 
-            var message = new MailMessage
-            {
-                From = new MailAddress(emailAddress),
-                Subject = email.Subject,
-                Body = email.Body,
-                IsBodyHtml = true
-            };
-
+            var message = new MailMessage();
+            message.From = new MailAddress(emailAddress); 
             message.To.Add(email.To);
+            message.Subject = email.Subject;
+            message.Body = email.Body;
+            
+            message.IsBodyHtml = true; 
+
 
             client.Send(message);
         }

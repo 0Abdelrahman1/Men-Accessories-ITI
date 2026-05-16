@@ -24,7 +24,7 @@ namespace Men_Accessories.Controllers
 
         public IActionResult Index()
         {
-            var products = _productService.GetAllProducts().Where(p => p.StockQuantity > 0).ToList();
+            var products = _productService.GetAllProducts();
             ViewBag.Categories = _categoryRepository.GetAll();
             List<int> userFavorites = new List<int>();
             if (User.Identity.IsAuthenticated)
@@ -42,11 +42,20 @@ namespace Men_Accessories.Controllers
         }
         // AJAX endpoint for filtering/sorting
         [HttpGet]
-        public IActionResult FilterAndSort(string categoryIds = "", string sortBy = "default")
+        public IActionResult FilterAndSort(string categoryIds = "", string sortBy = "default", string keyword = "", bool inStock = false, decimal minPrice = 0, decimal maxPrice = decimal.MaxValue)
         {
             var products = _productService.GetAllProducts();
-            products = products.Where(p => p.StockQuantity > 0).ToList();
-            // FILTER by multiple categories
+
+            // SEARCH by keyword
+            if (!string.IsNullOrEmpty(keyword))
+            {
+                products = products.Where(p =>
+                    p.Name.Contains(keyword, StringComparison.OrdinalIgnoreCase) ||
+                    p.Description.Contains(keyword, StringComparison.OrdinalIgnoreCase)
+                ).ToList();
+            }
+
+            // FILTER by categories
             if (!string.IsNullOrEmpty(categoryIds))
             {
                 var ids = categoryIds.Split(',')
@@ -55,12 +64,17 @@ namespace Men_Accessories.Controllers
                     .ToList();
 
                 if (ids.Count > 0)
-                {
                     products = products.Where(p => ids.Contains(p.CategoryId)).ToList();
-                }
-             }    
+            }
 
-          
+            // FILTER by stock
+            if (inStock)
+                products = products.Where(p => p.StockQuantity > 0).ToList();
+
+            // FILTER by price range
+            products = products.Where(p => p.Price >= minPrice && p.Price <= maxPrice).ToList();
+
+            // SORT
             products = sortBy switch
             {
                 "name_asc" => products.OrderBy(p => p.Name).ToList(),
@@ -69,32 +83,33 @@ namespace Men_Accessories.Controllers
                 "price_desc" => products.OrderByDescending(p => p.Price).ToList(),
                 "newest" => products.OrderByDescending(p => p.CreatedAt).ToList(),
                 "oldest" => products.OrderBy(p => p.CreatedAt).ToList(),
-                _ => products   
+                _ => products
             };
 
             List<int> userFavorites = new List<int>();
             if (User.Identity.IsAuthenticated)
             {
-                var userId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 var customer = _context.Customers.FirstOrDefault(c => c.ApplicationUserId == userId);
                 if (customer != null && customer.FavoriteProductIds != null)
-                {
                     userFavorites = customer.FavoriteProductIds;
-                }
             }
             ViewBag.FavoriteProductIds = userFavorites;
 
             return PartialView("_ProductsGrid", products);
         }
 
-
         [HttpGet]
-        public IActionResult Search(string keyword)
+        public IActionResult GetPriceRange()
         {
-            var products = _productService.SearchProducts(keyword);
-            ViewBag.Categories = _categoryRepository.GetAll();
-            return View("Index", products);
+            var products = _productService.GetAllProducts();
+            return Json(new
+            {
+                min = products.Any() ? products.Min(p => p.Price) : 0,
+                max = products.Any() ? products.Max(p => p.Price) : 1000
+            });
         }
+
 
         public IActionResult Privacy()
         {
