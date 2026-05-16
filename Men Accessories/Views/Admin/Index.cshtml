@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Admin Dashboard";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    // هنا خلينا الصفحة تقرأ من الـ Layout الجديد بتاع المتجر
+    Layout = "~/Views/Shared/_ShopLayout.cshtml";
 }
 
 @section Styles {
@@ -12,142 +13,179 @@
             padding-bottom: 60px;
         }
 
+        /* =========================================
+           HEADER SECTION
+        ========================================= */
         .admin-header {
             text-align: center;
-            margin-bottom: 40px;
-            padding: 40px 20px;
-            background: var(--white);
-            border-radius: 4px;
-            border: 1px solid var(--gray-mid);
-            animation: fadeUp .5s ease both;
+            margin-bottom: 50px;
+            padding: 60px 20px;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #1E293B 100%);
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            animation: fadeUp 0.5s ease both;
+            color: var(--white);
         }
 
         .admin-title {
             font-family: var(--font-display);
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 700;
             letter-spacing: 4px;
             text-transform: uppercase;
-            color: var(--black);
+            margin-bottom: 12px;
         }
 
+        .admin-subtitle {
+            color: var(--gray-mid);
+            font-size: 16px;
+            letter-spacing: 1px;
+            font-weight: 300;
+        }
+
+        /* =========================================
+           GRID & CARDS
+        ========================================= */
         .admin-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            animation: fadeUp .6s ease both;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 32px;
+            animation: fadeUp 0.6s ease both;
         }
 
         .admin-card {
             background: var(--white);
-            border: 1px solid var(--gray-mid);
+            border: 1px solid var(--gray-light);
+            border-radius: 16px;
             padding: 40px 30px;
             text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            transition: var(--transition);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            box-shadow: var(--shadow-sm);
         }
 
-            .admin-card:hover {
-                transform: translateY(-8px);
-                box-shadow: 0 12px 30px rgba(0,0,0,.06);
-                border-color: var(--accent);
-            }
+        .admin-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-md);
+            border-color: transparent;
+        }
 
+        /* =========================================
+           ICONS
+        ========================================= */
         .admin-icon {
-            width: 70px;
-            height: 70px;
-            background: var(--gray-light);
+            width: 80px;
+            height: 80px;
+            background: rgba(79, 70, 229, 0.1);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 24px;
-            color: var(--black);
-            transition: color 0.3s, background 0.3s;
+            color: var(--accent);
+            transition: var(--transition);
         }
 
         .admin-card:hover .admin-icon {
             background: var(--accent);
             color: var(--white);
+            transform: scale(1.1);
         }
 
         .admin-icon svg {
-            width: 32px;
-            height: 32px;
+            width: 36px;
+            height: 36px;
         }
 
+        /* =========================================
+           CARD CONTENT
+        ========================================= */
         .admin-card-title {
             font-family: var(--font-display);
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             letter-spacing: 2px;
             text-transform: uppercase;
-            color: var(--black);
-            margin-bottom: 12px;
+            color: var(--primary-dark);
+            margin-bottom: 16px;
         }
 
         .admin-card-desc {
             font-size: 14px;
-            color: var(--gray-text);
-            margin-bottom: 30px;
+            color: var(--primary-text);
+            margin-bottom: 32px;
             line-height: 1.6;
+            flex-grow: 1;
         }
 
+        /* =========================================
+           BUTTONS
+        ========================================= */
         .btn-admin {
-            background: var(--black);
+            background: var(--primary-dark);
             color: var(--white);
             font-family: var(--font-display);
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 700;
             letter-spacing: 2px;
             text-transform: uppercase;
-            padding: 14px 28px;
+            padding: 16px 32px;
+            border-radius: 8px;
             text-decoration: none;
-            transition: background 0.3s;
+            transition: var(--transition);
             width: 100%;
+            border: none;
+            cursor: pointer;
         }
 
-            .btn-admin:hover {
-                background: var(--accent);
-                color: var(--white);
-            }
+        .btn-admin:hover {
+            background: var(--accent);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        @@keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 }
 
 <div class="admin-container">
     <div class="admin-header">
         <h1 class="admin-title">Control Panel</h1>
-        <p style="color: var(--gray-text); margin-top: 10px; font-size: 15px;">Manage your store's inventory and orders efficiently.</p>
+        <p class="admin-subtitle">Manage your store's inventory and orders efficiently.</p>
     </div>
 
     <div class="admin-grid">
         <div class="admin-card">
             <div class="admin-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
             </div>
             <h3 class="admin-card-title">Products</h3>
-            <p class="admin-card-desc">Add new accessories, update prices, or remove items.</p>
+            <p class="admin-card-desc">Add new accessories, update prices, or remove items from your catalog.</p>
             <a asp-controller="Product" asp-action="Index" class="btn-admin">Manage Products</a>
         </div>
 
         <div class="admin-card">
             <div class="admin-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
             </div>
             <h3 class="admin-card-title">Categories</h3>
-            <p class="admin-card-desc">Organize your store by creating or editing categories.</p>
+            <p class="admin-card-desc">Organize your store by creating, editing, or reordering categories.</p>
             <a href="#" class="btn-admin">Manage Categories</a>
         </div>
 
         <div class="admin-card">
             <div class="admin-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
             </div>
             <h3 class="admin-card-title">Orders</h3>
-            <p class="admin-card-desc">View customer orders and update their fulfillment status.</p>
+            <p class="admin-card-desc">View customer orders, track shipments, and update fulfillment statuses.</p>
             <a href="#" class="btn-admin">View Orders</a>
         </div>
     </div>

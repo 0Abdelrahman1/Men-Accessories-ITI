@@ -2,46 +2,144 @@
 
 @{
     ViewData["Title"] = "My Favorites";
-        ViewBag.FavoriteProductIds = Model?.Select(p => p.Id).ToList() ?? new List<int>();
+    Layout = "~/Views/Shared/_ShopLayout.cshtml";
+    ViewBag.FavoriteProductIds = Model?.Select(p => p.Id).ToList() ?? new List<int>();
 }
 
 @section Styles {
     <style>
-        .hero-section { width: 100%; text-align: center; background: var(--white); padding: 60px 20px; margin-bottom: 50px; border-radius: 8px; box-shadow: 0 4px 24px rgba(0,0,0,.04); }
-        .hero-title { font-family: var(--font-display); font-size: 36px; font-weight: 700; letter-spacing: 5px; text-transform: uppercase; color: var(--black); margin-bottom: 16px; }
-        .hero-subtitle { font-size: 15px; color: var(--gray-text); letter-spacing: 1px; line-height: 1.6; }
-        .products-container { width: 100%; max-width: 1200px; margin: 0 auto; }
-        .empty-state { text-align: center; padding: 60px 20px; background: var(--white); border: 1px dashed var(--gray-mid); color: var(--gray-text); border-radius: 8px;}
+        .favorites-page-container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-bottom: 80px;
+        }
+
+        /* =========================================
+           HERO SECTION
+        ========================================= */
+        .hero-section { 
+            width: 100%; 
+            text-align: center; 
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #1E293B 100%);
+            padding: 80px 20px; 
+            margin-bottom: 50px; 
+            border-radius: 16px; 
+            box-shadow: var(--shadow-md);
+            color: var(--white);
+            animation: fadeUp 0.5s ease both;
+        }
         
-        .btn-favorite { position: absolute; top: 16px; right: 16px; background: var(--white); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s; color: var(--black); }
-        .btn-favorite:hover { transform: scale(1.1); }
-        .btn-favorite svg { width: 18px; height: 18px; transition: fill 0.3s, stroke 0.3s; }
-        .price-old { font-size: 14px; color: var(--gray-text); text-decoration: line-through; }
-        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 32px; }
-        .product-card { background: var(--white); display: flex; flex-direction: column; position: relative; transition: transform 0.3s ease, box-shadow 0.3s ease; border: 1px solid var(--gray-mid); }
-        .product-card:hover { transform: translateY(-8px); box-shadow: 0 12px 36px rgba(0,0,0,.08); border-color: transparent; }
-        .product-img-wrapper { position: relative; width: 100%; height: 300px; background: var(--gray-light); overflow: hidden; }
-        .product-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-        .product-card:hover .product-img-wrapper img { transform: scale(1.05); }
-        .discount-badge { position: absolute; top: 16px; left: 16px; background: var(--error); color: var(--white); font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 2px; padding: 6px 12px; border-radius: 4px; }
-        .product-details { padding: 24px 20px; display: flex; flex-direction: column; flex-grow: 1; }
-        .product-category { font-size: 11px; color: var(--gray-text); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; font-family: var(--font-display); }
-        .product-name { font-family: var(--font-display); font-size: 16px; font-weight: 600; color: var(--black); text-decoration: none; letter-spacing: 1px; line-height: 1.4; margin-bottom: 16px; transition: color 0.2s; }
+        .hero-title { 
+            font-family: var(--font-display); 
+            font-size: 42px; 
+            font-weight: 700; 
+            letter-spacing: 4px; 
+            text-transform: uppercase;
+            margin-bottom: 16px; 
+        }
+        
+        .hero-subtitle { 
+            font-size: 16px; 
+            color: var(--gray-mid); 
+            letter-spacing: 1px;
+            line-height: 1.6; 
+            font-weight: 300;
+        }
+
+        /* =========================================
+           PRODUCT GRID & CARDS (For the Partial View)
+        ========================================= */
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 32px; animation: fadeUp 0.7s ease both; }
+        
+        .product-card { 
+            background: var(--white); display: flex; flex-direction: column; position: relative; 
+            transition: var(--transition); border-radius: 12px; overflow: hidden;
+            box-shadow: var(--shadow-sm); border: 1px solid var(--gray-light);
+        }
+        .product-card:hover { 
+            transform: translateY(-8px); 
+            box-shadow: var(--shadow-md); 
+            border-color: transparent;
+        }
+        
+        .product-img-wrapper { position: relative; width: 100%; height: 320px; background: var(--gray-light); overflow: hidden; }
+        .product-img-wrapper img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .product-card:hover .product-img-wrapper img { transform: scale(1.08); }
+        
+        .discount-badge { 
+            position: absolute; top: 16px; left: 16px; background: var(--error); color: var(--white);
+            font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: 1.5px; 
+            padding: 6px 12px; border-radius: 6px; box-shadow: var(--shadow-sm); z-index: 2;
+        }
+
+        .btn-favorite {
+            position: absolute; top: 16px; right: 16px; background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(4px); border: none; border-radius: 50%; width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            box-shadow: var(--shadow-sm); transition: var(--transition); color: var(--primary-text); z-index: 2;
+        }
+        .btn-favorite:hover { transform: scale(1.1); color: var(--error); background: var(--white); }
+        .btn-favorite svg { width: 20px; height: 20px; transition: fill 0.3s, stroke 0.3s; }
+        
+        .product-details { padding: 24px; display: flex; flex-direction: column; flex-grow: 1; }
+        .product-category { font-size: 11px; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; font-family: var(--font-display); font-weight: 600; }
+        .product-name { 
+            font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--primary-dark);
+            text-decoration: none; letter-spacing: 0.5px; line-height: 1.4; margin-bottom: 16px; transition: color 0.2s;
+        }
         .product-name:hover { color: var(--accent); }
-        .product-meta { margin-top: auto; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .product-price { font-size: 18px; font-weight: 700; color: var(--black); }
-        .product-stock { font-size: 12px; color: var(--gray-text); }
+        
+        .product-meta { margin-top: auto; display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .product-price { font-size: 20px; font-weight: 700; color: var(--primary-dark); font-family: var(--font-body); }
+        .price-old { font-size: 14px; color: var(--gray-text); text-decoration: line-through; margin-left: 8px; font-weight: 400; }
+        .product-stock { font-size: 13px; color: var(--primary-text); background: var(--gray-light); padding: 4px 10px; border-radius: 20px; }
         .product-stock span { color: var(--success); font-weight: bold; }
-        .btn-card { width: 100%; text-align: center; padding: 12px; }
+        
+        .btn-card { 
+            width: 100%; text-align: center; padding: 14px; background: var(--primary-dark); 
+            color: var(--white); font-family: var(--font-display); text-transform: uppercase; 
+            letter-spacing: 2px; font-weight: 700; font-size: 12px; border-radius: 8px; 
+            transition: var(--transition); border: none; cursor: pointer; text-decoration: none; display: block;
+        }
+        .btn-card:hover { background: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+        /* =========================================
+           EMPTY STATE
+        ========================================= */
+        .empty-state { 
+            text-align: center; padding: 80px 20px; background: var(--white);
+            border: 2px dashed var(--gray-mid); border-radius: 16px; color: var(--primary-text); 
+            display: flex; flex-direction: column; align-items: center;
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .empty-icon {
+            width: 80px; height: 80px; background: rgba(239, 68, 68, 0.1); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; margin-bottom: 24px;
+            color: var(--error);
+        }
+
+        .empty-state h3 { font-family: var(--font-display); font-size: 24px; margin-bottom: 12px; color: var(--primary-dark); }
+        .empty-state p { margin-bottom: 32px; font-size: 15px; }
+
+        .btn-browse {
+            background: var(--primary-dark); color: var(--white); padding: 16px 36px;
+            font-family: var(--font-display); font-size: 13px; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase; border-radius: 8px; text-decoration: none; transition: var(--transition);
+        }
+        .btn-browse:hover { background: var(--accent); color: var(--white); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+        @@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 }
 
-<div class="hero-section">
-    <h1 class="hero-title">My Favorites</h1>
-    <p class="hero-subtitle">Products you loved and saved for later</p>
-</div>
+<div class="favorites-page-container">
+    <div class="hero-section">
+        <h1 class="hero-title">My Favorites</h1>
+        <p class="hero-subtitle">Products you loved and saved for later</p>
+    </div>
 
-<div class="products-container">
     @if (Model != null && Model.Any())
     {
        <partial name="~/Views/Home/_ProductsGrid.cshtml" model="Model" />
@@ -49,12 +147,21 @@
     else
     {
         <div class="empty-state">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="width: 48px; height: 48px; margin-bottom: 16px; color: var(--gray-text);">
-                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-            </svg>
+            <div class="empty-icon">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="36" height="36">
+                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+            </div>
             <h3>Your Favorites List is Empty</h3>
-            <p style="margin-top: 8px; margin-bottom: 24px;">Go back to the shop and add some items you love!</p>
-            <a asp-controller="Home" asp-action="Index" class="btn-accent" style="display:inline-block; width:auto; padding: 12px 36px; border-radius: 4px;">Browse Products</a>
+            <p>Go back to the shop and add some items you love!</p>
+            <a asp-controller="Home" asp-action="Index" class="btn-browse">Browse Products</a>
         </div>
     }
 </div>
+
+@section Scripts {
+    <script>
+        // Ensure global toggleFavorite works and updates UI properly
+        // You can leave your custom JS logic here if you have any sweetalerts for removing items
+    </script>
+}

@@ -1,109 +1,312 @@
 ﻿@{
-    ViewData["Title"] = "About";
+    ViewData["Title"] = "About Us";
+    Layout = "~/Views/Shared/_ShopLayout.cshtml";
 }
 
-<div class="breadcrumb">
-    <a asp-controller="Home" asp-action="Index">Home</a>
-    <span class="sep">/</span>
-    <span class="current">About</span>
-</div>
+@section Styles {
+    <style>
+        .about-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 40px 20px 80px;
+            animation: fadeUp 0.5s ease both;
+        }
 
-<section style="width:100%; max-width:1200px;">
+        /* =========================================
+           BREADCRUMB
+        ========================================= */
+        .breadcrumb {
+            font-family: var(--font-display);
+            font-size: 12px;
+            letter-spacing: 2px;
+            color: var(--primary-text);
+            text-transform: uppercase;
+            margin-bottom: 40px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            font-weight: 600;
+        }
 
-    <!-- HERO -->
-    <div style="
-        background:url('/images/about-banner.jpg') center/cover;
-        height:340px;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        position:relative;
-        margin-bottom:70px;">
+        .breadcrumb a {
+            color: var(--primary-text);
+            text-decoration: none;
+            transition: var(--transition);
+        }
 
-        <div style="
-            position:absolute;
-            inset:0;
-            background:rgba(0,0,0,.45);">
-        </div>
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
 
-        <h1 style="
-            position:relative;
-            color:white;
-            font-size:56px;
-            letter-spacing:8px;
-            font-family:var(--font-display);">
-            ABOUT US
-        </h1>
+        .breadcrumb .sep {
+            color: var(--gray-mid);
+        }
+
+        .breadcrumb .current {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* =========================================
+           HERO BANNER
+        ========================================= */
+        .about-hero {
+            background: linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.8)), url('/images/about-banner.jpg') center/cover no-repeat;
+            height: 380px;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 80px;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+
+        .about-hero-title {
+            color: var(--white);
+            font-size: 48px;
+            letter-spacing: 6px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            text-transform: uppercase;
+            text-align: center;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            animation: fadeUp 0.7s ease both 0.2s;
+        }
+
+        /* =========================================
+           STORY SECTION
+        ========================================= */
+        .story-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            margin-bottom: 100px;
+        }
+
+        .story-image {
+            width: 100%;
+            height: 550px;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+        }
+
+        .story-image:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .story-content {
+            padding-right: 20px;
+        }
+
+        .story-eyebrow {
+            font-family: var(--font-display);
+            font-size: 13px;
+            letter-spacing: 3px;
+            color: var(--accent);
+            text-transform: uppercase;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .story-title {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 24px;
+            line-height: 1.3;
+        }
+
+        .story-desc {
+            font-size: 16px;
+            color: var(--primary-text);
+            line-height: 1.8;
+            margin-bottom: 24px;
+        }
+
+        .btn-shop {
+            display: inline-block;
+            background: transparent;
+            color: var(--primary-dark);
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 16px 32px;
+            border: 2px solid var(--primary-dark);
+            border-radius: 8px;
+            text-decoration: none;
+            transition: var(--transition);
+            margin-top: 16px;
+        }
+
+        .btn-shop:hover {
+            background: var(--primary-dark);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        /* =========================================
+           FEATURES SECTION
+        ========================================= */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+        }
+
+        .feature-card {
+            background: var(--white);
+            padding: 40px 32px;
+            text-align: center;
+            border-radius: 16px;
+            border: 1px solid var(--gray-light);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-md);
+            border-color: transparent;
+        }
+
+        .feature-icon {
+            width: 72px;
+            height: 72px;
+            background: rgba(79, 70, 229, 0.1);
+            color: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            transition: var(--transition);
+        }
+
+        .feature-card:hover .feature-icon {
+            background: var(--accent);
+            color: var(--white);
+            transform: scale(1.1);
+        }
+
+        .feature-icon svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .feature-title {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            margin-bottom: 16px;
+            letter-spacing: 1px;
+        }
+
+        .feature-desc {
+            font-size: 14px;
+            color: var(--primary-text);
+            line-height: 1.6;
+        }
+
+        @@keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @@media (max-width: 992px) {
+            .story-grid { grid-template-columns: 1fr; gap: 40px; }
+            .story-image { height: 400px; }
+            .about-hero-title { font-size: 36px; }
+        }
+    </style>
+}
+
+<div class="about-container">
+    
+    <div class="breadcrumb">
+        <a asp-controller="Home" asp-action="Index">Home</a>
+        <span class="sep">/</span>
+        <span class="current">About</span>
     </div>
 
-    <!-- CONTENT -->
-    <div style="
-        display:grid;
-        grid-template-columns:1fr 1fr;
-        gap:60px;
-        align-items:center;
-        margin-bottom:80px;">
+    <div class="about-hero">
+        <h1 class="about-hero-title">ABOUT US</h1>
+    </div>
 
-        <img src="/images/about-1.jpg"
-             style="width:100%; height:500px; object-fit:cover;">
+    <div class="story-grid">
+        <img src="https://tse2.mm.bing.net/th/id/OIP.wW1baY96x0B2o7ibmQ0NgAHaE8?pid=Api&h=220&P=0" class="story-image" alt="Fashion With Personality" onerror="this.src='/images/placeholder.jpg'">
 
-        <div>
+        <div class="story-content">
+            <div class="story-eyebrow">Our Story</div>
+            <h2 class="story-title">Fashion With Personality</h2>
 
-            <div class="card-eyebrow">
-                OUR STORY
-            </div>
-
-            <h2 class="card-title" style="margin-bottom:20px;">
-                Fashion With Personality
-            </h2>
-
-            <p class="card-sub">
-                COZA STORE was created to bring modern fashion,
-                luxury accessories, and elegant lifestyle products
-                together in one premium experience.
+            <p class="story-desc">
+                COZA STORE was created to bring modern fashion, luxury accessories, and elegant lifestyle products together in one premium experience. We believe that what you wear is an extension of your identity.
             </p>
 
-            <p class="card-sub">
-                We focus on quality, minimal aesthetics,
-                and timeless style for customers who
-                love modern fashion.
+            <p class="story-desc">
+                We focus on exceptional quality, minimal aesthetics, and timeless style for customers who appreciate the fine details and love modern fashion.
             </p>
 
-            <a class="btn-ghost" href="#">
-                SHOP NOW
+            <a class="btn-shop" asp-controller="Home" asp-action="Index">
+                Explore Collection
             </a>
-
         </div>
     </div>
 
-    <!-- FEATURES -->
-    <div style="
-        display:grid;
-        grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-        gap:24px;
-        margin-bottom:60px;">
-
-        <div class="auth-card" style="padding:35px;text-align:center;">
-            <h3 style="margin-bottom:15px;">Premium Quality</h3>
-            <p class="card-sub">
-                Carefully selected products made with high-quality materials.
+    <div class="features-grid">
+        
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
+                </svg>
+            </div>
+            <h3 class="feature-title">Premium Quality</h3>
+            <p class="feature-desc">
+                Carefully selected products made with high-quality materials to ensure durability and elegance.
             </p>
         </div>
 
-        <div class="auth-card" style="padding:35px;text-align:center;">
-            <h3 style="margin-bottom:15px;">Fast Delivery</h3>
-            <p class="card-sub">
-                Secure and fast shipping worldwide.
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="1" y="3" width="15" height="13"></rect>
+                    <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                    <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                    <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                </svg>
+            </div>
+            <h3 class="feature-title">Fast Delivery</h3>
+            <p class="feature-desc">
+                Secure and lightning-fast shipping worldwide. Track your orders right to your doorstep.
             </p>
         </div>
 
-        <div class="auth-card" style="padding:35px;text-align:center;">
-            <h3 style="margin-bottom:15px;">Modern Style</h3>
-            <p class="card-sub">
-                Trend-driven collections with timeless elegance.
+        <div class="feature-card">
+            <div class="feature-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
+                    <line x1="7" y1="7" x2="7.01" y2="7"></line>
+                </svg>
+            </div>
+            <h3 class="feature-title">Modern Style</h3>
+            <p class="feature-desc">
+                Trend-driven collections with timeless elegance to keep you ahead of the fashion curve.
             </p>
         </div>
 
     </div>
 
-</section>
+</div>

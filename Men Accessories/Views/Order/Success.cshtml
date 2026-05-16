@@ -1,18 +1,31 @@
 ﻿@{
     ViewData["Title"] = "Payment Successful";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_ShopLayout.cshtml";
 }
 
 @section Styles {
     <style>
+        .success-page-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 60vh;
+            padding: 40px 20px;
+            width: 100%;
+        }
+
+        /* =========================================
+           SUCCESS CARD
+        ========================================= */
         .success-container {
             max-width: 600px;
-            margin: 80px auto;
+            width: 100%;
             text-align: center;
-            padding: 50px 40px;
+            padding: 64px 40px;
             background: var(--white);
-            border: 1px solid var(--gray-mid);
-            box-shadow: 0 8px 40px rgba(0,0,0,0.05);
+            border: 1px solid var(--gray-light);
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
             animation: fadeUp 0.5s ease both;
         }
 
@@ -20,67 +33,122 @@
             width: 90px;
             height: 90px;
             border-radius: 50%;
-            background: #eef9f3;
+            background: rgba(16, 185, 129, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 24px;
+            margin: 0 auto 32px;
+            color: var(--success);
         }
 
-            .success-icon svg {
-                width: 45px;
-                height: 45px;
-                color: var(--success);
-            }
+        .success-icon svg {
+            width: 44px;
+            height: 44px;
+        }
 
         .success-title {
             font-family: var(--font-display);
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 700;
             letter-spacing: 2px;
             text-transform: uppercase;
-            color: var(--black);
-            margin-bottom: 12px;
+            color: var(--primary-dark);
+            margin-bottom: 16px;
         }
 
         .success-text {
-            color: var(--gray-text);
+            color: var(--primary-text);
             line-height: 1.6;
-            margin-bottom: 36px;
-            font-size: 15px;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        /* =========================================
+           ACTION BUTTONS
+        ========================================= */
+        .btn-action-group {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
         }
 
         .btn-return {
-            display: inline-block;
-            background: var(--black);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary-dark);
             color: var(--white);
             font-family: var(--font-display);
             font-size: 13px;
             font-weight: 700;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            padding: 16px 36px;
+            padding: 16px 32px;
             text-decoration: none;
-            transition: all 0.3s ease;
-            border: 2px solid var(--black);
+            border-radius: 8px;
+            transition: var(--transition);
         }
 
-            .btn-return:hover {
-                background: var(--white);
-                color: var(--black);
-            }
+        .btn-return:hover {
+            background: var(--accent);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-orders {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--white);
+            color: var(--primary-dark);
+            font-family: var(--font-display);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 16px 32px;
+            text-decoration: none;
+            border: 2px solid var(--gray-mid);
+            border-radius: 8px;
+            transition: var(--transition);
+        }
+
+        .btn-orders:hover {
+            border-color: var(--primary-dark);
+            background: var(--gray-light);
+        }
+
+        @@keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @@media (max-width: 500px) {
+            .btn-action-group { flex-direction: column; }
+        }
     </style>
 }
 
-<div class="success-container">
-    <div class="success-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
+<div class="success-page-wrapper">
+    <div class="success-container">
+        
+        <div class="success-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </div>
+        
+        <h1 class="success-title">Payment Successful!</h1>
+        
+        <p class="success-text">
+            Thank you for your purchase. Your order has been placed successfully and is now being processed by our team. We'll send you an email confirmation shortly.
+        </p>
+        
+        <div class="btn-action-group">
+            <a asp-controller="Order" asp-action="MyOrders" class="btn-orders">View Orders</a>
+            <a asp-controller="Home" asp-action="Index" class="btn-return">Continue Shopping</a>
+        </div>
+        
     </div>
-    <h1 class="success-title">Payment Successful!</h1>
-    <p class="success-text">
-        Thank you for your purchase. Your order has been placed successfully and is now being processed by our team.
-    </p>
-    <a asp-controller="Home" asp-action="Index" class="btn-return">Return to Shop</a>
 </div>

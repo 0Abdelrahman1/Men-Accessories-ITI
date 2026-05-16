@@ -2,7 +2,7 @@
 
 @{
     ViewData["Title"] = Model.Name;
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_ShopLayout.cshtml";
 
     decimal finalPrice = Model.Price;
     decimal oldPrice = 0;
@@ -19,69 +19,79 @@
             max-width: 1200px;
             margin: 0 auto;
             width: 100%;
+            padding: 40px 20px;
+            animation: fadeUp 0.5s ease both;
         }
 
+        /* =========================================
+           BREADCRUMB
+        ========================================= */
         .breadcrumb {
             font-family: var(--font-display);
             font-size: 12px;
             letter-spacing: 2px;
-            color: var(--gray-text);
+            color: var(--primary-text);
             text-transform: uppercase;
             margin-bottom: 40px;
             display: flex;
-            gap: 10px;
+            gap: 12px;
             align-items: center;
+            font-weight: 600;
         }
 
-            .breadcrumb a {
-                color: var(--gray-text);
-                text-decoration: none;
-                transition: color 0.2s;
-            }
+        .breadcrumb a {
+            color: var(--primary-text);
+            text-decoration: none;
+            transition: var(--transition);
+        }
 
-                .breadcrumb a:hover {
-                    color: var(--accent);
-                }
+        .breadcrumb a:hover {
+            color: var(--accent);
+        }
 
-            .breadcrumb .sep {
-                color: var(--gray-mid);
-            }
+        .breadcrumb .sep {
+            color: var(--gray-mid);
+        }
 
-            .breadcrumb .current {
-                color: var(--black);
-                font-weight: 700;
-            }
+        .breadcrumb .current {
+            color: var(--accent);
+            font-weight: 700;
+        }
 
+        /* =========================================
+           PRODUCT GRID & IMAGE
+        ========================================= */
         .product-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 56px;
+            gap: 60px;
             align-items: start;
         }
 
         .img-box {
-            background: var(--gray-light);
-            border: 1px solid var(--gray-mid);
+            background: var(--white);
+            border: 1px solid var(--gray-light);
+            border-radius: 16px;
             position: relative;
             overflow: hidden;
-            border-radius: 4px;
             width: 100%;
             aspect-ratio: 4 / 5;
-            max-height: 600px; 
+            max-height: 600px;
+            box-shadow: var(--shadow-md);
         }
 
-            .img-box img {
-                width: 100%;
-                height: 100%; 
-                display: block;
-                object-fit: cover; 
-                object-position: center; 
-                transition: transform 0.4s ease;
-            }
+        .img-box img {
+            width: 100%;
+            height: 100%; 
+            display: block;
+            object-fit: cover; 
+            object-position: center; 
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
 
-            .img-box:hover img {
-                transform: scale(1.03);
-            }
+        .img-box:hover img {
+            transform: scale(1.05);
+        }
 
         .badge-sale {
             position: absolute;
@@ -90,89 +100,115 @@
             background: var(--error);
             color: var(--white);
             font-family: var(--font-display);
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 700;
             letter-spacing: 2px;
-            padding: 8px 18px;
-            border-radius: 4px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            z-index: 2;
         }
 
+        /* =========================================
+           PRODUCT INFO
+        ========================================= */
         .info-box {
             display: flex;
             flex-direction: column;
+            padding: 20px 0;
         }
 
         .product-cat {
             font-family: var(--font-display);
-            font-size: 13px;
+            font-size: 12px;
             letter-spacing: 3px;
-            color: var(--gray-text);
+            color: var(--accent);
             text-transform: uppercase;
             margin-bottom: 16px;
+            font-weight: 700;
         }
 
         .product-title {
             font-family: var(--font-display);
-            font-size: 36px;
+            font-size: 40px;
             font-weight: 700;
-            color: var(--black);
+            color: var(--primary-dark);
             margin-bottom: 24px;
-            line-height: 1.3;
+            line-height: 1.2;
+            letter-spacing: 1px;
         }
 
+        /* =========================================
+           PRICE
+        ========================================= */
         .price-wrap {
             display: flex;
             align-items: center;
-            gap: 18px;
-            margin-bottom: 36px;
+            gap: 16px;
+            margin-bottom: 32px;
+            font-family: var(--font-body);
         }
 
         .price-current {
-            font-size: 32px;
+            font-size: 36px;
             font-weight: 700;
-            color: var(--black);
+            color: var(--primary-dark);
         }
 
         .price-old {
-            font-size: 22px;
-            color: var(--gray-text);
+            font-size: 20px;
+            color: #94A3B8; /* Slate 400 */
             text-decoration: line-through;
+            font-weight: 400;
         }
 
+        /* =========================================
+           DESCRIPTION & STOCK
+        ========================================= */
         .product-desc {
             font-family: var(--font-body);
             font-size: 16px;
-            color: var(--gray-text);
+            color: var(--primary-text);
             line-height: 1.8;
-            margin-bottom: 36px;
-            padding-bottom: 36px;
+            margin-bottom: 40px;
+            padding-bottom: 40px;
             border-bottom: 1px solid var(--gray-mid);
         }
 
         .stock-info {
             font-family: var(--font-display);
-            font-size: 14px;
+            font-size: 13px;
             letter-spacing: 2px;
-            color: var(--black);
+            color: var(--primary-dark);
             margin-bottom: 36px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             text-transform: uppercase;
+            font-weight: 700;
         }
 
-        .stock-count {
+        .stock-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .stock-badge.in-stock {
+            background: rgba(16, 185, 129, 0.1);
             color: var(--success);
-            font-weight: 700;
-            font-size: 18px;
         }
 
-        .stock-out {
+        .stock-badge.out-of-stock {
+            background: rgba(239, 68, 68, 0.1);
             color: var(--error);
-            font-weight: 700;
-            font-size: 18px;
         }
 
+        /* =========================================
+           ACTION BUTTONS
+        ========================================= */
         .action-wrap {
             display: flex;
             gap: 16px;
@@ -180,26 +216,30 @@
 
         .btn-add {
             flex: 1;
-            background: var(--black);
+            background: var(--primary-dark);
             color: var(--white);
             font-family: var(--font-display);
             font-size: 14px;
             font-weight: 700;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-transform: uppercase;
             padding: 20px;
-            border: 2px solid var(--black);
+            border: none;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             text-align: center;
-            text-decoration: none;
-            display: inline-block;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
-            .btn-add:hover {
-                background: var(--accent);
-                border-color: var(--accent);
-            }
+        .btn-add:hover {
+            background: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
 
         .btn-back {
             display: flex;
@@ -207,33 +247,38 @@
             justify-content: center;
             padding: 20px 32px;
             border: 2px solid var(--gray-mid);
-            background: transparent;
-            color: var(--black);
+            background: var(--white);
+            color: var(--primary-dark);
             font-family: var(--font-display);
             font-size: 14px;
             font-weight: 700;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-transform: uppercase;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
             text-decoration: none;
         }
 
-            .btn-back:hover {
-                border-color: var(--black);
-            }
+        .btn-back:hover {
+            border-color: var(--primary-dark);
+            background: var(--gray-light);
+        }
+
+        @@keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         @@media (max-width: 992px) {
-            .product-grid {
-                grid-template-columns: 1fr;
-                gap: 40px;
-            }
+            .product-grid { grid-template-columns: 1fr; gap: 40px; }
+            .img-box { max-height: 500px; }
         }
 
         @@media (max-width: 540px) {
-            .action-wrap {
-                flex-direction: column;
-            }
+            .action-wrap { flex-direction: column; }
+            .product-title { font-size: 32px; }
+            .price-current { font-size: 32px; }
         }
     </style>
 }
@@ -276,11 +321,11 @@
                 Availability:
                 @if (Model.StockQuantity > 0)
                 {
-                    <span class="stock-count">In Stock (@Model.StockQuantity)</span>
+                    <span class="stock-badge in-stock">In Stock (@Model.StockQuantity)</span>
                 }
                 else
                 {
-                    <span class="stock-out">Out of Stock</span>
+                    <span class="stock-badge out-of-stock">Out of Stock</span>
                 }
             </div>
 
@@ -290,7 +335,14 @@
                     <form id="addToCartForm" asp-controller="Cart" asp-action="AddToCartAjax" method="post" style="flex: 1;">
                         <input type="hidden" name="productId" value="@Model.Id" />
                         <input type="hidden" name="quantity" value="1" />
-                        <button type="submit" class="btn-add" style="width: 100%;">Add to Cart</button>
+                        <button type="submit" class="btn-add">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"></path>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <path d="M16 10a4 4 0 01-8 0"></path>
+                            </svg>
+                            Add to Cart
+                        </button>
                     </form>
                 }
                 <a asp-controller="Home" asp-action="Index" class="btn-back">Back to Shop</a>
@@ -304,35 +356,48 @@
     
     <script>
         document.getElementById('addToCartForm').addEventListener('submit', function (e) {
-        e.preventDefault(); 
+            e.preventDefault(); 
 
-        var form = this;
-        var formData = new FormData(form);
+            var form = this;
+            var formData = new FormData(form);
 
-        fetch(form.action, {
-        method: 'POST',
-        body: formData
-        })
-        .then(response => response.json()) 
-        .then(data => {
-        if (data.success) {
-        Swal.fire({
-        title: 'Success!',
-        text: data.message,
-        icon: 'success',
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true
-        });
-        } else {
-        Swal.fire('Oops...', data.message, 'error');
-        }
-        })
-        .catch(error => {
-        Swal.fire('Error', 'Could not connect to the server.', 'error');
-        });
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json()) 
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Success!',
+                        text: data.message,
+                        icon: 'success',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        background: 'var(--white)',
+                        color: 'var(--primary-dark)',
+                        iconColor: 'var(--success)'
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Oops...', 
+                        text: data.message, 
+                        icon: 'error',
+                        confirmButtonColor: 'var(--primary-dark)'
+                    });
+                }
+            })
+            .catch(error => {
+                Swal.fire({
+                    title: 'Error', 
+                    text: 'Could not connect to the server.', 
+                    icon: 'error',
+                    confirmButtonColor: 'var(--primary-dark)'
+                });
+            });
         });
     </script>
 }

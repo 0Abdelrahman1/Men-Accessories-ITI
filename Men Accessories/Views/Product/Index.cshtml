@@ -1,7 +1,7 @@
 @model List<Men_Accessories.Models.Product>
 @{
     ViewData["Title"] = "Manage Products";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_ShopLayout.cshtml";
 }
 
 @section Styles {
@@ -13,49 +13,63 @@
             padding-bottom: 60px;
         }
 
+        /* =========================================
+           PAGE HEADER
+        ========================================= */
         .page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--gray-mid);
+            margin-bottom: 40px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #1E293B 100%);
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            color: var(--white);
+            animation: fadeUp 0.4s ease both;
         }
 
         .page-title {
             font-family: var(--font-display);
-            font-size: 24px;
+            font-size: 28px;
             font-weight: 700;
             letter-spacing: 3px;
             text-transform: uppercase;
-            color: var(--black);
+            margin: 0;
         }
 
         .btn-add-new {
-            background: var(--black);
+            background: var(--accent);
             color: var(--white);
             font-family: var(--font-display);
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 700;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
-            padding: 12px 24px;
+            padding: 14px 28px;
+            border-radius: 8px;
             text-decoration: none;
-            transition: background 0.3s;
+            transition: var(--transition);
+            border: 2px solid var(--accent);
             display: inline-block;
         }
 
         .btn-add-new:hover {
-            background: var(--accent);
+            background: transparent;
             color: var(--white);
+            transform: translateY(-2px);
         }
 
+        /* =========================================
+           TABLE STYLES
+        ========================================= */
         .table-wrapper {
             background: var(--white);
             border: 1px solid var(--gray-mid);
-            border-radius: 4px;
-            overflow-x: auto;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border-radius: 16px;
+            overflow: hidden; /* Keeps the rounded corners with the table inside */
+            box-shadow: var(--shadow-sm);
+            animation: fadeUp 0.6s ease both;
         }
 
         .admin-table {
@@ -67,78 +81,140 @@
         .admin-table th {
             background: var(--gray-light);
             font-family: var(--font-display);
-            font-size: 11px;
-            letter-spacing: 2px;
+            font-size: 12px;
+            letter-spacing: 1.5px;
             text-transform: uppercase;
-            padding: 18px 20px;
+            padding: 20px 24px;
             border-bottom: 1px solid var(--gray-mid);
-            color: var(--black);
+            color: var(--primary-dark);
+            font-weight: 700;
         }
 
         .admin-table td {
-            padding: 16px 20px;
+            padding: 16px 24px;
             border-bottom: 1px solid var(--gray-mid);
             vertical-align: middle;
             font-size: 14px;
-            color: var(--gray-text);
+            color: var(--primary-text);
+            transition: var(--transition);
         }
 
         .admin-table tr:last-child td {
             border-bottom: none;
         }
 
-        .admin-table tr:hover {
-            background: #fafafa;
+        .admin-table tr:hover td {
+            background: var(--gray-light);
         }
 
+        /* =========================================
+           TABLE CONTENT
+        ========================================= */
         .prod-img {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             object-fit: cover;
-            border-radius: 4px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
             border: 1px solid var(--gray-mid);
+            transition: var(--transition);
+        }
+        
+        .admin-table tr:hover .prod-img {
+            transform: scale(1.05);
         }
 
         .prod-name {
-            color: var(--black);
-            font-weight: 600;
+            color: var(--primary-dark);
+            font-weight: 700;
             text-decoration: none;
+            font-size: 15px;
+            transition: var(--transition);
         }
         
         .prod-name:hover {
             color: var(--accent);
         }
 
-        .action-links {
-            display: flex;
-            gap: 12px;
+        .price-text {
+            color: var(--primary-dark);
+            font-weight: 700;
+            font-family: var(--font-body);
+            font-size: 15px;
         }
 
-        .action-links a {
+        /* Status Badges */
+        .badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            font-family: var(--font-body);
+        }
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+        .badge-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+
+        /* =========================================
+           ACTION BUTTONS
+        ========================================= */
+        .action-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action {
+            padding: 8px 16px;
+            border-radius: 6px;
             font-family: var(--font-display);
             font-size: 11px;
             font-weight: 700;
             letter-spacing: 1px;
             text-transform: uppercase;
             text-decoration: none;
-            transition: color 0.2s;
+            transition: var(--transition);
         }
 
-        .link-edit { color: #f5a623; }
-        .link-edit:hover { color: var(--black); }
+        .btn-edit { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .btn-edit:hover { background: var(--warning); color: var(--white); box-shadow: var(--shadow-sm); }
         
-        .link-details { color: var(--accent); }
-        .link-details:hover { color: var(--black); }
+        .btn-details { background: rgba(79, 70, 229, 0.1); color: var(--accent); }
+        .btn-details:hover { background: var(--accent); color: var(--white); box-shadow: var(--shadow-sm); }
         
-        .link-delete { color: var(--error); }
-        .link-delete:hover { color: var(--black); }
+        .btn-delete { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+        .btn-delete:hover { background: var(--error); color: var(--white); box-shadow: var(--shadow-sm); }
 
+        /* =========================================
+           EMPTY STATE
+        ========================================= */
         .empty-state {
             text-align: center;
-            padding: 60px 20px;
+            padding: 80px 20px;
             background: var(--white);
-            border: 1px dashed var(--gray-mid);
-            color: var(--gray-text);
+            border: 2px dashed var(--gray-mid);
+            border-radius: 16px;
+            color: var(--primary-text);
+            animation: fadeUp 0.5s ease both;
+        }
+        
+        .empty-state h3 {
+            font-family: var(--font-display);
+            font-size: 24px;
+            color: var(--primary-dark);
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+        }
+
+        @@keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 }
@@ -174,22 +250,22 @@
                                 <a asp-action="Details" asp-route-id="@product.Id" class="prod-name">@product.Name</a>
                             </td>
                             <td>@(product.Category?.Name ?? "General")</td>
-                            <td style="color: var(--black); font-weight: bold;">$@product.Price</td>
+                            <td class="price-text">$@product.Price</td>
                             <td>
                                 @if (product.StockQuantity > 0)
                                 {
-                                    <span style="color: var(--success); font-weight: bold;">@product.StockQuantity</span>
+                                    <span class="badge badge-success">@product.StockQuantity in stock</span>
                                 }
                                 else
                                 {
-                                    <span style="color: var(--error); font-weight: bold;">Out of Stock</span>
+                                    <span class="badge badge-error">Out of Stock</span>
                                 }
                             </td>
                             <td>
                                 <div class="action-links">
-                                    <a asp-action="Edit" asp-route-id="@product.Id" class="link-edit">Edit</a>
-                                    <a asp-action="Details" asp-route-id="@product.Id" class="link-details">View</a>
-                                    <a asp-action="Delete" asp-route-id="@product.Id" class="link-delete">Delete</a>
+                                    <a asp-action="Edit" asp-route-id="@product.Id" class="btn-action btn-edit">Edit</a>
+                                    <a asp-action="Details" asp-route-id="@product.Id" class="btn-action btn-details">View</a>
+                                    <a asp-action="Delete" asp-route-id="@product.Id" class="btn-action btn-delete">Delete</a>
                                 </div>
                             </td>
                         </tr>
@@ -201,8 +277,8 @@
     else
     {
         <div class="empty-state">
-            <h3 style="font-family: var(--font-display); letter-spacing: 2px; color: var(--black); margin-bottom: 10px;">No Products Found</h3>
-            <p>Your inventory is currently empty. Start by adding a new product.</p>
+            <h3>No Products Found</h3>
+            <p>Your inventory is currently empty. Start building your store by adding a new product.</p>
         </div>
     }
 </div>
