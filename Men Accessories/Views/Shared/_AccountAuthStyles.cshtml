@@ -1,0 +1,373 @@
+@* Shared auth page styles — injected into _ShopLayout via @section Styles *@
+@* These harmonise with _ShopLayout CSS variables so every account view looks native *@
+<style>
+    /* =========================================================
+       AUTH PAGE WRAPPER
+    ========================================================= */
+    .auth-page {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 52px 20px 80px;
+        background: var(--gray-light);
+    }
+
+    /* =========================================================
+       BREADCRUMB
+    ========================================================= */
+    .breadcrumb {
+        font-family: var(--font-display);
+        font-size: 11px;
+        letter-spacing: 2.5px;
+        color: #94A3B8;          /* slate-400 */
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 36px;
+        text-transform: uppercase;
+        width: 100%;
+        max-width: 560px;
+    }
+    .breadcrumb a { color: #94A3B8; text-decoration: none; transition: color .2s; }
+    .breadcrumb a:hover { color: var(--accent); }
+    .breadcrumb .sep  { color: var(--gray-mid); }
+    .breadcrumb .current { color: var(--accent); }
+
+    /* =========================================================
+       STEP DOTS
+    ========================================================= */
+    .step-dots {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-bottom: 34px;
+        width: 100%;
+        max-width: 560px;
+    }
+    .step-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gray-mid); transition: background .3s; }
+    .step-dot.done   { background: var(--success); }
+    .step-dot.active { background: var(--accent); }
+
+    /* =========================================================
+       AUTH CARD
+    ========================================================= */
+    .auth-card {
+        background: var(--white);
+        width: 100%;
+        max-width: 480px;
+        padding: 52px 48px 56px;
+        border-radius: 2px;
+        box-shadow: 0 8px 40px rgba(15,23,42,.09);
+        animation: authFadeUp .45s cubic-bezier(.22,.68,0,1.2) both;
+    }
+    .auth-card.wide { max-width: 560px; }
+
+    @@keyframes authFadeUp {
+        from { opacity: 0; transform: translateY(28px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Card header */
+    .card-eyebrow {
+        font-family: var(--font-display);
+        font-size: 11px;
+        letter-spacing: 3px;
+        color: var(--accent);
+        margin-bottom: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .card-title {
+        font-family: var(--font-display);
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        color: var(--primary-dark);
+    }
+    .card-sub {
+        font-size: 14px;
+        color: #64748B;      /* slate-500 */
+        line-height: 1.65;
+        margin-bottom: 36px;
+    }
+
+    /* =========================================================
+       FORM ELEMENTS
+    ========================================================= */
+    .form-group { margin-bottom: 22px; position: relative; }
+
+    .form-label {
+        display: block;
+        font-family: var(--font-display);
+        font-size: 11px;
+        letter-spacing: 2px;
+        font-weight: 600;
+        margin-bottom: 8px;
+        color: var(--primary-dark);
+        text-transform: uppercase;
+    }
+
+    .form-control {
+        width: 100%;
+        border: 1.5px solid var(--gray-mid);
+        padding: 13px 16px;
+        font-family: var(--font-body);
+        font-size: 14px;
+        color: var(--primary-dark);
+        background: var(--gray-light);
+        outline: none;
+        border-radius: 6px;
+        transition: border-color .25s, background .25s, box-shadow .25s;
+        -webkit-appearance: none;
+    }
+    .form-control:focus {
+        border-color: var(--accent);
+        background: var(--white);
+        box-shadow: 0 0 0 3px rgba(79,70,229,.12);
+    }
+    .form-control::placeholder { color: #CBD5E1; }
+
+    /* Validation */
+    .field-validation-error { font-size: 12px; color: var(--error); margin-top: 5px; display: block; }
+    .validation-summary-errors {
+        background: #FEF2F2;
+        border: 1px solid #FECACA;
+        border-radius: 6px;
+        padding: 12px 16px;
+        margin-bottom: 20px;
+    }
+    .validation-summary-errors ul { list-style: none; }
+    .validation-summary-errors li { font-size: 13px; color: var(--error); margin-bottom: 4px; }
+    .validation-summary-valid { display: none; }
+
+    /* Eye toggle */
+    .eye-toggle {
+        position: absolute;
+        right: 14px;
+        top: 38px;
+        cursor: pointer;
+        color: #94A3B8;
+        font-size: 11px;
+        font-family: var(--font-display);
+        letter-spacing: 1px;
+        user-select: none;
+        font-weight: 600;
+        transition: color .2s;
+    }
+    .eye-toggle:hover { color: var(--accent); }
+
+    /* =========================================================
+       PASSWORD STRENGTH
+    ========================================================= */
+    .strength-bar { display: flex; gap: 4px; margin-top: 8px; }
+    .strength-seg {
+        height: 3px; flex: 1;
+        background: var(--gray-mid);
+        border-radius: 2px;
+        transition: background .3s;
+    }
+    .strength-seg.weak   { background: var(--error); }
+    .strength-seg.medium { background: var(--warning); }
+    .strength-seg.strong { background: var(--success); }
+    .strength-label {
+        font-size: 11px;
+        color: #94A3B8;
+        margin-top: 5px;
+        font-family: var(--font-display);
+        letter-spacing: 1px;
+    }
+
+    /* =========================================================
+       CHECKBOX ROW
+    ========================================================= */
+    .check-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 26px; }
+    .check-row input[type=checkbox] {
+        width: 16px; height: 16px;
+        accent-color: var(--accent);
+        cursor: pointer; flex-shrink: 0; margin-top: 2px;
+    }
+    .check-row label { font-size: 13px; color: #64748B; cursor: pointer; line-height: 1.5; }
+    .check-row a { color: var(--accent); text-decoration: none; font-weight: 600; }
+
+    /* =========================================================
+       FORGOT LINK
+    ========================================================= */
+    .forgot-link {
+        font-size: 12px;
+        color: #94A3B8;
+        text-decoration: none;
+        display: block;
+        text-align: right;
+        margin-top: -10px;
+        margin-bottom: 24px;
+        letter-spacing: .5px;
+        font-family: var(--font-display);
+        transition: color .2s;
+    }
+    .forgot-link:hover { color: var(--accent); }
+
+    /* =========================================================
+       BUTTONS
+    ========================================================= */
+    .btn-primary {
+        display: block;
+        width: 100%;
+        background: var(--accent);
+        color: var(--white);
+        font-family: var(--font-display);
+        font-size: 12px;
+        letter-spacing: 3px;
+        font-weight: 700;
+        padding: 16px;
+        border: 2px solid var(--accent);
+        cursor: pointer;
+        text-transform: uppercase;
+        border-radius: 6px;
+        transition: background .25s, border-color .25s, box-shadow .25s;
+        text-align: center;
+        text-decoration: none;
+    }
+    .btn-primary:hover {
+        background: var(--accent-hover);
+        border-color: var(--accent-hover);
+        box-shadow: 0 4px 14px rgba(79,70,229,.35);
+    }
+
+    .btn-accent {
+        display: block;
+        width: 100%;
+        background: var(--success);
+        color: var(--white);
+        font-family: var(--font-display);
+        font-size: 12px;
+        letter-spacing: 3px;
+        font-weight: 700;
+        padding: 16px;
+        border: 2px solid var(--success);
+        cursor: pointer;
+        text-transform: uppercase;
+        border-radius: 6px;
+        transition: background .25s, box-shadow .25s;
+        margin-top: 10px;
+        text-align: center;
+        text-decoration: none;
+    }
+    .btn-accent:hover {
+        background: #059669;
+        border-color: #059669;
+        box-shadow: 0 4px 14px rgba(16,185,129,.3);
+    }
+
+    .btn-ghost {
+        display: block;
+        background: transparent;
+        color: var(--primary-dark);
+        font-family: var(--font-display);
+        font-size: 12px;
+        letter-spacing: 2.5px;
+        font-weight: 600;
+        padding: 14px;
+        border: 1.5px solid var(--gray-mid);
+        cursor: pointer;
+        text-transform: uppercase;
+        border-radius: 6px;
+        transition: border-color .25s, color .25s;
+        text-decoration: none;
+        text-align: center;
+        width: 100%;
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* =========================================================
+       DIVIDER + SOCIAL
+    ========================================================= */
+    .or-divider {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin: 28px 0;
+        color: #94A3B8;
+        font-size: 11px;
+        letter-spacing: 2px;
+        font-family: var(--font-display);
+        text-transform: uppercase;
+    }
+    .or-divider::before,
+    .or-divider::after { content: ''; flex: 1; height: 1px; background: var(--gray-mid); }
+
+    .social-row { display: flex; gap: 12px; }
+    .btn-social {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px;
+        border: 1.5px solid var(--gray-mid);
+        background: var(--white);
+        font-family: var(--font-display);
+        font-size: 11px;
+        letter-spacing: 1.5px;
+        cursor: pointer;
+        border-radius: 6px;
+        transition: border-color .25s, color .25s, box-shadow .25s;
+        color: var(--primary-dark);
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .btn-social:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        box-shadow: 0 2px 8px rgba(79,70,229,.15);
+    }
+
+    /* =========================================================
+       CARD FOOTER
+    ========================================================= */
+    .card-footer {
+        margin-top: 30px;
+        text-align: center;
+        font-size: 13.5px;
+        color: #64748B;
+    }
+    .card-footer a {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+    }
+    .card-footer a:hover { text-decoration: underline; }
+
+    /* =========================================================
+       ICON CIRCLE
+    ========================================================= */
+    .icon-circle {
+        width: 76px; height: 76px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 30px;
+    }
+    .icon-circle.purple { background: #EEF2FF; }   /* indigo-50 */
+    .icon-circle.green  { background: #ECFDF5; }   /* emerald-50 */
+    .icon-circle svg { width: 36px; height: 36px; }
+
+    /* =========================================================
+       TWO-COLUMN GRID
+    ========================================================= */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    /* =========================================================
+       RESPONSIVE
+    ========================================================= */
+    @@media (max-width: 560px) {
+        .auth-card        { padding: 36px 24px 44px; }
+        .card-title       { font-size: 24px; }
+        .social-row       { flex-direction: column; }
+        .grid-2           { grid-template-columns: 1fr; }
+        .btn-ghost        { display: block; margin-top: 12px; }
+    }
+</style>

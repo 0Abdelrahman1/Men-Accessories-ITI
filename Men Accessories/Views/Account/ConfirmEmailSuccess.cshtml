@@ -1,24 +1,29 @@
 @{
     ViewData["Title"] = "Email Confirmed";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_ShopLayout.cshtml";
 }
 
-<div style="max-width: 480px; margin: 60px auto; text-align: center; padding: 0 1rem;">
+@section Styles {
+    <partial name="_AccountAuthStyles" />
+}
 
-    <div style="width: 64px; height: 64px; border-radius: 50%; background: #EAF3DE; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem;">
-        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#3B6D11" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
-        </svg>
+<div class="auth-page">
+
+    <!-- AUTH CARD -->
+    <div class="auth-card" style="text-align:center; margin-top: 20px;">
+        <div class="icon-circle green">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </div>
+        <div class="card-eyebrow">Success</div>
+        <div class="card-title">Email Confirmed!</div>
+        <p class="card-sub">
+            Your account has been successfully verified. You can now sign in and start shopping.
+        </p>
+        <a asp-action="Login" asp-controller="Account" class="btn-primary" style="text-decoration:none;">
+            Go to Sign In
+        </a>
     </div>
-
-    <h1 style="font-size: 22px; font-weight: 500; margin-bottom: 0.75rem;">Email confirmed!</h1>
-    <p style="color: #6b7280; font-size: 15px; margin-bottom: 2rem;">
-        Your account has been successfully verified. You can now sign in.
-    </p>
-
-    <a asp-action="Login" asp-controller="Account"
-       style="display: inline-block; padding: 10px 28px; background: #1a1a1a; color: #fff; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 500;">
-        Go to Login
-    </a>
 
 </div>
