@@ -1,34 +1,33 @@
 using Men_Accessories.Contexts;
 using Men_Accessories.Models;
-using Men_Accessories.Services;
+using Men_Accessories.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
 
 namespace Men_Accessories.Controllers
 {
     [Authorize(Roles = "Admin")]
     public class ProductController : Controller
     {
-        private readonly IProductService _productService;
+        private readonly IProductRepository _productRepository;
         private readonly MenAccessoriesContext _context;
 
-        public ProductController(IProductService productService, MenAccessoriesContext menAccessoriesContext)
+        public ProductController(IProductRepository productRepository, MenAccessoriesContext menAccessoriesContext)
         {
-            _productService = productService;
+            _productRepository = productRepository;
             _context = menAccessoriesContext;
         }
         [AllowAnonymous]
         public IActionResult Index()
         {
-            var products = _productService.GetAllProducts();
+            var products = _productRepository.GetAll();
             return View(products);
         }
         [AllowAnonymous]
         public IActionResult Details(int id)
         {
-            var product = _productService.GetProductById(id);
+            var product = _productRepository.GetByKey(p => p.Id == id);
             if (product == null)
             {
                 return NotFound();
@@ -48,7 +47,7 @@ namespace Men_Accessories.Controllers
         {
             if (ModelState.IsValid)
             {
-                _productService.AddProduct(product);
+                _productRepository.Add(product);
                 return RedirectToAction("Index");
             }
             var categories = _context.Categories.ToList();
@@ -58,7 +57,7 @@ namespace Men_Accessories.Controllers
 
         public IActionResult Edit(int id)
         {
-            var product = _productService.GetProductById(id);
+            var product = _productRepository.GetByKey(p => p.Id == id);
             if (product == null)
             {
                 return NotFound();
@@ -73,7 +72,7 @@ namespace Men_Accessories.Controllers
         {
             if (ModelState.IsValid)
             {
-                _productService.UpdateProduct(product);
+                _productRepository.Update(product);
                 return RedirectToAction("Index");
             }
             var categories = _context.Categories.ToList();
@@ -83,7 +82,7 @@ namespace Men_Accessories.Controllers
 
         public IActionResult Delete(int id)
         {
-            var product = _productService.GetProductById(id);
+            var product = _productRepository.GetByKey(p => p.Id == id);
             if (product == null)
             {
                 return NotFound();
@@ -94,7 +93,7 @@ namespace Men_Accessories.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeleteConfirmed(int id)
         {
-            _productService.DeleteProduct(id);
+            _productRepository.Delete(id);
             return RedirectToAction("Index");
         }
 
@@ -102,7 +101,7 @@ namespace Men_Accessories.Controllers
         [HttpGet]
         public IActionResult ToggleFavorite(int customerId, int productId)
         {
-            _productService.ToggleFavorite(customerId, productId);
+            _productRepository.ToggleFavorite(customerId, productId);
             return RedirectToAction("Details", new { id = productId });
         }
 
@@ -110,7 +109,7 @@ namespace Men_Accessories.Controllers
         [HttpGet]
         public IActionResult Favorites(int customerId)
         {
-            var favoriteProducts = _productService.GetCustomerFavorites(customerId);
+            var favoriteProducts = _productRepository.GetCustomerFavorites(customerId);
             return View(favoriteProducts);
         }
     }

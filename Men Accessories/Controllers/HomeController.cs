@@ -11,20 +11,20 @@ namespace Men_Accessories.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IProductService _productService;
+        private readonly IProductRepository _productRepository;
         private readonly IBaseRepository<Category> _categoryRepository;
         private readonly IBaseRepository<Customer> _customerRepository;
 
-        public HomeController(IProductService productService, IBaseRepository<Category> categoryRepository, IBaseRepository<Customer> customerRepository)
+        public HomeController(IProductRepository productRepository, IBaseRepository<Category> categoryRepository, IBaseRepository<Customer> customerRepository)
         {
             _categoryRepository = categoryRepository;
             _customerRepository = customerRepository;
-            _productService = productService;
+            _productRepository = productRepository;
         }
 
         public IActionResult Index()
         {
-            var products = _productService.GetAllProducts();
+            var products = _productRepository.GetAll();
             ViewBag.Categories = _categoryRepository.GetAll();
             List<int> userFavorites = new List<int>();
             if (User.Identity.IsAuthenticated)
@@ -43,7 +43,7 @@ namespace Men_Accessories.Controllers
 
         public IActionResult Features()
         {
-            var products = _productService.GetAllProducts().Where(p => p.IsFeatured).ToList();
+            var products = _productRepository.GetAll().Where(p => p.IsFeatured).ToList();
 
             ViewBag.Categories = _categoryRepository.GetAll();
             List<int> userFavorites = new List<int>();
@@ -65,7 +65,7 @@ namespace Men_Accessories.Controllers
         [HttpGet]
         public IActionResult FilterAndSort(string categoryIds = "", string sortBy = "default", string keyword = "", bool inStock = false, decimal minPrice = 0, decimal maxPrice = decimal.MaxValue, bool featuredOnly = false)
         {
-            var products = _productService.GetAllProducts();
+            var products = _productRepository.GetAll();
 
             // SEARCH by keyword
             if (!string.IsNullOrEmpty(keyword))
@@ -127,7 +127,7 @@ namespace Men_Accessories.Controllers
         [HttpGet]
         public IActionResult GetPriceRange()
         {
-            var products = _productService.GetAllProducts();
+            var products = _productRepository.GetAll();
             return Json(new
             {
                 min = products.Any() ? products.Min(p => p.Price) : 0,
