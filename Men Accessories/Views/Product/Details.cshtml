@@ -109,6 +109,22 @@
             z-index: 2;
         }
 
+        .featured-badge {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            background: rgba(16, 185, 129, 0.9);
+            color: var(--white);
+            font-family: var(--font-display);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-sm);
+            z-index: 2;
+        }
+
         /* =========================================
            PRODUCT INFO
         ========================================= */
@@ -298,6 +314,12 @@
             @if (Model.Discount > 0)
             {
                 <span class="badge-sale">-@Model.Discount.ToString("0")%</span>
+            }
+            @if (Model.IsFeatured)
+            {
+                <div class="featured-badge">
+                    <span class="badge-featured">⭐ Featured Product</span>
+                </div>
             }
         </div>
 

@@ -20,7 +20,7 @@ namespace Men_Accessories.Services
 
         public Product GetProductById(int id)
         {
-            return _productRepository.GetById(id);
+            return _productRepository.GetByKey(p => p.Id == id);
         }
 
         public List<Product> GetProductsByCategory(int categoryId)

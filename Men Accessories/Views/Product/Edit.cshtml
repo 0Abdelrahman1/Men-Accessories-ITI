@@ -249,6 +249,13 @@
                 </div>
             </div>
 
+            <div class="form-group" style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+                <input type="checkbox" asp-for="IsFeatured" id="IsFeatured" style="width: 18px; height: 18px; cursor: pointer;" />
+                <label asp-for="IsFeatured" class="form-label" style="margin-bottom: 0; cursor: pointer;">
+                    Mark as Featured Product
+                </label>
+            </div>
+
             <button type="submit" class="btn-submit">Update Product</button>
             <a asp-action="Index" class="back-link">Cancel & Back to Inventory</a>
         </form>

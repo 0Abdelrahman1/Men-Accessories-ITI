@@ -13,12 +13,12 @@ namespace Men_Accessories.Controllers
     {
         private readonly IProductService _productService;
         private readonly IBaseRepository<Category> _categoryRepository;
-        private readonly MenAccessoriesContext _context;
+        private readonly IBaseRepository<Customer> _customerRepository;
 
-        public HomeController(IProductService productService, IBaseRepository<Category> categoryRepository,MenAccessoriesContext menAccessoriesContext )
+        public HomeController(IProductService productService, IBaseRepository<Category> categoryRepository, IBaseRepository<Customer> customerRepository)
         {
             _categoryRepository = categoryRepository;
-            _context  = menAccessoriesContext;
+            _customerRepository = customerRepository;
             _productService = productService;
         }
 
@@ -29,8 +29,8 @@ namespace Men_Accessories.Controllers
             List<int> userFavorites = new List<int>();
             if (User.Identity.IsAuthenticated)
             {
-                var userId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
-                var customer = _context.Customers.FirstOrDefault(c => c.ApplicationUserId == userId);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var customer = _customerRepository.GetByKey(c => c.ApplicationUserId == userId);
 
                 if (customer != null && customer.FavoriteProductIds != null)
                 {
@@ -40,9 +40,30 @@ namespace Men_Accessories.Controllers
             ViewBag.FavoriteProductIds = userFavorites;
             return View(products);
         }
-        // AJAX endpoint for filtering/sorting
+
+        public IActionResult Features()
+        {
+            var products = _productService.GetAllProducts().Where(p => p.IsFeatured).ToList();
+
+            ViewBag.Categories = _categoryRepository.GetAll();
+            List<int> userFavorites = new List<int>();
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var customer = _customerRepository.GetByKey(c => c.ApplicationUserId == userId);
+
+                if (customer != null && customer.FavoriteProductIds != null)
+                {
+                    userFavorites = customer.FavoriteProductIds;
+                }
+            }
+            ViewBag.FavoriteProductIds = userFavorites;
+            return View(products);
+        }
+
+        // AJAX endpoint for filtering/sorting (used by both Index and Features views)
         [HttpGet]
-        public IActionResult FilterAndSort(string categoryIds = "", string sortBy = "default", string keyword = "", bool inStock = false, decimal minPrice = 0, decimal maxPrice = decimal.MaxValue)
+        public IActionResult FilterAndSort(string categoryIds = "", string sortBy = "default", string keyword = "", bool inStock = false, decimal minPrice = 0, decimal maxPrice = decimal.MaxValue, bool featuredOnly = false)
         {
             var products = _productService.GetAllProducts();
 
@@ -54,6 +75,10 @@ namespace Men_Accessories.Controllers
                     p.Description.Contains(keyword, StringComparison.OrdinalIgnoreCase)
                 ).ToList();
             }
+
+            // FILTER by featured
+            if (featuredOnly)
+                products = products.Where(p => p.IsFeatured).ToList();
 
             // FILTER by categories
             if (!string.IsNullOrEmpty(categoryIds))
@@ -90,7 +115,7 @@ namespace Men_Accessories.Controllers
             if (User.Identity.IsAuthenticated)
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var customer = _context.Customers.FirstOrDefault(c => c.ApplicationUserId == userId);
+                var customer = _customerRepository.GetByKey(c => c.ApplicationUserId == userId);
                 if (customer != null && customer.FavoriteProductIds != null)
                     userFavorites = customer.FavoriteProductIds;
             }
@@ -110,7 +135,6 @@ namespace Men_Accessories.Controllers
             });
         }
 
-
         public IActionResult Privacy()
         {
             return View();
@@ -121,6 +145,7 @@ namespace Men_Accessories.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
         public IActionResult About()
         {
             return View();

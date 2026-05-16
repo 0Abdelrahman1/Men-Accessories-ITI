@@ -1,5 +1,6 @@
 ﻿using Men_Accessories.Contexts;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Men_Accessories.Repositories
 {
@@ -17,14 +18,14 @@ namespace Men_Accessories.Repositories
             return _context.Set<T>().ToList();
         }
 
-        public T? GetByKey<TKey>(TKey id, Func<T, TKey> keySelector)
+        public T? GetByKey(Expression<Func<T, bool>> predicate)
         {
-            return _context.Set<T>().FirstOrDefault(s => keySelector(s)!.Equals(id));
+            return _context.Set<T>().FirstOrDefault(predicate);
         }
 
-        public List<T> GetByAttribute<TAttribute>(TAttribute value, Func<T, TAttribute> attributeSelector)
+        public List<T> GetByAttribute(Expression<Func<T, bool>> predicate)
         {
-            return _context.Set<T>().Where(s => attributeSelector(s)!.Equals(value)).ToList();
+            return _context.Set<T>().Where(predicate).ToList();
         }
 
         public void Add(T entity)
@@ -56,14 +57,14 @@ namespace Men_Accessories.Repositories
             return await _context.Set<T>().ToListAsync();
         }
 
-        public async Task<T?> GetByKeyAsync<TKey>(TKey id, Func<T, TKey> keySelector)
+        public async Task<T?> GetByKeyAsync(Expression<Func<T, bool>> predicate)
         {
-            return await _context.Set<T>().FirstOrDefaultAsync(s => keySelector(s)!.Equals(id));
+            return await _context.Set<T>().FirstOrDefaultAsync(predicate);
         }
 
-        public async Task<List<T>> GetByAttributeAsync<TAttribute>(TAttribute value, Func<T, TAttribute> attributeSelector)
+        public async Task<List<T>> GetByAttributeAsync(Expression<Func<T, bool>> predicate)
         {
-            return await _context.Set<T>().Where(s => attributeSelector(s)!.Equals(value)).ToListAsync();
+            return await _context.Set<T>().Where(predicate).ToListAsync();
         }
 
         public async Task AddAsync(T entity)
