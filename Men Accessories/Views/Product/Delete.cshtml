@@ -1,7 +1,7 @@
 @model Men_Accessories.Models.Product
 @{
     ViewData["Title"] = "Delete Product";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = "~/Views/Shared/_ShopLayout.cshtml";
 }
 
 @section Styles {
@@ -9,82 +9,105 @@
         .delete-page-container {
             display: flex;
             justify-content: center;
-            padding: 40px 20px 80px;
+            padding: 60px 20px;
+            width: 100%;
         }
 
+        /* =========================================
+           DELETE CARD
+        ========================================= */
         .delete-card {
             background: var(--white);
             width: 100%;
             max-width: 600px;
-            padding: 40px 50px;
-            box-shadow: 0 8px 40px rgba(0,0,0,0.05);
-            border: 1px solid var(--error);
-            border-top: 4px solid var(--error);
+            padding: 48px 40px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-top: 6px solid var(--error);
             animation: fadeUp 0.5s ease both;
             text-align: center;
         }
 
-        .delete-warning {
+        .icon-circle {
+            width: 72px;
+            height: 72px;
+            background: rgba(239, 68, 68, 0.1);
             color: var(--error);
-            margin-bottom: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
         }
 
-            .delete-warning svg {
-                width: 48px;
-                height: 48px;
-                margin-bottom: 10px;
-            }
+        .icon-circle svg {
+            width: 36px;
+            height: 36px;
+        }
 
         .delete-title {
             font-family: var(--font-display);
-            font-size: 24px;
+            font-size: 26px;
             font-weight: 700;
             letter-spacing: 2px;
             text-transform: uppercase;
-            color: var(--black);
-            margin-bottom: 10px;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
         }
 
         .delete-subtitle {
-            color: var(--gray-text);
+            color: var(--primary-text);
             font-size: 15px;
-            margin-bottom: 30px;
+            margin-bottom: 32px;
             line-height: 1.6;
         }
 
+        /* =========================================
+           PRODUCT PREVIEW
+        ========================================= */
         .product-preview {
             background: var(--gray-light);
-            padding: 20px;
-            border-radius: 4px;
-            margin-bottom: 30px;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 36px;
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 24px;
             text-align: left;
             border: 1px solid var(--gray-mid);
         }
 
-            .product-preview img {
-                width: 80px;
-                height: 80px;
-                object-fit: cover;
-                border-radius: 4px;
-                border: 1px solid var(--gray-mid);
-            }
+        .product-preview img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid var(--gray-mid);
+            box-shadow: var(--shadow-sm);
+        }
 
         .product-details h4 {
             font-family: var(--font-display);
             font-size: 18px;
-            color: var(--black);
-            margin-bottom: 5px;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            font-weight: 700;
         }
 
         .product-details p {
             font-size: 14px;
-            color: var(--gray-text);
-            margin: 0 0 5px 0;
+            color: var(--primary-text);
+            margin: 0 0 6px 0;
+        }
+        
+        .product-details p strong {
+            color: var(--primary-dark);
         }
 
+        /* =========================================
+           BUTTONS
+        ========================================= */
         .btn-delete {
             width: 100%;
             background: var(--error);
@@ -92,18 +115,20 @@
             font-family: var(--font-display);
             font-size: 14px;
             font-weight: 700;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
             text-transform: uppercase;
             padding: 16px;
-            border: 2px solid var(--error);
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: var(--transition);
         }
 
-            .btn-delete:hover {
-                background: var(--white);
-                color: var(--error);
-            }
+        .btn-delete:hover {
+            background: #DC2626; /* Darker red */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
 
         .back-link {
             display: block;
@@ -113,20 +138,34 @@
             font-size: 12px;
             letter-spacing: 2px;
             text-transform: uppercase;
-            color: var(--gray-text);
+            color: var(--primary-text);
             text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
         }
 
-            .back-link:hover {
-                color: var(--black);
-            }
+        .back-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        @@keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @@media (max-width: 540px) {
+            .delete-card { padding: 32px 24px; }
+            .product-preview { flex-direction: column; text-align: center; }
+        }
     </style>
 }
 
 <div class="delete-page-container">
     <div class="delete-card">
-        <div class="delete-warning">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        
+        <div class="icon-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
                 <line x1="12" y1="9" x2="12" y2="13"></line>
                 <line x1="12" y1="17" x2="12.01" y2="17"></line>
@@ -152,5 +191,6 @@
             <button type="submit" class="btn-delete">Yes, Delete Product</button>
             <a asp-action="Index" class="back-link">Cancel & Keep Product</a>
         </form>
+        
     </div>
 </div>

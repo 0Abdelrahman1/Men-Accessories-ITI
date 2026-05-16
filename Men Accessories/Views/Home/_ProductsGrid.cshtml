@@ -17,10 +17,10 @@
                 
                 @if (product.Discount > 0)
                 {
-                    <span class="discount-badge">-@product.Discount%</span>
+                    <span class="discount-badge">-@product.Discount.ToString("0")%</span>
                 }
 
-                <button type="button" class="btn-favorite" onclick="toggleFavorite(@product.Id, this)">
+                <button type="button" class="btn-favorite" onclick="toggleFavorite(@product.Id, this)" title="@(isFav ? "Remove from Favorites" : "Add to Favorites")">
                     <svg viewBox="0 0 24 24"
                          fill="@(isFav ? "var(--error)" : "none")"
                          stroke="@(isFav ? "var(--error)" : "currentColor")"
@@ -38,7 +38,7 @@
                 </a>
 
                 <div class="product-meta">
-                    <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
                         @{
                             decimal finalPrice = product.Price;
                             decimal oldPrice = 0;
@@ -48,16 +48,26 @@
                                 oldPrice = product.Price;
                             }
                         }
-                        <span class="product-price" style="font-size: 20px;">$@finalPrice.ToString("0.00")</span>
+                        <span class="product-price">$@finalPrice.ToString("0.00")</span>
                         @if (oldPrice > 0)
                         {
                             <span class="price-old">$@oldPrice.ToString("0.00")</span>
                         }
                     </div>
-                    <span class="product-stock">Stock: <span>@product.StockQuantity</span></span>
+                    
+                    <span class="product-stock">
+                        @if (product.StockQuantity > 0)
+                        {
+                            <span>In Stock</span>
+                        }
+                        else
+                        {
+                            <span style="color: var(--error);">Out of Stock</span>
+                        }
+                    </span>
                 </div>
 
-                <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="btn-ghost btn-card">
+                <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="btn-card">
                     View Details
                 </a>
             </div>

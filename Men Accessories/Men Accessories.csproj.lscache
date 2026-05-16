@@ -587,6 +587,7 @@ Views/
  Shared/
   Error.cshtml
   _Layout.cshtml
+  _ShopLayout.cshtml
   _ValidationScriptsPartial.cshtml
  _ViewImports.cshtml
  _ViewStart.cshtml
@@ -622,6 +623,7 @@ Views/
  Shared/
   Error.cshtml
   _Layout.cshtml
+  _ShopLayout.cshtml
   _ValidationScriptsPartial.cshtml
  _ViewImports.cshtml
  _ViewStart.cshtml
