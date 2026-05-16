@@ -130,17 +130,40 @@
         .filter-tag .remove-tag:hover { transform: scale(1.2); }
 
         /* =========================================
-           PRICE SLIDER (REFINED & FIXED)
+           PRICE SLIDER (NEW PRO DESIGN)
         ========================================= */
         .price-slider-inline { display: flex; align-items: center; gap: 16px; flex: 1; min-width: 280px; }
         
         .price-slider-wrapper { 
             position: relative; 
-            height: 6px; 
             width: 100%; 
-            background: var(--gray-mid); 
+            height: 24px; /* Increased height to properly contain thumbs */
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+        }
+
+        /* The base gray track */
+        .price-slider-wrapper::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            background: var(--gray-mid);
             border-radius: 4px;
-            margin: 12px 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        /* The colored active track (controlled by JS) */
+        .slider-track {
+            position: absolute;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 1;
         }
         
         .price-slider {
@@ -151,11 +174,11 @@
             left: 0;
             -webkit-appearance: none; 
             appearance: none; 
-            background: transparent; 
+            background: transparent; /* Inputs must be completely transparent */
             pointer-events: none; 
             outline: none;
-            border-radius: 4px;
             margin: 0;
+            z-index: 2;
         }
         
         #minPriceSlider { z-index: 6; }
@@ -170,7 +193,7 @@
             background: var(--accent); 
             cursor: pointer;
             pointer-events: auto; 
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25); 
             border: 3px solid var(--white); 
             transition: transform 0.1s;
         }
@@ -184,7 +207,7 @@
             background: var(--accent); 
             cursor: pointer; 
             pointer-events: auto; 
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); 
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25); 
             border: 3px solid var(--white); 
             transition: transform 0.1s;
         }
@@ -326,10 +349,12 @@
             <div class="price-slider-inline">
                 <label class="filter-label">Price</label>
                 <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
+                    
                     <div class="price-slider-wrapper">
-                        <input type="range" id="minPriceSlider" class="price-slider" min="0" max="1000" value="0" oninput="updatePriceDisplay()" onchange="loadProducts()">
-                        <input type="range" id="maxPriceSlider" class="price-slider" min="0" max="1000" value="1000" oninput="updatePriceDisplay()" onchange="loadProducts()">
+                        <div class="slider-track" id="sliderTrack"></div> <input type="range" id="minPriceSlider" class="price-slider" min="0" max="1000" value="0" oninput="updatePriceDisplay(this)" onchange="loadProducts()">
+                        <input type="range" id="maxPriceSlider" class="price-slider" min="0" max="1000" value="1000" oninput="updatePriceDisplay(this)" onchange="loadProducts()">
                     </div>
+                    
                     <div class="price-display" style="margin-top: 4px; display: flex; justify-content: space-between;">
                         <span id="minPriceDisplay">$0</span>
                         <span id="maxPriceDisplay">$1000</span>
@@ -488,23 +513,36 @@
             loadProducts();
         }
 
-        function updatePriceDisplay() {
+        /* NEW LOGIC TO PREVENT CROSSING AND UPDATE DISPLAY */
+        function updatePriceDisplay(element) {
             const minSlider = document.getElementById('minPriceSlider');
             const maxSlider = document.getElementById('maxPriceSlider');
 
-            if (parseInt(minSlider.value) > parseInt(maxSlider.value)) {
-                [minSlider.value, maxSlider.value] = [maxSlider.value, minSlider.value];
+            let minVal = parseInt(minSlider.value);
+            let maxVal = parseInt(maxSlider.value);
+
+            // Prevent thumbs from crossing
+            if (element && element.id === 'minPriceSlider' && minVal >= maxVal) {
+                minSlider.value = maxVal - 1;
+                minVal = maxVal - 1;
+            }
+            if (element && element.id === 'maxPriceSlider' && maxVal <= minVal) {
+                maxSlider.value = minVal + 1;
+                maxVal = minVal + 1;
             }
 
-            document.getElementById('minPriceDisplay').textContent = '$' + minSlider.value;
-            document.getElementById('maxPriceDisplay').textContent = '$' + maxSlider.value;
+            document.getElementById('minPriceDisplay').textContent = '$' + minVal;
+            document.getElementById('maxPriceDisplay').textContent = '$' + maxVal;
 
             updateSliderTrack();
         }
 
+        /* NEW LOGIC TO DRAW THE TRACK */
         function updateSliderTrack() {
             const minSlider = document.getElementById('minPriceSlider');
             const maxSlider = document.getElementById('maxPriceSlider');
+            const track = document.getElementById('sliderTrack');
+            
             const min = parseInt(minSlider.min);
             const max = parseInt(minSlider.max);
             const minVal = parseInt(minSlider.value);
@@ -513,9 +551,9 @@
             const minPercent = ((minVal - min) / (max - min)) * 100;
             const maxPercent = ((maxVal - min) / (max - min)) * 100;
             
-            // Apply the gradient ONLY to the top slider to avoid messy overlaps
-            minSlider.style.background = `linear-gradient(to right, transparent ${minPercent}%, var(--accent) ${minPercent}%, var(--accent) ${maxPercent}%, transparent ${maxPercent}%)`;
-            maxSlider.style.background = 'transparent';
+            // Move the track div and scale it!
+            track.style.left = minPercent + '%';
+            track.style.width = (maxPercent - minPercent) + '%';
         }
 
         function loadProducts() {
