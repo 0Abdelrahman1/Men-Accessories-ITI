@@ -2,6 +2,7 @@ using Men_Accessories.Contexts;
 using Men_Accessories.Models;
 using Men_Accessories.Repositories;
 using Men_Accessories.Services;
+using Men_Accessories.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -22,9 +23,25 @@ namespace Men_Accessories.Controllers
             _productRepository = productRepository;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
+            int pageSize = 4;
             var products = _productRepository.GetAll();
+
+            int totalCount = products.Count;
+
+            var pagedProducts = products
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var vm = new ProductPaginationViewModel
+            {
+                Products = pagedProducts,
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+            };
+
             ViewBag.Categories = _categoryRepository.GetAll();
             List<int> userFavorites = new List<int>();
             if (User.Identity.IsAuthenticated)
@@ -38,9 +55,10 @@ namespace Men_Accessories.Controllers
                 }
             }
             ViewBag.FavoriteProductIds = userFavorites;
-            return View(products);
+            return View(vm);
         }
 
+        
         public IActionResult Features()
         {
             var products = _productRepository.GetAll().Where(p => p.IsFeatured).ToList();
@@ -58,13 +76,15 @@ namespace Men_Accessories.Controllers
                 }
             }
             ViewBag.FavoriteProductIds = userFavorites;
+            
             return View(products);
         }
 
         // AJAX endpoint for filtering/sorting (used by both Index and Features views)
         [HttpGet]
-        public IActionResult FilterAndSort(string categoryIds = "", string sortBy = "default", string keyword = "", bool inStock = false, decimal minPrice = 0, decimal maxPrice = decimal.MaxValue, bool featuredOnly = false)
+        public IActionResult FilterAndSort(string categoryIds = "", string sortBy = "default",int page  = 1, string keyword = "", bool inStock = false, decimal minPrice = 0, decimal maxPrice = decimal.MaxValue, bool featuredOnly = false)
         {
+            int pageSize = 4;
             var products = _productRepository.GetAll();
 
             // SEARCH by keyword
@@ -110,6 +130,7 @@ namespace Men_Accessories.Controllers
                 "oldest" => products.OrderBy(p => p.CreatedAt).ToList(),
                 _ => products
             };
+           
 
             List<int> userFavorites = new List<int>();
             if (User.Identity.IsAuthenticated)
@@ -120,8 +141,23 @@ namespace Men_Accessories.Controllers
                     userFavorites = customer.FavoriteProductIds;
             }
             ViewBag.FavoriteProductIds = userFavorites;
+            // total count pages (before pagination)
+            int totalCount = products.Count;
 
-            return PartialView("_ProductsGrid", products);
+            // pagination
+            var pagedProducts = products
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var vm = new ProductPaginationViewModel
+            {
+                Products = pagedProducts,
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+            };
+
+            return PartialView("_ProductsGrid", vm.Products);
         }
 
         [HttpGet]

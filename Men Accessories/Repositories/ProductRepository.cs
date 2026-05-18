@@ -59,5 +59,23 @@ namespace Men_Accessories.Repositories
             var customer = _context.Customers.FirstOrDefault(c => c.Id == customerId);
             return customer != null && customer.FavoriteProductIds.Contains(productId);
         }
+
+        public IQueryable<Product> GetAllQueryable()
+        {
+            return _context.Products.Include(p => p.Category);
+        }
+        public (List<Product> products, int totalCount) GetPaginatedProducts(int pageIndex, int pageSize)
+        {
+            var query = GetAllQueryable();
+
+            int totalCount = query.Count();
+
+            var products = query
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return (products, totalCount);
+        }
     }
 }

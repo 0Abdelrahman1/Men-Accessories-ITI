@@ -10,5 +10,8 @@ namespace Men_Accessories.Repositories
         void ToggleFavorite(int customerId, int productId);
         bool IsCustomerFavorite(int customerId, int productId);
         List<Product> GetCustomerFavorites(int customerId);
+
+        IQueryable<Product> GetAllQueryable();
+        (List<Product> products, int totalCount) GetPaginatedProducts(int pageIndex, int pageSize);
     }
 }

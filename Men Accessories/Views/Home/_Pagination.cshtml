@@ -1,0 +1,44 @@
+@model ProductPaginationViewModel
+
+<div style="margin-top:40px; text-align:center;">
+    @if (Model.TotalPages > 1)
+    {
+        <ul style="list-style:none; display:inline-flex; gap:10px; padding:0; margin:0;">
+
+            @if (Model.CurrentPage > 1)
+            {
+                <li>
+                    <a href="javascript:void(0)"
+                           onclick="loadProducts(@(Model.CurrentPage - 1))"
+                           class="btn-card">
+                        Prev
+                    </a>
+                </li>
+            }
+
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <li>
+                    <a href="javascript:void(0)"
+                           onclick="loadProducts(@i)"
+                           class="btn-card"
+                           style="@(i == Model.CurrentPage ? "background:black;color:white;" : "")">
+                        @i
+                    </a>
+                </li>
+            }
+
+            @if (Model.CurrentPage < Model.TotalPages)
+            {
+                <li>
+                    <a href="javascript:void(0)"
+                           onclick="loadProducts(@(Model.CurrentPage + 1))"
+                           class="btn-card">
+                        Next
+                    </a>
+                </li>
+            }
+
+        </ul>
+    }
+</div>

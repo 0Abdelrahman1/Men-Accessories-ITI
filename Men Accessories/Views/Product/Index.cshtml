@@ -1,4 +1,4 @@
-@model List<Men_Accessories.Models.Product>
+@model ProductPaginationViewModel
 @{
     ViewData["Title"] = "Manage Products";
     Layout = "~/Views/Shared/_ShopLayout.cshtml";
@@ -225,7 +225,7 @@
         <a asp-action="Create" class="btn-add-new">+ Add New Product</a>
     </div>
 
-    @if (Model != null && Model.Count > 0)
+    @if (Model != null && Model.Products.Count > 0)
     {
         <div class="table-wrapper">
             <table class="admin-table">
@@ -240,7 +240,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var product in Model)
+                    @foreach (var product in Model.Products)
                     {
                         <tr>
                             <td>
@@ -282,3 +282,32 @@
         </div>
     }
 </div>
+
+@if (Model.TotalPages > 1)
+{
+    <div style="margin-top:20px; text-align:center;">
+        @if (Model.CurrentPage > 1)
+        {
+            <a class="btn-card" href="@Url.Action("Index", new { page = Model.CurrentPage - 1 })">
+                Prev
+            </a>
+        }
+
+        @for (int i = 1; i <= Model.TotalPages; i++)
+        {
+            <a class="btn-card"
+               style="@(i == Model.CurrentPage ? "background:black;color:white;" : "")"
+               href="@Url.Action("Index", new { page = i })">
+
+                @i
+            </a>
+        }
+
+        @if (Model.CurrentPage < Model.TotalPages)
+        {
+            <a class="btn-card" href="@Url.Action("Index", new { page = Model.CurrentPage + 1 })">
+                Next
+            </a>
+        }
+    </div>
+}

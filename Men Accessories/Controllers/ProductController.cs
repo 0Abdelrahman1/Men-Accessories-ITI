@@ -1,6 +1,7 @@
 using Men_Accessories.Contexts;
 using Men_Accessories.Models;
 using Men_Accessories.Repositories;
+using Men_Accessories.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -17,12 +18,22 @@ namespace Men_Accessories.Controllers
         {
             _productRepository = productRepository;
             _context = menAccessoriesContext;
-        }
+        }    
         [AllowAnonymous]
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
-            var products = _productRepository.GetAll();
-            return View(products);
+            int pageSize = 4;
+
+            var result = _productRepository.GetPaginatedProducts(page, pageSize);
+
+            var vm = new ProductPaginationViewModel
+            {
+                Products = result.products,
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling((double)result.totalCount / pageSize)
+            };
+
+            return View(vm);
         }
         [AllowAnonymous]
         public IActionResult Details(int id)

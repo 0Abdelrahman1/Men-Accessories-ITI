@@ -1,7 +1,7 @@
-﻿using Men_Accessories.Contexts;
+using Men_Accessories.Contexts;
 using Men_Accessories.Models;
 using Men_Accessories.Repositories;
-using Men_Accessories.Services; 
+using Men_Accessories.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -29,8 +29,8 @@ namespace Men_Accessories.Controllers
                 return RedirectToAction("Login", "Account");
 
             var favorites = _productRepository.GetCustomerFavorites(customer.Id);
-
-            return View(favorites);
+            
+            return View(favorites);   
         }
 
         [HttpPost]
