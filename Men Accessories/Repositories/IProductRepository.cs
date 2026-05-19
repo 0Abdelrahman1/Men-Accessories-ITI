@@ -13,5 +13,6 @@ namespace Men_Accessories.Repositories
 
         IQueryable<Product> GetAllQueryable();
         (List<Product> products, int totalCount) GetPaginatedProducts(int pageIndex, int pageSize);
+        void AddRating(string email, int productId, int stars, string? comment);
     }
 }

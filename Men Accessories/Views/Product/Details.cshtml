@@ -11,6 +11,11 @@
         finalPrice = Model.Price - (Model.Price * (Model.Discount / 100));
         oldPrice = Model.Price;
     }
+
+    var currentUserEmail = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value
+                        ?? User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
+
+    var existingRate = Model.Rates.FirstOrDefault(r => r.Email == currentUserEmail);
 }
 
 @section Styles {
@@ -23,9 +28,6 @@
             animation: fadeUp 0.5s ease both;
         }
 
-        /* =========================================
-           BREADCRUMB
-        ========================================= */
         .breadcrumb {
             font-family: var(--font-display);
             font-size: 12px;
@@ -39,28 +41,25 @@
             font-weight: 600;
         }
 
-        .breadcrumb a {
-            color: var(--primary-text);
-            text-decoration: none;
-            transition: var(--transition);
-        }
+            .breadcrumb a {
+                color: var(--primary-text);
+                text-decoration: none;
+                transition: var(--transition);
+            }
 
-        .breadcrumb a:hover {
-            color: var(--accent);
-        }
+                .breadcrumb a:hover {
+                    color: var(--accent);
+                }
 
-        .breadcrumb .sep {
-            color: var(--gray-mid);
-        }
+            .breadcrumb .sep {
+                color: var(--gray-mid);
+            }
 
-        .breadcrumb .current {
-            color: var(--accent);
-            font-weight: 700;
-        }
+            .breadcrumb .current {
+                color: var(--accent);
+                font-weight: 700;
+            }
 
-        /* =========================================
-           PRODUCT GRID & IMAGE
-        ========================================= */
         .product-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -80,18 +79,18 @@
             box-shadow: var(--shadow-md);
         }
 
-        .img-box img {
-            width: 100%;
-            height: 100%; 
-            display: block;
-            object-fit: cover; 
-            object-position: center; 
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
+            .img-box img {
+                width: 100%;
+                height: 100%;
+                display: block;
+                object-fit: cover;
+                object-position: center;
+                transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            }
 
-        .img-box:hover img {
-            transform: scale(1.05);
-        }
+            .img-box:hover img {
+                transform: scale(1.05);
+            }
 
         .badge-sale {
             position: absolute;
@@ -125,9 +124,6 @@
             z-index: 2;
         }
 
-        /* =========================================
-           PRODUCT INFO
-        ========================================= */
         .info-box {
             display: flex;
             flex-direction: column;
@@ -154,9 +150,46 @@
             letter-spacing: 1px;
         }
 
-        /* =========================================
-           PRICE
-        ========================================= */
+        .avg-rating-wrap {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .avg-stars {
+            display: flex;
+            gap: 4px;
+        }
+
+            .avg-stars .star {
+                font-size: 20px;
+                color: #CBD5E1;
+            }
+
+                .avg-stars .star.filled {
+                    color: #F59E0B;
+                }
+
+                .avg-stars .star.half {
+                    color: #F59E0B;
+                    opacity: 0.55;
+                }
+
+        .avg-score {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .avg-count {
+            font-family: var(--font-body);
+            font-size: 14px;
+            color: #2f2f2f;
+            ;
+        }
+
         .price-wrap {
             display: flex;
             align-items: center;
@@ -173,14 +206,11 @@
 
         .price-old {
             font-size: 20px;
-            color: #94A3B8; /* Slate 400 */
+            color: #94A3B8;
             text-decoration: line-through;
             font-weight: 400;
         }
 
-        /* =========================================
-           DESCRIPTION & STOCK
-        ========================================= */
         .product-desc {
             font-family: var(--font-body);
             font-size: 16px;
@@ -188,7 +218,7 @@
             line-height: 1.8;
             margin-bottom: 40px;
             padding-bottom: 40px;
-            border-bottom: 1px solid var(--gray-mid);
+            border-bottom: 1px solid #2f2f2f;
         }
 
         .stock-info {
@@ -212,19 +242,16 @@
             letter-spacing: 1px;
         }
 
-        .stock-badge.in-stock {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
-        }
+            .stock-badge.in-stock {
+                background: rgba(16,185,129,0.1);
+                color: var(--success);
+            }
 
-        .stock-badge.out-of-stock {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--error);
-        }
+            .stock-badge.out-of-stock {
+                background: rgba(239,68,68,0.1);
+                color: var(--error);
+            }
 
-        /* =========================================
-           ACTION BUTTONS
-        ========================================= */
         .action-wrap {
             display: flex;
             gap: 16px;
@@ -232,6 +259,7 @@
 
         .btn-add {
             flex: 1;
+            width: 100%;
             background: var(--primary-dark);
             color: var(--white);
             font-family: var(--font-display);
@@ -244,25 +272,24 @@
             border-radius: 12px;
             cursor: pointer;
             transition: var(--transition);
-            text-align: center;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 10px;
         }
 
-        .btn-add:hover {
-            background: var(--accent);
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
+            .btn-add:hover {
+                background: var(--accent);
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-md);
+            }
 
         .btn-back {
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px 32px;
-            border: 2px solid var(--gray-mid);
+            border: 2px solid #2f2f2f;
             background: var(--white);
             color: var(--primary-dark);
             font-family: var(--font-display);
@@ -276,30 +303,328 @@
             text-decoration: none;
         }
 
-        .btn-back:hover {
-            border-color: var(--primary-dark);
-            background: var(--gray-light);
+            .btn-back:hover {
+                border-color: var(--primary-dark);
+                background: var(--gray-light);
+            }
+
+        /* ============================
+                   RATINGS SECTION
+                ============================ */
+        .ratings-section {
+            margin-top: 80px;
+            padding-top: 60px;
+            border-top: 2px solid var(--gray-light);
+            animation: fadeUp 0.6s ease 0.2s both;
         }
 
+        .section-heading {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .section-subheading {
+            font-family: var(--font-body);
+            font-size: 15px;
+            color: #2f2f2f;
+            margin-bottom: 40px;
+        }
+
+        .rate-form-card {
+            background: var(--white);
+            border: 1px solid var(--gray-light);
+            border-radius: 20px;
+            padding: 36px 40px;
+            margin-bottom: 56px;
+            box-shadow: var(--shadow-sm);
+        }
+
+            .rate-form-card .card-label {
+                font-family: var(--font-display);
+                font-size: 12px;
+                letter-spacing: 3px;
+                color: var(--accent);
+                text-transform: uppercase;
+                font-weight: 700;
+                margin-bottom: 20px;
+                display: block;
+            }
+
+        .star-picker {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            gap: 6px;
+            margin-bottom: 28px;
+        }
+
+            .star-picker input[type="radio"] {
+                display: none;
+            }
+
+            .star-picker label {
+                font-size: 38px;
+                cursor: pointer;
+                color: #CBD5E1;
+                transition: color 0.15s, transform 0.15s;
+                line-height: 1;
+                user-select: none;
+            }
+
+                .star-picker label:hover,
+                .star-picker label:hover ~ label,
+                .star-picker input[type="radio"]:checked ~ label,
+                .star-picker input[type="radio"]:checked + label {
+                    color: #F59E0B;
+                }
+
+                .star-picker label:hover {
+                    transform: scale(1.2);
+                }
+
+        .rate-comment {
+            width: 100%;
+            min-height: 110px;
+            resize: vertical;
+            padding: 16px 20px;
+            border: 1.5px solid var(--gray-light);
+            border-radius: 12px;
+            font-family: var(--font-body);
+            font-size: 15px;
+            color: var(--primary-dark);
+            background: var(--gray-light);
+            transition: border-color 0.2s, background 0.2s;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+            .rate-comment:focus {
+                outline: none;
+                border-color: var(--accent);
+                background: var(--white);
+            }
+
+            .rate-comment::placeholder {
+                color: #2f2f2f;
+            }
+
+        .btn-rate {
+            background: var(--primary-dark);
+            color: var(--white);
+            font-family: var(--font-display);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 16px 36px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+            .btn-rate:hover {
+                background: var(--accent);
+                transform: translateY(-2px);
+                box-shadow: var(--shadow-md);
+            }
+
+        .login-prompt {
+            background: var(--gray-light);
+            border: 1px dashed #2f2f2f;
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            margin-bottom: 56px;
+        }
+
+            .login-prompt p {
+                font-family: var(--font-body);
+                font-size: 15px;
+                color: #2f2f2f;
+                margin-bottom: 16px;
+            }
+
+            .login-prompt a {
+                color: var(--accent);
+                font-weight: 700;
+                text-decoration: none;
+            }
+
+                .login-prompt a:hover {
+                    text-decoration: underline;
+                }
+
+        .reviews-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .review-card {
+            background: var(--white);
+            border: 1px solid var(--gray-light);
+            border-radius: 16px;
+            padding: 28px 32px;
+            box-shadow: var(--shadow-sm);
+            transition: box-shadow 0.2s;
+        }
+
+            .review-card:hover {
+                box-shadow: var(--shadow-md);
+            }
+
+        .review-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .reviewer-info {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .reviewer-avatar {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--primary-dark);
+            color: var(--white);
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            text-transform: uppercase;
+        }
+
+        .reviewer-name {
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-dark);
+        }
+
+        .reviewer-email {
+            font-family: var(--font-body);
+            font-size: 12px;
+            color: #2f2f2f;
+            margin-top: 2px;
+        }
+
+        .reviewer-stars {
+            display: flex;
+            gap: 3px;
+            margin-top: 4px;
+        }
+
+            .reviewer-stars .star {
+                font-size: 15px;
+                color: #CBD5E1;
+            }
+
+                .reviewer-stars .star.filled {
+                    color: #F59E0B;
+                }
+
+        .your-review-tag {
+            font-family: var(--font-display);
+            font-size: 11px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--accent);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--accent);
+        }
+
+        .review-comment {
+            font-family: var(--font-body);
+            font-size: 15px;
+            color: var(--primary-text);
+            line-height: 1.7;
+            margin-top: 12px;
+        }
+
+        .no-reviews {
+            text-align: center;
+            padding: 48px 0;
+            font-family: var(--font-body);
+            color: #2f2f2f;
+            font-size: 15px;
+        }
+
+            .no-reviews span {
+                display: block;
+                font-size: 40px;
+                margin-bottom: 12px;
+            }
+
         @@keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         @@media (max-width: 992px) {
-            .product-grid { grid-template-columns: 1fr; gap: 40px; }
-            .img-box { max-height: 500px; }
+            .product-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+
+            .img-box {
+                max-height: 500px;
+            }
         }
 
         @@media (max-width: 540px) {
-            .action-wrap { flex-direction: column; }
-            .product-title { font-size: 32px; }
-            .price-current { font-size: 32px; }
+            .action-wrap {
+                flex-direction: column;
+            }
+
+            .product-title {
+                font-size: 32px;
+            }
+
+            .price-current {
+                font-size: 32px;
+            }
+
+            .rate-form-card {
+                padding: 24px 20px;
+            }
+
+            .review-card {
+                padding: 20px;
+            }
         }
     </style>
 }
 
 <div class="detail-container">
+
     <div class="breadcrumb">
         <a asp-controller="Home" asp-action="Index">Home</a>
         <span class="sep">/</span>
@@ -309,6 +634,7 @@
     </div>
 
     <div class="product-grid">
+
         <div class="img-box">
             <img src="@Model.ImageUrl" alt="@Model.Name" onerror="this.src='/images/placeholder.jpg'" />
             @if (Model.Discount > 0)
@@ -317,15 +643,41 @@
             }
             @if (Model.IsFeatured)
             {
-                <div class="featured-badge">
-                    <span class="badge-featured">⭐ Featured Product</span>
-                </div>
+                <div class="featured-badge">&#11088; Featured Product</div>
             }
         </div>
 
         <div class="info-box">
             <span class="product-cat">@(Model.Category?.Name ?? "General")</span>
             <h1 class="product-title">@Model.Name</h1>
+
+            @if (Model.Rates.Count > 0)
+            {
+                double avg = Model.AverageRating;
+                int fullStars = (int)Math.Floor(avg);
+                bool halfStar = (avg - fullStars) >= 0.5;
+                <div class="avg-rating-wrap">
+                    <div class="avg-stars">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= fullStars)
+                            {
+                                <span class="star filled">&#9733;</span>
+                            }
+                            else if (i == fullStars + 1 && halfStar)
+                            {
+                                <span class="star half">&#9733;</span>
+                            }
+                            else
+                            {
+                                <span class="star">&#9733;</span>
+                            }
+                        }
+                    </div>
+                    <span class="avg-score">@avg.ToString("0.0")</span>
+                    <span class="avg-count">(@Model.Rates.Count @(Model.Rates.Count == 1 ? "review" : "reviews"))</span>
+                </div>
+            }
 
             <div class="price-wrap">
                 <span class="price-current">$@finalPrice.ToString("0.00")</span>
@@ -335,9 +687,7 @@
                 }
             </div>
 
-            <p class="product-desc">
-                @Model.Description
-            </p>
+            <p class="product-desc">@Model.Description</p>
 
             <div class="stock-info">
                 Availability:
@@ -354,7 +704,7 @@
             <div class="action-wrap">
                 @if (Model.StockQuantity > 0)
                 {
-                    <form id="addToCartForm" asp-controller="Cart" asp-action="AddToCartAjax" method="post" style="flex: 1;">
+                    <form id="addToCartForm" asp-controller="Cart" asp-action="AddToCartAjax" method="post" style="flex:1;">
                         <input type="hidden" name="productId" value="@Model.Id" />
                         <input type="hidden" name="quantity" value="1" />
                         <button type="submit" class="btn-add">
@@ -371,55 +721,165 @@
             </div>
         </div>
     </div>
+
+    <div class="ratings-section">
+        <h2 class="section-heading">Customer Reviews</h2>
+        <p class="section-subheading">
+            @if (Model.Rates.Count > 0)
+            {
+                @($"{Model.Rates.Count} {(Model.Rates.Count == 1 ? "review" : "reviews")} · Average {Model.AverageRating:0.0} / 5")
+            }
+            else
+            {
+                @("Be the first to review this product.")
+            }
+        </p>
+
+        @if (User.Identity != null && User.Identity.IsAuthenticated && !string.IsNullOrEmpty(currentUserEmail))
+        {
+            <div class="rate-form-card">
+                <span class="card-label">
+                    @(existingRate != null ? "Update Your Review" : "&#11088; Leave a Review")
+                </span>
+                <form asp-controller="Product" asp-action="RateProduct" method="post">
+                    <input type="hidden" name="productId" value="@Model.Id" />
+                    <input type="hidden" name="email" value="@currentUserEmail" />
+
+                    <div class="star-picker">
+                        @for (int s = 5; s >= 1; s--)
+                        {
+                            bool isChecked = existingRate != null && existingRate.Stars == s;
+                            <input type="radio"
+                                   name="stars"
+                                   id="star@(s)"
+                                   value="@s"
+                            @(isChecked ? "checked" : "") />
+                            <label for="star@(s)" title="@s @(s == 1 ? "star" : "stars")">&#9733;</label>
+                        }
+                    </div>
+
+                    <textarea name="comment"
+                              class="rate-comment"
+                              placeholder="Share your thoughts about this product… (optional)"
+                              maxlength="1000">@(existingRate?.Comment)</textarea>
+
+                    <button type="submit" class="btn-rate">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        @(existingRate != null ? "Update Review" : "Submit Review")
+                    </button>
+                </form>
+            </div>
+        }
+        else if (User.Identity == null || !User.Identity.IsAuthenticated)
+        {
+            <div class="login-prompt">
+                <p>Want to share your experience with this product?</p>
+                <a asp-controller="Account" asp-action="Login"
+                   asp-route-returnUrl="@Url.Action("Details", "Product", new { id = Model.Id })">
+                    Sign in to leave a review
+                </a>
+            </div>
+        }
+
+        <div class="reviews-list">
+            @if (Model.Rates.Count == 0)
+            {
+                <div class="no-reviews">
+                    <span>&#128172;</span>
+                    No reviews yet. Be the first to rate this product!
+                </div>
+            }
+            else
+            {
+                @foreach (var rate in Model.Rates.OrderByDescending(r => r.Id))
+                {
+                    bool isCurrentUser = rate.Email == currentUserEmail;
+                    string initials = rate.Email.Length >= 2
+                        ? rate.Email.Substring(0, 2).ToUpper()
+                        : rate.Email.ToUpper();
+                    string displayName = isCurrentUser ? "You" : rate.Email.Split('@')[0];
+
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="reviewer-info">
+                                <div class="reviewer-avatar">@initials</div>
+                                <div>
+                                    <div class="reviewer-name">@displayName</div>
+                                    <div class="reviewer-email">@rate.Email</div>
+                                    <div class="reviewer-stars">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <span class="star @(i <= rate.Stars ? "filled" : "")">&#9733;</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            @if (isCurrentUser)
+                            {
+                                <span class="your-review-tag">Your Review</span>
+                            }
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(rate.Comment))
+                        {
+                            <p class="review-comment">@rate.Comment</p>
+                        }
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
 </div>
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
     <script>
-        document.getElementById('addToCartForm').addEventListener('submit', function (e) {
-            e.preventDefault(); 
-
-            var form = this;
-            var formData = new FormData(form);
-
-            fetch(form.action, {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json()) 
-            .then(data => {
-                if (data.success) {
-                    Swal.fire({
-                        title: 'Success!',
-                        text: data.message,
-                        icon: 'success',
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000,
-                        timerProgressBar: true,
-                        background: 'var(--white)',
-                        color: 'var(--primary-dark)',
-                        iconColor: 'var(--success)'
-                    });
-                } else {
-                    Swal.fire({
-                        title: 'Oops...', 
-                        text: data.message, 
-                        icon: 'error',
-                        confirmButtonColor: 'var(--primary-dark)'
-                    });
-                }
-            })
-            .catch(error => {
-                Swal.fire({
-                    title: 'Error', 
-                    text: 'Could not connect to the server.', 
-                    icon: 'error',
-                    confirmButtonColor: 'var(--primary-dark)'
-                });
-            });
+        // Add to Cart AJAX
+        const cartForm = document.getElementById('addToCartForm');
+        if (cartForm) {
+        cartForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        fetch(this.action, { method: 'POST', body: new FormData(this) })
+        .then(r => r.json())
+        .then(data => {
+        Swal.fire({
+        title: data.success ? 'Added!' : 'Oops...',
+        text: data.message,
+        icon: data.success ? 'success' : 'error',
+        toast: data.success,
+        position: data.success ? 'top-end' : 'center',
+        showConfirmButton: !data.success,
+        confirmButtonColor: 'var(--primary-dark)',
+        timer: data.success ? 3000 : undefined,
+        timerProgressBar: data.success,
+        background: 'var(--white)',
+        color: 'var(--primary-dark)',
+        iconColor: data.success ? 'var(--success)' : 'var(--error)'
         });
+        })
+        .catch(() => Swal.fire({
+        title: 'Error', text: 'Could not connect to the server.',
+        icon: 'error', confirmButtonColor: 'var(--primary-dark)'
+        }));
+        });
+        }
+
+        // Require star selection before submitting review
+        const rateForm = document.querySelector('.rate-form-card form');
+        if (rateForm) {
+        rateForm.addEventListener('submit', function (e) {
+        if (!this.querySelector('input[name="stars"]:checked')) {
+        e.preventDefault();
+        Swal.fire({
+        title: 'Pick a rating',
+        text: 'Please select at least 1 star before submitting.',
+        icon: 'warning',
+        confirmButtonColor: 'var(--primary-dark)'
+        });
+        }
+        });
+        }
     </script>
 }

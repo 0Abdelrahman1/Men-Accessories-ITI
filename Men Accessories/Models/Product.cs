@@ -41,5 +41,10 @@ namespace Men_Accessories.Models
         // Navigation
         [ForeignKey("CategoryId")]
         public virtual Category? Category { get; set; }
+
+        public int TotalRating { get; set; } = 0;
+        public double AverageRating { get { return TotalRating > 0 ? (double)TotalRating / Rates.Count : 0.0; } }
+
+        public virtual List<Rate> Rates { get; set; } = new List<Rate>();
     }
 }
