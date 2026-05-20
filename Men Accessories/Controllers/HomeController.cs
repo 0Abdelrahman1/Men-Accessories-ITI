@@ -25,7 +25,7 @@ namespace Men_Accessories.Controllers
 
         public IActionResult Index(int page = 1)
         {
-            int pageSize = 4;
+            int pageSize = 12;
             var products = _productRepository.GetAll();
 
             int totalCount = products.Count;
@@ -84,7 +84,7 @@ namespace Men_Accessories.Controllers
         [HttpGet]
         public IActionResult FilterAndSort(string categoryIds = "", string sortBy = "default",int page  = 1, string keyword = "", bool inStock = false, decimal minPrice = 0, decimal maxPrice = decimal.MaxValue, bool featuredOnly = false)
         {
-            int pageSize = 4;
+            int pageSize = 12;
             var products = _productRepository.GetAll();
 
             // SEARCH by keyword
@@ -156,8 +156,7 @@ namespace Men_Accessories.Controllers
                 CurrentPage = page,
                 TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)
             };
-
-            return PartialView("_ProductsGrid", vm.Products);
+            return PartialView("_ProductsSection", vm);
         }
 
         [HttpGet]

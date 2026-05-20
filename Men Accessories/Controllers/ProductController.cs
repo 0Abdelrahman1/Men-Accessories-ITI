@@ -19,10 +19,10 @@ namespace Men_Accessories.Controllers
             _productRepository = productRepository;
             _context = menAccessoriesContext;
         }    
-        [AllowAnonymous]
+       
         public IActionResult Index(int page = 1)
         {
-            int pageSize = 4;
+            int pageSize = 12;
 
             var result = _productRepository.GetPaginatedProducts(page, pageSize);
 
@@ -35,7 +35,7 @@ namespace Men_Accessories.Controllers
 
             return View(vm);
         }
-        [AllowAnonymous]
+       
         public IActionResult Details(int id)
         {
             var product = _productRepository.GetByKey(p => p.Id == id);
