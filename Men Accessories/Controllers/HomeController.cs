@@ -2,6 +2,7 @@ using Men_Accessories.Contexts;
 using Men_Accessories.Models;
 using Men_Accessories.Repositories;
 using Men_Accessories.Services;
+using Men_Accessories.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
@@ -11,26 +12,42 @@ namespace Men_Accessories.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IProductService _productService;
+        private readonly IProductRepository _productRepository;
         private readonly IBaseRepository<Category> _categoryRepository;
-        private readonly MenAccessoriesContext _context;
+        private readonly IBaseRepository<Customer> _customerRepository;
 
-        public HomeController(IProductService productService, IBaseRepository<Category> categoryRepository,MenAccessoriesContext menAccessoriesContext )
+        public HomeController(IProductRepository productRepository, IBaseRepository<Category> categoryRepository, IBaseRepository<Customer> customerRepository)
         {
             _categoryRepository = categoryRepository;
-            _context  = menAccessoriesContext;
-            _productService = productService;
+            _customerRepository = customerRepository;
+            _productRepository = productRepository;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int page = 1)
         {
-            var products = _productService.GetAllProducts();
+            int pageSize = 4;
+            var products = _productRepository.GetAll();
+
+            int totalCount = products.Count;
+
+            var pagedProducts = products
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var vm = new ProductPaginationViewModel
+            {
+                Products = pagedProducts,
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+            };
+
             ViewBag.Categories = _categoryRepository.GetAll();
             List<int> userFavorites = new List<int>();
             if (User.Identity.IsAuthenticated)
             {
-                var userId = User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier);
-                var customer = _context.Customers.FirstOrDefault(c => c.ApplicationUserId == userId);
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var customer = _customerRepository.GetByKey(c => c.ApplicationUserId == userId);
 
                 if (customer != null && customer.FavoriteProductIds != null)
                 {
@@ -38,13 +55,37 @@ namespace Men_Accessories.Controllers
                 }
             }
             ViewBag.FavoriteProductIds = userFavorites;
+            return View(vm);
+        }
+
+        
+        public IActionResult Features()
+        {
+            var products = _productRepository.GetAll().Where(p => p.IsFeatured).ToList();
+
+            ViewBag.Categories = _categoryRepository.GetAll();
+            List<int> userFavorites = new List<int>();
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var customer = _customerRepository.GetByKey(c => c.ApplicationUserId == userId);
+
+                if (customer != null && customer.FavoriteProductIds != null)
+                {
+                    userFavorites = customer.FavoriteProductIds;
+                }
+            }
+            ViewBag.FavoriteProductIds = userFavorites;
+            
             return View(products);
         }
-        // AJAX endpoint for filtering/sorting
+
+        // AJAX endpoint for filtering/sorting (used by both Index and Features views)
         [HttpGet]
-        public IActionResult FilterAndSort(string categoryIds = "", string sortBy = "default", string keyword = "", bool inStock = false, decimal minPrice = 0, decimal maxPrice = decimal.MaxValue)
+        public IActionResult FilterAndSort(string categoryIds = "", string sortBy = "default",int page  = 1, string keyword = "", bool inStock = false, decimal minPrice = 0, decimal maxPrice = decimal.MaxValue, bool featuredOnly = false)
         {
-            var products = _productService.GetAllProducts();
+            int pageSize = 4;
+            var products = _productRepository.GetAll();
 
             // SEARCH by keyword
             if (!string.IsNullOrEmpty(keyword))
@@ -54,6 +95,10 @@ namespace Men_Accessories.Controllers
                     p.Description.Contains(keyword, StringComparison.OrdinalIgnoreCase)
                 ).ToList();
             }
+
+            // FILTER by featured
+            if (featuredOnly)
+                products = products.Where(p => p.IsFeatured).ToList();
 
             // FILTER by categories
             if (!string.IsNullOrEmpty(categoryIds))
@@ -85,31 +130,46 @@ namespace Men_Accessories.Controllers
                 "oldest" => products.OrderBy(p => p.CreatedAt).ToList(),
                 _ => products
             };
+           
 
             List<int> userFavorites = new List<int>();
             if (User.Identity.IsAuthenticated)
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var customer = _context.Customers.FirstOrDefault(c => c.ApplicationUserId == userId);
+                var customer = _customerRepository.GetByKey(c => c.ApplicationUserId == userId);
                 if (customer != null && customer.FavoriteProductIds != null)
                     userFavorites = customer.FavoriteProductIds;
             }
             ViewBag.FavoriteProductIds = userFavorites;
+            // total count pages (before pagination)
+            int totalCount = products.Count;
 
-            return PartialView("_ProductsGrid", products);
+            // pagination
+            var pagedProducts = products
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            var vm = new ProductPaginationViewModel
+            {
+                Products = pagedProducts,
+                CurrentPage = page,
+                TotalPages = (int)Math.Ceiling((double)totalCount / pageSize)
+            };
+
+            return PartialView("_ProductsGrid", vm.Products);
         }
 
         [HttpGet]
         public IActionResult GetPriceRange()
         {
-            var products = _productService.GetAllProducts();
+            var products = _productRepository.GetAll();
             return Json(new
             {
                 min = products.Any() ? products.Min(p => p.Price) : 0,
                 max = products.Any() ? products.Max(p => p.Price) : 1000
             });
         }
-
 
         public IActionResult Privacy()
         {
@@ -121,6 +181,7 @@ namespace Men_Accessories.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
         public IActionResult About()
         {
             return View();

@@ -1,7 +1,7 @@
-@model ProductPaginationViewModel
+@model List<Product>
 
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Featured Products";
     Layout = "~/Views/Shared/_ShopLayout.cshtml";
 }
 
@@ -212,7 +212,7 @@
             transition: transform 0.1s;
         }
 
-        .price-display { font-size: 13px; font-weight: 700; color: var(--primary-dark); font-family: var(--font-body); }
+        .price-display { font-size: 13px; font-weight: 700; color: var(--primary-dark); font-family: var(--font-body); display: flex; justify-content: space-between; }
 
         /* Toggle Switch */
         .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
@@ -304,12 +304,12 @@
 }
 
 <div class="hero-section">
-    <h1 class="hero-title">Discover Your Style</h1>
-    <p class="hero-subtitle">Browse our exclusive collection of premium men's accessories</p>
+    <h1 class="hero-title">Featured Collection</h1>
+    <p class="hero-subtitle">Our hand-picked selection of premium men's accessories</p>
 </div>
 
 <div class="products-container">
-    @if (Model != null && Model.Products.Any())
+    @if (Model != null && Model.Any())
     {
         <div class="filter-sort-bar">
             <div class="filter-group">
@@ -351,11 +351,12 @@
                 <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
                     
                     <div class="price-slider-wrapper">
-                        <div class="slider-track" id="sliderTrack"></div> <input type="range" id="minPriceSlider" class="price-slider" min="0" max="1000" value="0" oninput="updatePriceDisplay(this)" onchange="loadProducts()">
+                        <div class="slider-track" id="sliderTrack"></div>
+                        <input type="range" id="minPriceSlider" class="price-slider" min="0" max="1000" value="0" oninput="updatePriceDisplay(this)" onchange="loadProducts()">
                         <input type="range" id="maxPriceSlider" class="price-slider" min="0" max="1000" value="1000" oninput="updatePriceDisplay(this)" onchange="loadProducts()">
                     </div>
                     
-                    <div class="price-display" style="margin-top: 4px; display: flex; justify-content: space-between;">
+                    <div class="price-display" style="margin-top: 4px;">
                         <span id="minPriceDisplay">$0</span>
                         <span id="maxPriceDisplay">$1000</span>
                     </div>
@@ -377,19 +378,16 @@
 
         <div class="filter-tags" id="filterTags"></div>
 
-        <h2 class="section-heading">Products</h2>
+        <h2 class="section-heading">Featured Products</h2>
 
         <div id="productsContainer">
-            <partial name="_ProductsGrid" model="Model.Products" />
-        </div>
-        <div id="paginationContainer">
-           <partial name="_Pagination" model="Model" />
+            <partial name="_ProductsGrid" model="Model" />
         </div>
     }
     else
     {
         <div class="empty-state">
-            <h3>No Products Found</h3>
+            <h3>No Featured Products Found</h3>
             <p>We are currently updating our catalog. Please check back later.</p>
         </div>
     }
@@ -567,7 +565,7 @@
             const minPrice = document.getElementById('minPriceSlider').value;
             const maxPrice = document.getElementById('maxPriceSlider').value;
 
-            fetch(`/Home/FilterAndSort?categoryIds=${categoryIds}&sortBy=${sortBy}&page=${page}&keyword=${encodeURIComponent(keyword)}&inStock=${inStock}&minPrice=${minPrice}&maxPrice=${maxPrice}`)
+            fetch(`/Home/FilterAndSort?categoryIds=${categoryIds}&sortBy=${sortBy}&page=${page}&keyword=${encodeURIComponent(keyword)}&inStock=${inStock}&minPrice=${minPrice}&maxPrice=${maxPrice}&featuredOnly=true`)
                 .then(response => response.text())
                 .then(html => {
                     document.getElementById('productsContainer').innerHTML = html;

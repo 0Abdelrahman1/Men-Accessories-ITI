@@ -4,94 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Men_Accessories.Repositories
 {
-    public class ProductRepository : IProductRepository
+    public class ProductRepository : BaseRepository<Product>, IProductRepository
     {
-        private readonly MenAccessoriesContext _context;
 
-        public ProductRepository(MenAccessoriesContext context)
-        {
-            _context = context;
-        }
-        public Product GetById(int id)
-        {
-            return _context.Products
-                           .Include(p => p.Category)
-                           .FirstOrDefault(p => p.Id == id);
-        }
-
-        public List<Product> GetAll()
-        {
-            return _context.Products.Include(p => p.Category).ToList();
-        }
-
-        public Product? GetByKey<TKey>(TKey id, Func<Product, TKey> keySelector)
-        {
-            return _context.Products.Include(p => p.Category).FirstOrDefault(p => keySelector(p).Equals(id));
-        }
-
-        public List<Product> GetByAttribute<TAttribute>(TAttribute value, Func<Product, TAttribute> attributeSelector)
-        {
-            return _context.Products.Include(p => p.Category).Where(p => attributeSelector(p).Equals(value)).ToList();
-        }
-
-        public void Add(Product entity)
-        {
-            _context.Products.Add(entity);
-            _context.SaveChanges();
-        }
-
-        public void Update(Product entity)
-        {
-            _context.Products.Update(entity);
-            _context.SaveChanges();
-        }
-
-        public void Delete<TKey>(TKey id)
-        {
-            var product = _context.Products.Find(id);
-            if (product != null)
-            {
-                _context.Products.Remove(product);
-                _context.SaveChanges();
-            }
-        }
-
-        public async Task<List<Product>> GetAllAsync()
-        {
-            return await _context.Products.Include(p => p.Category).ToListAsync();
-        }
-
-        public async Task<Product?> GetByKeyAsync<TKey>(TKey id, Func<Product, TKey> keySelector)
-        {
-            return await _context.Products.Include(p => p.Category).FirstOrDefaultAsync(p => keySelector(p).Equals(id));
-        }
-
-        public async Task<List<Product>> GetByAttributeAsync<TAttribute>(TAttribute value, Func<Product, TAttribute> attributeSelector)
-        {
-            return await _context.Products.Include(p => p.Category).Where(p => attributeSelector(p).Equals(value)).ToListAsync();
-        }
-
-        public async Task AddAsync(Product entity)
-        {
-            await _context.Products.AddAsync(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task UpdateAsync(Product entity)
-        {
-            _context.Products.Update(entity);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteAsync<TKey>(TKey id)
-        {
-            var product = await _context.Products.FindAsync(id);
-            if (product != null)
-            {
-                _context.Products.Remove(product);
-                await _context.SaveChangesAsync();
-            }
-        }
+        public ProductRepository(MenAccessoriesContext context) : base(context) { }
 
         public List<Product> GetByCategory(int categoryId)
         {
@@ -142,6 +58,52 @@ namespace Men_Accessories.Repositories
         {
             var customer = _context.Customers.FirstOrDefault(c => c.Id == customerId);
             return customer != null && customer.FavoriteProductIds.Contains(productId);
+        }
+
+        public IQueryable<Product> GetAllQueryable()
+        {
+            return _context.Products.Include(p => p.Category);
+        }
+        public (List<Product> products, int totalCount) GetPaginatedProducts(int pageIndex, int pageSize)
+        {
+            var query = GetAllQueryable();
+
+            int totalCount = query.Count();
+
+            var products = query
+                .Skip((pageIndex - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return (products, totalCount);
+        }
+
+
+        public void AddRating(string email, int productId, int stars, string? comment)
+        {
+            var product = _context.Products.Include(p => p.Rates).FirstOrDefault(p => p.Id == productId);
+            if (product != null)
+            {
+                var existingRate = product.Rates.FirstOrDefault(r => r.Email == email);
+                if (existingRate != null)
+                {
+                    existingRate.Stars = stars;
+                    existingRate.Comment = comment;
+                }
+                else
+                {
+                    var newRate = new Rate
+                    {
+                        Email = email,
+                        ProductId = productId,
+                        Stars = stars,
+                        Comment = comment
+                    };
+                    product.Rates.Add(newRate);
+                }
+                product.TotalRating = product.Rates.Sum(r => r.Stars);
+                _context.SaveChanges();
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
-﻿using Men_Accessories.Contexts;
+using Men_Accessories.Contexts;
 using Men_Accessories.Models;
-using Men_Accessories.Services; 
+using Men_Accessories.Repositories;
+using Men_Accessories.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -10,12 +11,12 @@ namespace Men_Accessories.Controllers
     [Authorize] 
     public class FavoritesController : Controller
     {
-        private readonly IProductService _productService; 
+        private readonly IProductRepository _productRepository; 
         private readonly MenAccessoriesContext _context;
 
-        public FavoritesController(IProductService productService, MenAccessoriesContext context)
+        public FavoritesController(IProductRepository productRepository, MenAccessoriesContext context)
         {
-            _productService = productService;
+            _productRepository = productRepository;
             _context = context;
         }
 
@@ -27,9 +28,9 @@ namespace Men_Accessories.Controllers
             if (customer == null)
                 return RedirectToAction("Login", "Account");
 
-            var favorites = _productService.GetCustomerFavorites(customer.Id);
-
-            return View(favorites);
+            var favorites = _productRepository.GetCustomerFavorites(customer.Id);
+            
+            return View(favorites);   
         }
 
         [HttpPost]
@@ -43,9 +44,9 @@ namespace Men_Accessories.Controllers
             if (customer == null)
                 return Json(new { success = false, message = "Customer not found" });
 
-            _productService.ToggleFavorite(customer.Id, productId);
+            _productRepository.ToggleFavorite(customer.Id, productId);
 
-            bool isFavorite = _productService.IsFavorite(customer.Id, productId);
+            bool isFavorite = _productRepository.IsCustomerFavorite(customer.Id, productId);
 
             return Json(new { success = true, isFavorite = isFavorite });
         }

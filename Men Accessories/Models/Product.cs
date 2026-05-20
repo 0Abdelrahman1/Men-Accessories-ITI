@@ -31,6 +31,8 @@ namespace Men_Accessories.Models
         [Range(0, 100, ErrorMessage = "Discount must be between 0 and 100")]
         public decimal Discount { get; set; }
 
+        public bool IsFeatured { get; set; } = false;
+
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         [Required(ErrorMessage = "Category is required")]
@@ -39,5 +41,10 @@ namespace Men_Accessories.Models
         // Navigation
         [ForeignKey("CategoryId")]
         public virtual Category? Category { get; set; }
+
+        public int TotalRating { get; set; } = 0;
+        public double AverageRating { get { return TotalRating > 0 ? (double)TotalRating / Rates.Count : 0.0; } }
+
+        public virtual List<Rate> Rates { get; set; } = new List<Rate>();
     }
 }

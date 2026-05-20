@@ -16,7 +16,7 @@ namespace Men_Accessories.Repositories
         public void addToCart(int customerId, int productId, int quantity)
         {
             Cart? cart = getCartByCustomerId(customerId);
-            Product? product = _productRepository.GetById(productId);
+            Product? product = _productRepository.GetByKey(p => p.Id == productId);
 
             if (product != null)
             {
