@@ -35,7 +35,8 @@ namespace Men_Accessories.Controllers
 
             return View(vm);
         }
-       
+        [AllowAnonymous]
+
         public IActionResult Details(int id)
         {
             var product = _productRepository.GetByKey(p => p.Id == id);
