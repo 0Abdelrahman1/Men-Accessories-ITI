@@ -123,5 +123,15 @@ namespace Men_Accessories.Controllers
             var favoriteProducts = _productRepository.GetCustomerFavorites(customerId);
             return View(favoriteProducts);
         }
+
+
+        [AllowAnonymous]
+        [HttpPost]
+        public IActionResult RateProduct(string email, int productId, int stars, string? comment)
+        {
+            _productRepository.AddRating(email, productId, stars, comment);
+            return RedirectToAction("Details", new { id = productId });
+        }
+
     }
 }

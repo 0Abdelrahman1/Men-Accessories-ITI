@@ -77,5 +77,33 @@ namespace Men_Accessories.Repositories
 
             return (products, totalCount);
         }
+
+
+        public void AddRating(string email, int productId, int stars, string? comment)
+        {
+            var product = _context.Products.Include(p => p.Rates).FirstOrDefault(p => p.Id == productId);
+            if (product != null)
+            {
+                var existingRate = product.Rates.FirstOrDefault(r => r.Email == email);
+                if (existingRate != null)
+                {
+                    existingRate.Stars = stars;
+                    existingRate.Comment = comment;
+                }
+                else
+                {
+                    var newRate = new Rate
+                    {
+                        Email = email,
+                        ProductId = productId,
+                        Stars = stars,
+                        Comment = comment
+                    };
+                    product.Rates.Add(newRate);
+                }
+                product.TotalRating = product.Rates.Sum(r => r.Stars);
+                _context.SaveChanges();
+            }
+        }
     }
 }
