@@ -320,7 +320,7 @@
             <div class="filter-group">
                 <label class="filter-label">Filter</label>
                 <div class="filter-dropdown">
-                    <button class="filter-select" onclick="toggleDropdown()">Categories ?</button>
+                    <button class="filter-select" onclick="toggleDropdown()">Categories</button>
                     <div id="filterDropdown" class="dropdown-content">
                         @foreach (var category in ViewBag.Categories)
                         {
@@ -497,7 +497,7 @@
                 tag.className = 'filter-tag';
                 tag.innerHTML = `
                     ${categoryName}
-                    <span class="remove-tag" onclick="removeTag(${catId})">?</span>
+                    <span class="remove-tag" onclick="removeTag(${catId})">❌</span>
                 `;
                 tagsContainer.appendChild(tag);
             });
