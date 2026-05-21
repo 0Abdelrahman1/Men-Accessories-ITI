@@ -320,7 +320,7 @@
             <div class="filter-group">
                 <label class="filter-label">Filter</label>
                 <div class="filter-dropdown">
-                    <button class="filter-select" onclick="toggleDropdown()">Categories ?</button>
+                    <button class="filter-select" onclick="toggleDropdown()">Categories </button>
                     <div id="filterDropdown" class="dropdown-content">
                         @foreach (var category in ViewBag.Categories)
                         {
@@ -379,11 +379,8 @@
 
         <h2 class="section-heading">Products</h2>
 
-        <div id="productsContainer">
-            <partial name="_ProductsGrid" model="Model.Products" />
-        </div>
-        <div id="paginationContainer">
-           <partial name="_Pagination" model="Model" />
+        <div id="productsSection">
+    <partial name="_ProductsSection" model="Model" />
         </div>
     }
     else
@@ -499,7 +496,7 @@
                 tag.className = 'filter-tag';
                 tag.innerHTML = `
                     ${categoryName}
-                    <span class="remove-tag" onclick="removeTag(${catId})">?</span>
+                    <span class="remove-tag" onclick="removeTag(${catId})">❌</span>
                 `;
                 tagsContainer.appendChild(tag);
             });
@@ -570,7 +567,7 @@
             fetch(`/Home/FilterAndSort?categoryIds=${categoryIds}&sortBy=${sortBy}&page=${page}&keyword=${encodeURIComponent(keyword)}&inStock=${inStock}&minPrice=${minPrice}&maxPrice=${maxPrice}`)
                 .then(response => response.text())
                 .then(html => {
-                    document.getElementById('productsContainer').innerHTML = html;
+                    document.getElementById('productsSection').innerHTML = html;
                     updatePriceSliderRange();
                 })
                 .catch(error => console.error('Error:', error));

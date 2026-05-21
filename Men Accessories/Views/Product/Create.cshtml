@@ -13,9 +13,6 @@
             width: 100%;
         }
 
-        /* =========================================
-           FORM CARD
-        ========================================= */
         .form-card {
             background: var(--white);
             width: 100%;
@@ -57,9 +54,6 @@
             margin: 0;
         }
 
-        /* =========================================
-           INPUTS & LABELS
-        ========================================= */
         .form-group {
             margin-bottom: 24px;
         }
@@ -176,6 +170,116 @@
             color: var(--accent);
         }
 
+        /* NEW: Image URL section styles */
+        .image-urls-section {
+            background: rgba(79, 70, 229, 0.05);
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .image-urls-title {
+            font-family: var(--font-display);
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--accent);
+            font-weight: 700;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .add-image-url-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-family: var(--font-display);
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 12px;
+        }
+
+        .add-image-url-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .image-url-input-group {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            align-items: flex-start;
+        }
+
+        .image-url-input {
+            flex: 1;
+            border: 1.5px solid var(--gray-mid);
+            padding: 12px 14px;
+            font-family: var(--font-body);
+            font-size: 13px;
+            color: var(--primary-dark);
+            background: var(--white);
+            border-radius: 6px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .image-url-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .remove-image-url-btn {
+            background: var(--error);
+            color: white;
+            border: none;
+            padding: 12px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: var(--transition);
+        }
+
+        .remove-image-url-btn:hover {
+            background: rgba(239, 68, 68, 0.8);
+        }
+
+        .image-url-preview {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .preview-item {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            background: #f0f0f0;
+            border: 1px solid var(--gray-light);
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-item.error {
+            background: rgba(239, 68, 68, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+
         @@keyframes fadeUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -184,6 +288,8 @@
         @@media (max-width: 600px) {
             .form-card { padding: 32px 24px; }
             .grid-2 { grid-template-columns: 1fr; gap: 0; }
+            .image-url-input-group { flex-direction: column; }
+            .remove-image-url-btn { width: 100%; }
         }
     </style>
 }
@@ -200,7 +306,7 @@
             <h1 class="form-title">Add New Product</h1>
         </div>
 
-        <form asp-action="Create">
+        <form asp-action="Create" method="post" id="productForm">
             <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
 
             <div class="form-group">
@@ -216,9 +322,21 @@
             </div>
 
             <div class="form-group">
-                <label asp-for="ImageUrl" class="form-label">Image URL</label>
-                <input asp-for="ImageUrl" class="form-control" placeholder="https://example.com/image.jpg" />
+                <label asp-for="ImageUrl" class="form-label">Primary Image URL (Required)</label>
+                <input asp-for="ImageUrl" class="form-control" placeholder="https://example.com/image.jpg" required />
                 <span asp-validation-for="ImageUrl" class="text-danger"></span>
+            </div>
+
+            <!-- NEW: Additional Images Section -->
+            <div class="image-urls-section">
+                <span class="image-urls-title">📸 Additional Product Images (Optional)</span>
+                <small style="color: #666; display: block; margin-bottom: 12px;">Add up to 5 additional product image URLs from the internet</small>
+                
+                <div id="imageUrlsContainer"></div>
+
+                <button type="button" class="add-image-url-btn" id="addImageUrlBtn">+ Add Image URL</button>
+                
+                <div class="image-url-preview" id="imagePreview"></div>
             </div>
 
             <div class="grid-2">
@@ -258,6 +376,9 @@
                 </label>
             </div>
 
+            <!-- Hidden container for image URLs (for form submission) -->
+            <div id="imageUrlsFormContainer"></div>
+
             <button type="submit" class="btn-submit">Save Product</button>
             <a asp-action="Index" class="back-link">Cancel & Back to Inventory</a>
         </form>
@@ -268,4 +389,77 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <script>
+        const form = document.getElementById('productForm');
+        const container = document.getElementById('imageUrlsContainer');
+        const formContainer = document.getElementById('imageUrlsFormContainer');
+        const previewContainer = document.getElementById('imagePreview');
+        const addBtn = document.getElementById('addImageUrlBtn');
+        let imageUrlCount = 0;
+
+        addBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+
+            if (imageUrlCount >= 5) {
+                alert('Maximum 5 additional images allowed');
+                return;
+            }
+
+            const inputGroup = document.createElement('div');
+            inputGroup.className = 'image-url-input-group';
+            inputGroup.innerHTML = `
+                <input type="text" class="image-url-input" placeholder="https://example.com/image.jpg" oninput="updateImagePreview()" />
+                <button type="button" class="remove-image-url-btn" onclick="removeImageUrl(this)">✕</button>
+            `;
+
+            container.appendChild(inputGroup);
+            imageUrlCount++;
+        });
+
+        window.removeImageUrl = function (btn) {
+            btn.closest('.image-url-input-group').remove();
+            updateImagePreview();
+        };
+
+        window.updateImagePreview = function () {
+            previewContainer.innerHTML = '';
+            const inputs = container.querySelectorAll('.image-url-input');
+
+            inputs.forEach((input) => {
+                const url = input.value.trim();
+                if (url) {
+                    const previewDiv = document.createElement('div');
+                    previewDiv.className = 'preview-item';
+
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.onerror = function () {
+                        previewDiv.classList.add('error');
+                        previewDiv.textContent = '❌';
+                        img.style.display = 'none';
+                    };
+
+                    previewDiv.appendChild(img);
+                    previewContainer.appendChild(previewDiv);
+                }
+            });
+        };
+
+        form.addEventListener('submit', function () {
+            formContainer.innerHTML = '';
+            const inputs = container.querySelectorAll('.image-url-input');
+
+            inputs.forEach((input) => {
+                const url = input.value.trim();
+                if (url) {
+                    const hidden = document.createElement('input');
+                    hidden.type = 'hidden';
+                    hidden.name = 'productImageUrls';
+                    hidden.value = url;
+                    formContainer.appendChild(hidden);
+                }
+            });
+        });
+    </script>
 }
