@@ -393,10 +393,12 @@
                         {
                             <div class="image-item">
                                 <img src="@img.ImageUrl" alt="Product Image" onerror="this.style.display='none'" />
-                                <form asp-action="DeleteProductImage" method="post" style="position: absolute; inset: 0; margin: 0;" onsubmit="return confirm('Delete this image?');">
-                                    <input type="hidden" name="productImageId" value="@img.Id" />
-                                    <button type="submit" class="delete-image-btn">✕</button>
-                                </form>
+                                <button type="button"
+                                        class="delete-image-btn"
+                                        data-image-id="@img.Id"
+                                        onclick="submitDeleteImage(this)">
+                                    ✕
+                                </button>
                             </div>
                         }
                     </div>
@@ -457,6 +459,11 @@
 
             <button type="submit" class="btn-submit">Save Changes</button>
             <a asp-action="Index" class="back-link">Cancel & Back to Inventory</a>
+        </form>
+
+        <form id="deleteImageForm" asp-action="DeleteProductImage" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="productImageId" id="deleteProductImageId" />
         </form>
     </div>
 </div>
@@ -521,6 +528,21 @@
                     previewContainer.appendChild(previewDiv);
                 }
             });
+        };
+
+        const deleteForm = document.getElementById('deleteImageForm');
+        const deleteInput = document.getElementById('deleteProductImageId');
+
+        window.submitDeleteImage = function (btn) {
+            const imageId = btn.getAttribute('data-image-id');
+            if (!imageId) {
+                return;
+            }
+
+            if (confirm('Delete this image?')) {
+                deleteInput.value = imageId;
+                deleteForm.submit();
+            }
         };
 
         form.addEventListener('submit', function () {

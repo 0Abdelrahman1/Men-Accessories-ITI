@@ -13,14 +13,16 @@ namespace Men_Accessories.Controllers
     public class ProductController : Controller
     {
         private readonly IProductRepository _productRepository;
-        private readonly MenAccessoriesContext _context;
-
+        private readonly IBaseRepository<Category> _categoryRepository;
+        private readonly IBaseRepository<ProductImage> _productImageRepository;
         public ProductController(
             IProductRepository productRepository, 
-            MenAccessoriesContext menAccessoriesContext)
+            IBaseRepository<Category> categoryRepository,
+            IBaseRepository<ProductImage> productImageRepository)
         {
             _productRepository = productRepository;
-            _context = menAccessoriesContext;
+            _categoryRepository = categoryRepository;
+            _productImageRepository = productImageRepository;
         }    
        
         public IActionResult Index(int page = 1)
@@ -41,11 +43,7 @@ namespace Men_Accessories.Controllers
         [AllowAnonymous]
         public IActionResult Details(int id)
         {
-            var product = _context.Products
-                .Include(p => p.ProductImages)
-                .Include(p => p.Category)
-                .Include(p => p.Rates)
-                .FirstOrDefault(p => p.Id == id);
+            var product = _productRepository.GetByKey(p => p.Id == id);
                 
             if (product == null)
                 return NotFound();
@@ -55,7 +53,7 @@ namespace Men_Accessories.Controllers
 
         public IActionResult Create()
         {
-            var categories = _context.Categories.ToList();
+            var categories = _categoryRepository.GetAll();
             ViewBag.CategoriesList = new SelectList(categories, "Id", "Name");
             return View();
         }
@@ -83,11 +81,10 @@ namespace Men_Accessories.Controllers
                                     ProductId = product.Id,
                                     ImageUrl = imageUrl.Trim()
                                 };
-                                _context.ProductImages.Add(productImage);
+                                _productImageRepository.Add(productImage);
                             }
                         }
                     }
-                    _context.SaveChanges();
 
                     return RedirectToAction(nameof(Index));
                 }
@@ -97,21 +94,19 @@ namespace Men_Accessories.Controllers
                 }
             }
 
-            var categories = _context.Categories.ToList();
+            var categories = _categoryRepository.GetAll();
             ViewBag.CategoriesList = new SelectList(categories, "Id", "Name", product.CategoryId);
             return View(product);
         }
 
         public IActionResult Edit(int id)
         {
-            var product = _context.Products
-                .Include(p => p.ProductImages)
-                .FirstOrDefault(p => p.Id == id);
+            var product = _productRepository.GetByKey(p => p.Id == id);
                 
             if (product == null)
                 return NotFound();
 
-            var categories = _context.Categories.ToList();
+            var categories = _categoryRepository.GetAll();
             ViewBag.CategoriesList = new SelectList(categories, "Id", "Name", product.CategoryId);
             return View(product);
         }
@@ -128,7 +123,7 @@ namespace Men_Accessories.Controllers
                 try
                 {
                     // Get existing product
-                    var existingProduct = _context.Products.Find(id);
+                    var existingProduct = _productRepository.GetByKey(p => p.Id == id);
                     if (existingProduct == null)
                         return NotFound();
 
@@ -147,7 +142,7 @@ namespace Men_Accessories.Controllers
                     // Add new additional images if provided
                     if (productImageUrls != null && productImageUrls.Length > 0)
                     {
-                        var currentImageCount = _context.ProductImages.Count(pi => pi.ProductId == id);
+                        var currentImageCount = _productImageRepository.GetAll().Count(pi => pi.ProductId == id);
                         
                         foreach (var imageUrl in productImageUrls)
                         {
@@ -158,12 +153,11 @@ namespace Men_Accessories.Controllers
                                     ProductId = id,
                                     ImageUrl = imageUrl.Trim()
                                 };
-                                _context.ProductImages.Add(productImage);
+                                _productImageRepository.Add(productImage);
                                 currentImageCount++;
                             }
                         }
                     }
-                    _context.SaveChanges();
 
                     return RedirectToAction(nameof(Index));
                 }
@@ -173,7 +167,7 @@ namespace Men_Accessories.Controllers
                 }
             }
 
-            var categories = _context.Categories.ToList();
+            var categories = _categoryRepository.GetAll();
             ViewBag.CategoriesList = new SelectList(categories, "Id", "Name", product.CategoryId);
             return View(product);
         }
@@ -182,15 +176,14 @@ namespace Men_Accessories.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteProductImage(int productImageId)
         {
-            var productImage = _context.ProductImages.Find(productImageId);
+            var productImage = _productImageRepository.GetByKey(pi => pi.Id == productImageId);
             if (productImage == null)
                 return NotFound();
 
             try
             {
                 int productId = productImage.ProductId;
-                _context.ProductImages.Remove(productImage);
-                _context.SaveChanges();
+                _productImageRepository.Delete(productImageId);
 
                 return RedirectToAction("Edit", new { id = productId });
             }
