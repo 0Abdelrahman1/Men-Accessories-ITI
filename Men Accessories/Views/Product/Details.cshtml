@@ -86,98 +86,6 @@
             box-shadow: var(--shadow-md);
         }
 
-        /* NEW: Carousel styles */
-        .carousel-container {
-            position: relative;
-            width: 100%;
-            height: 100%;
-        }
-
-        .carousel-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .carousel-image.active {
-            display: block;
-        }
-
-        @@keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .carousel-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            border: none;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            transition: background 0.3s ease;
-            z-index: 10;
-        }
-
-        .carousel-nav:hover {
-            background: rgba(0, 0, 0, 0.8);
-        }
-
-        .carousel-nav.prev {
-            left: 12px;
-        }
-
-        .carousel-nav.next {
-            right: 12px;
-        }
-
-        .carousel-indicators {
-            position: absolute;
-            bottom: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 8px;
-            z-index: 10;
-        }
-
-        .indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        .indicator.active {
-            background: white;
-        }
-
-        /* Show navigation only if multiple images */
-        @@media (max-width: 768px) {
-            .product-grid {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-
-            .carousel-nav {
-                width: 40px;
-                height: 40px;
-                font-size: 18px;
-            }
-        }
-
         .badge-sale {
             position: absolute;
             top: 24px;
@@ -273,7 +181,6 @@
             font-family: var(--font-body);
             font-size: 14px;
             color: #2f2f2f;
-            ;
         }
 
         .price-wrap {
@@ -395,8 +302,8 @@
             }
 
         /* ============================
-                   RATINGS SECTION
-                ============================ */
+                           RATINGS SECTION
+                        ============================ */
         .ratings-section {
             margin-top: 80px;
             padding-top: 60px;
@@ -721,40 +628,25 @@
 
     <div class="product-grid">
 
-        <div class="img-box">
-            <div class="carousel-container">
-                @for (int i = 0; i < allImages.Count; i++)
-                {
-                    <img src="@allImages[i]" 
-                         alt="@Model.Name - Image @(i + 1)" 
-                         class="carousel-image @(i == 0 ? "active" : "")"
-                         data-index="@i" />
-                }
-
-                @if (allImages.Count > 1)
-                {
-                    <!-- Left Arrow -->
-                    <button class="carousel-nav prev" onclick="previousImage()" aria-label="Previous image">
-                        &#10094;
-                    </button>
-
-                    <!-- Right Arrow -->
-                    <button class="carousel-nav next" onclick="nextImage()" aria-label="Next image">
-                        &#10095;
-                    </button>
-
-                    <!-- Indicators -->
-                    <div class="carousel-indicators">
-                        @for (int i = 0; i < allImages.Count; i++)
-                        {
-                            <div class="indicator @(i == 0 ? "active" : "")" 
-                                 onclick="goToImage(@i)" 
-                                 aria-label="Image @(i + 1)"
-                                 data-index="@i"></div>
-                        }
-                    </div>
-                }
+        <div class="images-wrapper">
+            <div class="img-box" style="margin-bottom: 20px;">
+                <img id="mainProductImage" src="@Model.ImageUrl" alt="@Model.Name" style="width: 100%; height: 100%; object-fit: cover; transition: 0.3s;" />
             </div>
+
+            @if (allImages.Count > 1)
+            {
+                <div class="product-gallery" style="display: flex; gap: 16px; overflow-x: auto; padding-bottom: 10px;">
+                    @foreach (var imgUrl in allImages)
+                    {
+                        <img src="@imgUrl"
+                             alt="Gallery Image"
+                             onclick="changeMainImage(this.src)"
+                             style="width: 90px; height: 90px; border-radius: 12px; object-fit: cover; cursor: pointer; border: 2px solid transparent; transition: 0.3s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"
+                             onmouseover="this.style.borderColor='var(--primary-dark)'"
+                             onmouseout="this.style.borderColor='transparent'" />
+                    }
+                </div>
+            }
         </div>
 
         <div class="info-box">
@@ -887,7 +779,7 @@
             <div class="login-prompt">
                 <p>Want to share your experience with this product?</p>
                 <a asp-controller="Account" asp-action="Login"
-                   asp-route-returnUrl="@Url.Action("Details", "Product", new { id = Model.Id })">
+                       asp-route-returnUrl="@Url.Action("Details", "Product", new { id = Model.Id })">
                     Sign in to leave a review
                 </a>
             </div>
@@ -953,7 +845,7 @@
         e.preventDefault();
         fetch(this.action, { method: 'POST', body: new FormData(this) })
         .then(r => r.json())
-        .then data => {
+        .then(data => {
         Swal.fire({
         title: data.success ? 'Added!' : 'Oops...',
         text: data.message,
@@ -970,8 +862,10 @@
         });
         })
         .catch(() => Swal.fire({
-        title: 'Error', text: 'Could not connect to the server.',
-        icon: 'error', confirmButtonColor: 'var(--primary-dark)'
+        title: 'Error',
+        text: 'Could not connect to the server.',
+        icon: 'error',
+        confirmButtonColor: 'var(--primary-dark)'
         }));
         });
         }
@@ -991,57 +885,10 @@
         }
         });
         }
-    </script>
 
-    <script>
-        let currentImageIndex = 0;
-        const totalImages = @allImages.Count;
-
-        function showImage(index) {
-            // Handle circular navigation
-            if (index >= totalImages) {
-                currentImageIndex = 0;
-            } else if (index < 0) {
-                currentImageIndex = totalImages - 1;
-            } else {
-                currentImageIndex = index;
-            }
-
-            // Hide all images
-            document.querySelectorAll('.carousel-image').forEach(img => {
-                img.classList.remove('active');
-            });
-
-            // Show current image
-            document.querySelector(`.carousel-image[data-index="${currentImageIndex}"]`).classList.add('active');
-
-            // Update indicators
-            if (totalImages > 1) {
-                document.querySelectorAll('.indicator').forEach(ind => {
-                    ind.classList.remove('active');
-                });
-                document.querySelector(`.indicator[data-index="${currentImageIndex}"]`).classList.add('active');
-            }
+        // Image Gallery Logic
+        function changeMainImage(newSrc) {
+        document.getElementById('mainProductImage').src = newSrc;
         }
-
-        function nextImage() {
-            showImage(currentImageIndex + 1);
-        }
-
-        function previousImage() {
-            showImage(currentImageIndex - 1);
-        }
-
-        function goToImage(index) {
-            showImage(index);
-        }
-
-        // Optional: Keyboard navigation
-        document.addEventListener('keydown', (e) => {
-            if (totalImages > 1) {
-                if (e.key === 'ArrowRight') nextImage();
-                if (e.key === 'ArrowLeft') previousImage();
-            }
-        });
     </script>
 }
