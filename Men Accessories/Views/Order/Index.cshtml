@@ -1,0 +1,234 @@
+@model List<Men_Accessories.Models.Order>
+@{
+    ViewData["Title"] = "Manage Orders";
+    Layout = "~/Views/Shared/_ShopLayout.cshtml";
+}
+
+@section Styles {
+    <style>
+        .admin-page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding-bottom: 60px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #1E293B 100%);
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            color: var(--white);
+            animation: fadeUp 0.4s ease both;
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .table-wrapper {
+            background: var(--white);
+            border: 1px solid var(--gray-mid);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            animation: fadeUp 0.6s ease both;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .admin-table th {
+            background: var(--gray-light);
+            font-family: var(--font-display);
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--gray-mid);
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+
+        .admin-table td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--gray-mid);
+            vertical-align: middle;
+            font-size: 14px;
+            color: var(--primary-text);
+            transition: var(--transition);
+        }
+
+        .admin-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .admin-table tr:hover td {
+            background: var(--gray-light);
+        }
+
+        .order-id {
+            color: var(--primary-dark);
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .order-id:hover {
+            color: var(--accent);
+        }
+
+        .price-text {
+            color: var(--primary-dark);
+            font-weight: 700;
+            font-family: var(--font-body);
+            font-size: 15px;
+        }
+
+        .badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            display: inline-block;
+            font-family: var(--font-body);
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .badge-error {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+        }
+
+        .action-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .btn-details { background: rgba(79, 70, 229, 0.1); color: var(--accent); }
+        .btn-details:hover { background: var(--accent); color: var(--white); box-shadow: var(--shadow-sm); }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: var(--white);
+            border: 2px dashed var(--gray-mid);
+            border-radius: 16px;
+            color: var(--primary-text);
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .empty-state h3 {
+            font-family: var(--font-display);
+            font-size: 24px;
+            color: var(--primary-dark);
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+        }
+
+        @@keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+}
+
+<div class="admin-page-container">
+    <div class="page-header">
+        <h1 class="page-title">Orders Overview</h1>
+        <span></span>
+    </div>
+
+    @if (Model != null && Model.Count > 0)
+    {
+        <div class="table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        var paymentBadge = string.Equals(order.PaymentStatus, "Paid", StringComparison.OrdinalIgnoreCase)
+                            || string.Equals(order.PaymentStatus, "Succeeded", StringComparison.OrdinalIgnoreCase)
+                            ? "badge-success"
+                            : "badge-error";
+
+                        var statusBadge = string.Equals(order.OrderStatus, "Delivered", StringComparison.OrdinalIgnoreCase)
+                            || string.Equals(order.OrderStatus, "Completed", StringComparison.OrdinalIgnoreCase)
+                            ? "badge-success"
+                            : "badge-warning";
+
+                        <tr>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@order.Id" class="order-id">#@order.Id</a>
+                            </td>
+                            <td>@(order.Customer?.Name ?? "Unknown")</td>
+                            <td>@order.CreatedAt.ToString("MMM dd, yyyy")</td>
+                            <td>@(order.OrderItems?.Count ?? 0)</td>
+                            <td class="price-text">$@order.TotalAmount</td>
+                            <td><span class="badge @paymentBadge">@order.PaymentStatus</span></td>
+                            <td><span class="badge @statusBadge">@order.OrderStatus</span></td>
+                            <td>
+                                <div class="action-links">
+                                    <a asp-action="Details" asp-route-id="@order.Id" class="btn-action btn-details">View</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <h3>No Orders Found</h3>
+            <p>Your store has no orders yet.</p>
+        </div>
+    }
+</div>
