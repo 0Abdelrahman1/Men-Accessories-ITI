@@ -1,0 +1,223 @@
+@model Men_Accessories.Models.Category
+
+@{
+    ViewData["Title"] = "Delete Category";
+    Layout = "~/Views/Shared/_ShopLayout.cshtml";
+}
+
+@section Styles {
+    <style>
+        .delete-page-container {
+            display: flex;
+            justify-content: center;
+            padding: 60px 20px;
+            width: 100%;
+        }
+
+        .delete-card {
+            background: var(--white);
+            width: 100%;
+            max-width: 600px;
+            padding: 48px 40px;
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-top: 6px solid var(--error);
+            animation: fadeUp 0.5s ease both;
+            text-align: center;
+        }
+
+        .icon-circle {
+            width: 72px;
+            height: 72px;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+
+        .icon-circle svg {
+            width: 36px;
+            height: 36px;
+        }
+
+        .delete-title {
+            font-family: var(--font-display);
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--primary-dark);
+            margin-bottom: 12px;
+        }
+
+        .delete-subtitle {
+            color: var(--primary-text);
+            font-size: 15px;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .category-preview {
+            background: var(--gray-light);
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 36px;
+            text-align: left;
+            border: 1px solid var(--gray-mid);
+        }
+
+        .category-preview h4 {
+            font-family: var(--font-display);
+            font-size: 18px;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .category-preview p {
+            font-size: 14px;
+            color: var(--primary-text);
+            margin: 0;
+        }
+
+        .btn-delete-confirm {
+            width: 100%;
+            background: var(--error);
+            color: var(--white);
+            font-family: var(--font-display);
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-delete-confirm:hover {
+            background: #DC2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-family: var(--font-display);
+            font-size: 12px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--primary-text);
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .back-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .warning-section {
+            background: rgba(239, 68, 68, 0.05);
+            border: 2px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 28px;
+            text-align: left;
+        }
+
+        .warning-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .warning-icon {
+            color: var(--error);
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .warning-title {
+            font-family: var(--font-display);
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--error);
+            margin: 0;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .warning-text {
+            font-size: 14px;
+            color: var(--primary-text);
+            margin: 8px 0 0 34px;
+            line-height: 1.6;
+        }
+
+        @@keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @@media (max-width: 540px) {
+            .delete-card { padding: 32px 24px; }
+        }
+    </style>
+}
+
+<div class="delete-page-container">
+    <div class="delete-card">
+        <div class="icon-circle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
+        </div>
+
+        <h1 class="delete-title">Are you absolutely sure?</h1>
+        <p class="delete-subtitle">This action cannot be undone. This will permanently remove the category from your store's database.</p>
+
+        <div class="category-preview">
+            <h4>@Model.Name</h4>
+            <p><strong>Products:</strong> @(Model.Products?.Count ?? 0)</p>
+        </div>
+
+        @if (Model.Products?.Count > 0)
+        {
+            <div class="warning-section">
+                <div class="warning-header">
+                    <span class="warning-icon">⚠️</span>
+                    <h3 class="warning-title">Cascade Deletion Warning</h3>
+                </div>
+                <p class="warning-text">
+                    This category contains <strong>@Model.Products.Count product@(Model.Products.Count != 1 ? "s" : "")</strong>. 
+                    Deleting this category will permanently delete all associated products and their images. 
+                    <strong>This action cannot be undone.</strong>
+                </p>
+            </div>
+        }
+
+        <form asp-action="Delete">
+            <input type="hidden" asp-for="Id" />
+            <button type="submit" class="btn-delete-confirm">Yes, Delete Category</button>
+            <a asp-action="Index" class="back-link">Cancel & Keep Category</a>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

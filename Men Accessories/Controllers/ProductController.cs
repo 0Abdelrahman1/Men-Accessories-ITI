@@ -5,6 +5,7 @@ using Men_Accessories.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace Men_Accessories.Controllers
 {
@@ -12,18 +13,21 @@ namespace Men_Accessories.Controllers
     public class ProductController : Controller
     {
         private readonly IProductRepository _productRepository;
-        private readonly MenAccessoriesContext _context;
-
-        public ProductController(IProductRepository productRepository, MenAccessoriesContext menAccessoriesContext)
+        private readonly IBaseRepository<Category> _categoryRepository;
+        private readonly IBaseRepository<ProductImage> _productImageRepository;
+        public ProductController(
+            IProductRepository productRepository, 
+            IBaseRepository<Category> categoryRepository,
+            IBaseRepository<ProductImage> productImageRepository)
         {
             _productRepository = productRepository;
-            _context = menAccessoriesContext;
+            _categoryRepository = categoryRepository;
+            _productImageRepository = productImageRepository;
         }    
        
         public IActionResult Index(int page = 1)
         {
             int pageSize = 12;
-
             var result = _productRepository.GetPaginatedProducts(page, pageSize);
 
             var vm = new ProductPaginationViewModel
@@ -35,78 +39,176 @@ namespace Men_Accessories.Controllers
 
             return View(vm);
         }
-        [AllowAnonymous]
 
+        [AllowAnonymous]
         public IActionResult Details(int id)
         {
             var product = _productRepository.GetByKey(p => p.Id == id);
+                
             if (product == null)
-            {
                 return NotFound();
-            }
+                
             return View(product);
         }
 
         public IActionResult Create()
         {
-            var categories = _context.Categories.ToList();
+            var categories = _categoryRepository.GetAll();
             ViewBag.CategoriesList = new SelectList(categories, "Id", "Name");
             return View();
         }
 
         [HttpPost]
-        public IActionResult Create(Product product)
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(Product product, string[]? productImageUrls)
         {
             if (ModelState.IsValid)
             {
-                _productRepository.Add(product);
-                return RedirectToAction("Index");
+                try
+                {
+                    // Add product
+                    _productRepository.Add(product);
+
+                    // Add additional images if provided
+                    if (productImageUrls != null && productImageUrls.Length > 0)
+                    {
+                        foreach (var imageUrl in productImageUrls)
+                        {
+                            if (!string.IsNullOrWhiteSpace(imageUrl))
+                            {
+                                var productImage = new ProductImage
+                                {
+                                    ProductId = product.Id,
+                                    ImageUrl = imageUrl.Trim()
+                                };
+                                _productImageRepository.Add(productImage);
+                            }
+                        }
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Error creating product: {ex.Message}");
+                }
             }
-            var categories = _context.Categories.ToList();
-            ViewBag.CategoriesList = new SelectList(categories, "Id", "Name");
+
+            var categories = _categoryRepository.GetAll();
+            ViewBag.CategoriesList = new SelectList(categories, "Id", "Name", product.CategoryId);
             return View(product);
         }
 
         public IActionResult Edit(int id)
         {
             var product = _productRepository.GetByKey(p => p.Id == id);
+                
             if (product == null)
-            {
                 return NotFound();
-            }
-            var categories = _context.Categories.ToList();
-            ViewBag.CategoriesList = new SelectList(categories, "Id", "Name");
+
+            var categories = _categoryRepository.GetAll();
+            ViewBag.CategoriesList = new SelectList(categories, "Id", "Name", product.CategoryId);
             return View(product);
         }
 
         [HttpPost]
-        public IActionResult Edit(Product product)
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, Product product, string[]? productImageUrls)
         {
+            if (id != product.Id)
+                return NotFound();
+
             if (ModelState.IsValid)
             {
-                _productRepository.Update(product);
-                return RedirectToAction("Index");
+                try
+                {
+                    // Get existing product
+                    var existingProduct = _productRepository.GetByKey(p => p.Id == id);
+                    if (existingProduct == null)
+                        return NotFound();
+
+                    // Update product properties
+                    existingProduct.Name = product.Name;
+                    existingProduct.Description = product.Description;
+                    existingProduct.ImageUrl = product.ImageUrl;
+                    existingProduct.Price = product.Price;
+                    existingProduct.StockQuantity = product.StockQuantity;
+                    existingProduct.Discount = product.Discount;
+                    existingProduct.IsFeatured = product.IsFeatured;
+                    existingProduct.CategoryId = product.CategoryId;
+
+                    _productRepository.Update(existingProduct);
+
+                    // Add new additional images if provided
+                    if (productImageUrls != null && productImageUrls.Length > 0)
+                    {
+                        var currentImageCount = _productImageRepository.GetAll().Count(pi => pi.ProductId == id);
+                        
+                        foreach (var imageUrl in productImageUrls)
+                        {
+                            if (!string.IsNullOrWhiteSpace(imageUrl) && currentImageCount < 5)
+                            {
+                                var productImage = new ProductImage
+                                {
+                                    ProductId = id,
+                                    ImageUrl = imageUrl.Trim()
+                                };
+                                _productImageRepository.Add(productImage);
+                                currentImageCount++;
+                            }
+                        }
+                    }
+
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"Error updating product: {ex.Message}");
+                }
             }
-            var categories = _context.Categories.ToList();
-            ViewBag.CategoriesList = new SelectList(categories, "Id", "Name");
+
+            var categories = _categoryRepository.GetAll();
+            ViewBag.CategoriesList = new SelectList(categories, "Id", "Name", product.CategoryId);
             return View(product);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DeleteProductImage(int productImageId)
+        {
+            var productImage = _productImageRepository.GetByKey(pi => pi.Id == productImageId);
+            if (productImage == null)
+                return NotFound();
+
+            try
+            {
+                int productId = productImage.ProductId;
+                _productImageRepository.Delete(productImageId);
+
+                return RedirectToAction("Edit", new { id = productId });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Error deleting image: {ex.Message}");
+                return RedirectToAction("Edit", new { id = productImage.ProductId });
+            }
         }
 
         public IActionResult Delete(int id)
         {
             var product = _productRepository.GetByKey(p => p.Id == id);
             if (product == null)
-            {
                 return NotFound();
-            }
+                
             return View(product);
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(int id)
         {
             _productRepository.Delete(id);
-            return RedirectToAction("Index");
+            return RedirectToAction(nameof(Index));
         }
 
         [AllowAnonymous]
@@ -125,7 +227,6 @@ namespace Men_Accessories.Controllers
             return View(favoriteProducts);
         }
 
-
         [AllowAnonymous]
         [HttpPost]
         public IActionResult RateProduct(string email, int productId, int stars, string? comment)
@@ -133,6 +234,5 @@ namespace Men_Accessories.Controllers
             _productRepository.AddRating(email, productId, stars, comment);
             return RedirectToAction("Details", new { id = productId });
         }
-
     }
 }

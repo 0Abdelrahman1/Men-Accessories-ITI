@@ -1,0 +1,208 @@
+@model List<Men_Accessories.Models.Category>
+
+@{
+    ViewData["Title"] = "Manage Categories";
+    Layout = "~/Views/Shared/_ShopLayout.cshtml";
+}
+
+@section Styles {
+    <style>
+        .admin-page-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding-bottom: 60px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 40px;
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #1E293B 100%);
+            border-radius: 16px;
+            box-shadow: var(--shadow-md);
+            color: var(--white);
+            animation: fadeUp 0.4s ease both;
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin: 0;
+        }
+
+        .btn-add-new {
+            background: var(--accent);
+            color: var(--white);
+            font-family: var(--font-display);
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 14px 28px;
+            border-radius: 8px;
+            text-decoration: none;
+            transition: var(--transition);
+            border: 2px solid var(--accent);
+            display: inline-block;
+        }
+
+        .btn-add-new:hover {
+            background: transparent;
+            color: var(--white);
+            transform: translateY(-2px);
+        }
+
+        .table-wrapper {
+            background: var(--white);
+            border: 1px solid var(--gray-mid);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            animation: fadeUp 0.6s ease both;
+        }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        .admin-table th {
+            background: var(--gray-light);
+            font-family: var(--font-display);
+            font-size: 12px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--gray-mid);
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+
+        .admin-table td {
+            padding: 16px 24px;
+            border-bottom: 1px solid var(--gray-mid);
+            vertical-align: middle;
+            font-size: 14px;
+            color: var(--primary-text);
+            transition: var(--transition);
+        }
+
+        .admin-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .admin-table tr:hover td {
+            background: var(--gray-light);
+        }
+
+        .category-name {
+            color: var(--primary-dark);
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .category-name:hover {
+            color: var(--accent);
+        }
+
+        .action-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-family: var(--font-display);
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .btn-edit { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .btn-edit:hover { background: var(--warning); color: var(--white); box-shadow: var(--shadow-sm); }
+
+        .btn-delete { background: rgba(239, 68, 68, 0.1); color: var(--error); }
+        .btn-delete:hover { background: var(--error); color: var(--white); box-shadow: var(--shadow-sm); }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: var(--white);
+            border: 2px dashed var(--gray-mid);
+            border-radius: 16px;
+            color: var(--primary-text);
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .empty-state h3 {
+            font-family: var(--font-display);
+            font-size: 24px;
+            color: var(--primary-dark);
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+        }
+
+        @@keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+}
+
+<div class="admin-page-container">
+    <div class="page-header">
+        <h1 class="page-title">Manage Categories</h1>
+        <a asp-action="Create" class="btn-add-new">+ Add New Category</a>
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <div class="empty-state">
+            <h3>No categories yet</h3>
+            <p>Create your first category to get started.</p>
+            <a asp-action="Create" class="btn-add-new">+ Create First Category</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Category Name</th>
+                        <th>Products Count</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var category in Model)
+                    {
+                        <tr>
+                            <td><span class="category-name">@category.Name</span></td>
+                            <td>@(category.Products?.Count ?? 0)</td>
+                            <td>
+                                <div class="action-links">
+                                    <a asp-action="Edit" asp-route-id="@category.Id" class="btn-action btn-edit">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@category.Id" class="btn-action btn-delete">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
