@@ -1,4 +1,5 @@
 ﻿using Men_Accessories.Contexts;
+using Men_Accessories.Models;
 using Men_Accessories.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,6 +28,18 @@ namespace Men_Accessories.Controllers
 
             return View();
         }
+
+        [Authorize(Roles = "Admin")]
+        public IActionResult Index()
+        {
+            var orders = _context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.OrderItems)
+                .OrderByDescending(o => o.CreatedAt)
+                .ToList();
+
+            return View(orders);
+        }
         public IActionResult MyOrders()
         {
             int customerId = GetCustomerId();
@@ -41,12 +54,22 @@ namespace Men_Accessories.Controllers
 
         public IActionResult Details(int id)
         {
-            int customerId = GetCustomerId();
-
-            var order = _context.Orders
+            var orderQuery = _context.Orders
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
-                .FirstOrDefault(o => o.Id == id && o.CustomerId == customerId);
+                .AsQueryable();
+
+            Order? order;
+
+            if (User.IsInRole("Admin"))
+            {
+                order = orderQuery.FirstOrDefault(o => o.Id == id);
+            }
+            else
+            {
+                int customerId = GetCustomerId();
+                order = orderQuery.FirstOrDefault(o => o.Id == id && o.CustomerId == customerId);
+            }
 
             if (order == null)
             {
