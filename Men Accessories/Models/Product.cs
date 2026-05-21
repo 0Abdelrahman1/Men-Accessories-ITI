@@ -46,5 +46,7 @@ namespace Men_Accessories.Models
         public double AverageRating { get { return TotalRating > 0 ? (double)TotalRating / Rates.Count : 0.0; } }
 
         public virtual List<Rate> Rates { get; set; } = new List<Rate>();
+
+        public virtual List<ProductImage> ProductImages { get; set; } = new();
     }
 }

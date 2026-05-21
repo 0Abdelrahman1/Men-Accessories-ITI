@@ -17,6 +17,7 @@ namespace Men_Accessories.Contexts
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<Cart> Carts { get; set; }
         public virtual DbSet<CartItem> CartItems { get; set; }
+        public virtual DbSet<ProductImage> ProductImages { get; set; }  // NEW
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -62,6 +63,23 @@ namespace Men_Accessories.Contexts
                     .WithMany(c => c.Products)
                     .HasForeignKey(e => e.CategoryId)
                     .OnDelete(DeleteBehavior.Restrict);
+                // NEW: Configure ProductImage relationship
+                entity.HasMany(e => e.ProductImages)
+                    .WithOne(pi => pi.Product)
+                    .HasForeignKey(pi => pi.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // NEW: ProductImage configuration
+            modelBuilder.Entity<ProductImage>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.ImageUrl)
+                    .IsRequired();
+                entity.HasOne(e => e.Product)
+                    .WithMany(p => p.ProductImages)
+                    .HasForeignKey(e => e.ProductId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Customer configuration
