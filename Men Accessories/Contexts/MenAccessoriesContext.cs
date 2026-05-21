@@ -34,11 +34,11 @@ namespace Men_Accessories.Contexts
                 // Prevent duplicate category names
                 entity.HasIndex(e => e.Name)
                     .IsUnique();
-                // Prevent category deletion if products exist
+                // Cascade delete: When category is deleted, all products in it are deleted
                 entity.HasMany(e => e.Products)
                     .WithOne(p => p.Category)
                     .HasForeignKey(p => p.CategoryId)
-                    .OnDelete(DeleteBehavior.Restrict);
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             // Product configuration
