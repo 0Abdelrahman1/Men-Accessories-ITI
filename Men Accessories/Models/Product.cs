@@ -16,7 +16,6 @@ namespace Men_Accessories.Models
         public string Description { get; set; }
 
         [Required(ErrorMessage = "Image URL is required")]
-        [Url(ErrorMessage = "Image URL must be a valid URL")]
         public string ImageUrl { get; set; }
 
         [Required(ErrorMessage = "Price is required")]
