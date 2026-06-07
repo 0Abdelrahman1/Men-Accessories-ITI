@@ -348,11 +348,6 @@ The application includes built-in data seeding for testing:
 - [ ] Product comparison tool
 - [ ] Gift cards system
 
-## 📞 Contact & Support
-
-For questions, issues, or suggestions:
-- **Email:** dinaalaraby9503@gmail.com
-- **GitHub:** [0Abdelrahman1](https://github.com/0Abdelrahman1)
 
 ## 📄 License
 
